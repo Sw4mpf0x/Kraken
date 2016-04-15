@@ -1,0 +1,148 @@
+<html>
+
+
+<head>
+<script src="http://code.jquery.com/jquery-2.1.1.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<meta charset="UTF-8">
+<!-- If IE use the latest rendering engine -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- Set the page to the width of the device and set the zoon level -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kraken Operations Center</title>
+<nav class="navbar navbar-inverse navbar-">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Kraken</a>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">WebScout <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../../WebScout">Web Interfaces</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="../../WebScout/setup">Setup</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Scanning <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Kickoff</a></li>
+                        <li><a href="#">Custom</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Setup</a></li>
+
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Logs <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Logs</a></li>
+                        <li><a href="../../Logs/reports">Reports</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+</head>
+<body>
+<div class="alert alert-success" id="success-alert" style="position: fixed;width: 100%;">
+        <button type="button" class="close" data-dismiss="alert">x</button>
+        <strong>Success!</strong>
+        Notes updated for this interface.
+</div>
+<div class="container">
+
+
+
+<form  id="cleardb-form" method = "POST">
+	<div class="form-group">
+                {% csrf_token %}
+                <input type="hidden" class="form-control" name="script" value="clearDB"/>
+		<label for="cleardb">Clear the Hosts and Ports tables:</label><br>
+		<button id ="cleardb" class="btn btn-primary" type="submit">Clear Database</button>
+	</div>
+</form>
+
+<form id="parse-form" method="POST" role="form">
+	<div class="form-group">
+                {% csrf_token %}
+		<input type="hidden" class="form-control" name="script" value="parse"/>
+		<label for="path">Enter path to Nmap XML file (.xml)</label>
+		<input class="form-control" name="path" id="path"/>
+		<button id="parse" type="submit" class="btn btn-primary" value="Submit">Parse File</button>
+	</div>
+</form>
+<!-- <input type="file" data-filename-placement="inside"> -->
+
+
+<form  id="screenshot-form" method = "POST">
+        <div class="form-group">
+                {% csrf_token %}
+                <input type="hidden" class="form-control" name="script" value="screenshot"/>
+                <label for="screenshot">Retrieve web interface screenshots:</label><br>
+                <button id ="screenshot" class="btn btn-primary" type="submit">Take Screenshots</button>
+        </div>
+</form>
+<script>
+    $(function() {
+        //twitter bootstrap script
+        $("#success-alert").hide();
+        $("button#cleardb").click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "",
+                data: $('form#cleardb-form').serialize(),
+                success: function(msg){
+                    $("#success-alert").alert();
+                    $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                        $("#success-alert").hide();
+                    }); 
+                },
+                error: function(){
+                    alert("failure");
+                },
+            });
+        });
+        $("button#parse").click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "",
+                data: $('form#parse-form').serialize(),
+                success: function(msg){
+                    $("#success-alert").alert();
+                    $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                        $("#success-alert").hide();
+                    }); 
+                },
+                error: function(){
+                    alert("failure");
+                },
+            });
+        });
+        $("button#screenshot").click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "",
+                data: $('form#screenshot-form').serialize(),
+                success: function(msg){
+                    $("#success-alert").alert();
+                },
+                error: function(){
+                    alert("failure");
+                },
+            });
+        });
+    });
+</script>
+
+</div>
+</body>
+</html>
+

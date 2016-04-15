@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<script src="http://code.jquery.com/jquery-2.1.1.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<nav class="navbar navbar-inverse" style="position:fixed;top:0;width:100%;">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">Kraken</a>
+			<ul class="nav navbar-nav">
+				<li>
+					<span class="navbar-text">
+						<h4>URL: <a href="{{ port.Link }}">{{ port.Link }}</a></h4>
+					</span>
+				</li>
+				<form class="navbar-form navbar-left" id="note-form" method="POST">
+					<div class="form-group">
+						{% csrf_token %}
+							{% if port.DefaultCreds %}
+								<span class="navbar-text" style="margin-top:0px;margin-bottom:0px;"><input type="hidden" id="default-credshidden" value="No" name="default-creds" />
+	  							<input type="checkbox" id="default-creds" value="Yes" name="default-creds" checked/>&#160&#160Default Credentials</span><br>
+	  						{% else %}
+	  							<span class="navbar-text" style="margin-top:0px;margin-bottom:0px;"><input type="hidden" id="default-credshidden" value="No" name="default-creds" />
+	  							<input type="checkbox" id="default-creds" value="Yes" name="default-creds" />&#160&#160Default Credentials</span><br>
+	  						{% endif %}
+
+	  						{% if port.HttpAuth %}
+	  							<span class="navbar-text" style="margin-top:0px;margin-bottom:0px;"><input type="hidden" id="http-authhidden" value="No" name="http-auth" />
+	  							<input type="checkbox" id="http-auth" value="Yes" name="http-auth" checked/>&#160&#160HTTP Authentication</span>
+							{% else %}
+								<span class="navbar-text" style="margin-top:0px;margin-bottom:0px;"><input type="hidden" id="http-authhidden" value="No" name="http-auth" />
+	  							<input type="checkbox" id="http-auth" value="Yes" name="http-auth" />&#160&#160HTTP Authentication</span>
+	  						{% endif %}
+	  						<input type="hidden" id="id" class="form-control" name="record" value="{{ port.PortID }}"/>
+			 		</div>
+			 		<div class="form-group">
+			 				<span class="navbar-text" style="margin-top:0px;margin-bottom:0px;"><label for="image-gallery-notes">Notes:</label></span>
+							<textarea class="form-control" rows="1" id="image-gallery-note" name="note">{{ port.Notes }}</textarea>
+							<button id="note-submit" type="submit" class="btn btn-primary">Submit</button>
+					</div>
+				</form>
+
+			</ul>
+		</div>
+	</div>
+</nav>
+<div class="alert alert-success" id="success-alert" style="position: fixed;width: 100%;">
+	<button type="button" class="close" data-dismiss="alert">x</button>
+	<strong>Success!</strong>
+	Notes updated for this interface.
+</div>
+				<script>
+					$(function() {
+						if(document.getElementById("default-creds").checked) {
+    						document.getElementById("default-credshidden").disabled = true;
+						}
+						if(document.getElementById("http-auth").checked) {
+    						document.getElementById("http-authhidden").disabled = true;
+								}
+						//twitter bootstrap script
+						$("#success-alert").hide();
+						$("button#note-submit").click(function(e){
+							e.preventDefault();
+							$.ajax({
+								type: "POST",
+								url: "../",
+								data: $('form#note-form').serialize(),
+								success: function(msg){
+									$("#success-alert").alert();
+              						$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+               							$("#success-alert").hide();
+               						});	
+								},
+								error: function(){
+									alert("failure");
+								},
+							});
+						});
+					});
+				</script>
+<div style="margin-top:70px;">
+        <iframe src="{{ port.Link }}" style="width:100%;height:100%;"></iframe>
+</div>
+</body>

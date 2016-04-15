@@ -1,0 +1,468 @@
+<html>
+
+
+<head>
+<script src="http://code.jquery.com/jquery-2.1.1.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+
+	loadGallery(true, 'a.thumbnail');
+
+	//This function disables buttons when needed
+	function disableButtons(counter_max, counter_current){
+		$('#show-previous-image, #show-next-image').show();
+		if(counter_max == counter_current){
+			$('#show-next-image').hide();
+		} else if (counter_current == 1){
+			$('#show-previous-image').hide();
+		}
+	}
+
+	/**
+	 *
+	 * @param setIDs		Sets IDs when DOM is loaded. If using a PHP counter, set to false.
+	 * @param setClickAttr  Sets the attribute for the click handler.
+	 */
+
+	function loadGallery(setIDs, setClickAttr){
+		var current_image,
+			selector,
+			counter = 0;
+
+		$('#show-next-image, #show-previous-image').click(function(){
+			if($(this).attr('id') == 'show-previous-image'){
+				current_image--;
+			} else {
+				current_image++;
+			}
+
+			selector = $('[data-image-id="' + current_image + '"]');
+			updateGallery(selector);
+		});
+
+
+
+		function updateGallery(selector) {
+			var $sel = selector;
+			current_image = $sel.data('image-id');
+			$('#image-gallery-name').text($sel.data('name'));
+			$('#image-gallery-title').text($sel.data('title'));
+			$('#image-gallery-image').attr('src', $sel.data('image'));
+			$('#image-gallery-link').attr('href', $sel.data('link'));
+			$('#image-gallery-os').text($sel.data('os'));
+			$('#image-gallery-device').text($sel.data('device'));
+			$('#image-gallery-product').text($sel.data('product'));
+			$('#image-gallery-note').val('');
+			$('#image-gallery-note').val($sel.data('note'));
+			$('#image-gallery-id').attr('value', $sel.data('port-id'));
+			if($sel.data('default-creds') == "True"){
+				$("#image-gallery-default-creds").prop("checked", true);
+			}
+			else{
+				$("#image-gallery-default-creds").prop("checked", false);
+			}
+			if($sel.data('http-auth') == "True"){
+				$("#image-gallery-http-auth").prop("checked", true);
+			}
+			else{
+				$("#image-gallery-http-auth").prop("checked", false);
+			}
+
+			disableButtons(counter, $sel.data('image-id'));
+		}
+
+		if(setIDs == true){
+			$('[data-image-id]').each(function(){
+				counter++;
+				$(this).attr('data-image-id',counter);
+			});
+		}
+
+		$(document).keydown(function(e) {
+   			switch(e.which) {
+				case 37: // left
+				if (current_image > 1){
+					current_image--;
+				}
+				selector = $('[data-image-id="' + current_image + '"]');
+				updateGallery(selector);
+				break;
+
+				case 39: // right
+				if (current_image < counter){
+					current_image++;
+				}
+				selector = $('[data-image-id="' + current_image + '"]');
+				updateGallery(selector);
+				break;
+
+				case 38: // up
+				document.getElementById('image-gallery-link').click();
+				break;
+
+				default: return; // exit this handler for other keys
+			}
+			e.preventDefault(); // prevent the default action (scroll / move caret)
+		});
+
+		$(setClickAttr).on('click',function(){
+			updateGallery($(this));
+		});
+	}
+});
+</script>
+<meta charset="UTF-8">
+
+<!-- If IE use the latest rendering engine -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- Set the page to the width of the device and set the zoom level -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kraken Operations Center</title>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-inverse navbar-">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">Kraken</a>
+			<ul class="nav navbar-nav">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">WebScout <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="../../WebScout">Web Interfaces</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="../../WebScout/setup">Setup</a></li>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Scanning <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#">Kickoff</a></li>
+						<li><a href="#">Custom</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="#">Setup</a></li>
+
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Logs <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#">Logs</a></li>
+						<li><a href="../../Logs/reports">Reports</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
+<style>
+.thumbnail {
+	max-width: 150px;
+	padding: 0px;
+	margin-bottom: 0px;
+}
+</style>
+</head>
+<body>
+
+<!-- Body Content -->
+<div class="container-fluid">
+
+	<!-- Pagination -->
+	<nav>
+	<div align="center">
+		<ul class="pagination" align="center">		
+						{% if hosts.has_previous %}
+				<li><a href="?page={{ hosts.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+			{% endif %}
+			{% if hosts.paginator.num_pages < 12 %}
+				{% for page in hosts.paginator.page_range %}
+					{% if hosts.number == page %}
+						<li class="active"><a href="?page={{ page }}"> {{ page }} <span class="sr-only">(current)</span></a></li>
+					{% else %}
+						<li><a href="?page={{ page }}"> {{ page }} </a></li>
+					{% endif %}
+				{% endfor %}
+			{% elif hosts.paginator.num_pages > 11 %}
+				{% if hosts.number < 7 %}
+					{% for page in "nnnnnnnnnnn" %}
+						{% if hosts.number == forloop.counter %}
+							<li class="active"><a href="?page={{ forloop.counter }}"> {{ forloop.counter }} <span class="sr-only">(current)</span></a></li>
+						{% else %}
+							<li><a href="?page={{ forloop.counter }}"> {{ forloop.counter }} </a></li>
+						{% endif %}
+					{% endfor %}
+				{% elif hosts.number|add:5 <= hosts.paginator.num_pages %}
+					<li><a href="?page={{ hosts.previous_page_number|add:"-4" }}"> {{ hosts.previous_page_number|add:"-4" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-3" }}"> {{ hosts.previous_page_number|add:"-3" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-2" }}"> {{ hosts.previous_page_number|add:"-2" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-1" }}"> {{ hosts.previous_page_number|add:"-1" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number }}"> {{ hosts.previous_page_number }} </a></li>
+					<li class="active"><a href="?page={{ hosts.number }}"> {{ hosts.number }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number }}"> {{ hosts.next_page_number }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"1" }}"> {{ hosts.next_page_number|add:"1" }} </a></li>	
+					<li><a href="?page={{ hosts.next_page_number|add:"2" }}"> {{ hosts.next_page_number|add:"2" }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"3" }}"> {{ hosts.next_page_number|add:"3" }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"4" }}"> {{ hosts.next_page_number|add:"4" }} </a></li>
+				{% elif hosts.number|add:5 > hosts.paginator.num_pages %}
+					{% for minus_number in nav_list %}
+						{% if hosts.number == hosts.paginator.num_pages|add:minus_number %}
+							<li class="active"><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
+						{% else %}
+							<li><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
+						{% endif %}	
+					{% endfor %}
+					{% if hosts.paginator.num_pages == hosts.number %}
+						<li class="active"><a href="?page={{ hosts.paginator.num_pages }}"> {{ hosts.paginator.num_pages }} </a></li>
+					{% else %}
+						<li><a href="?page={{ hosts.paginator.num_pages }}"> {{ hosts.paginator.num_pages }} </a></li>
+					{% endif %}
+				{% endif %}
+			{% endif %}
+						{% if hosts.has_next %}
+								<li><a href="?page={{ hosts.next_page_number }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+						{% endif %}
+
+		</ul>			
+	</div>
+	</nav>
+
+
+	
+	<!-- List of screenshots -->
+	<div class="row">
+	{% load staticfiles %}
+	
+	{% for host in hosts %}
+		{% if host.ports_set.all|length_is:"1" %}
+			<div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 well" style="text-align:left">
+								{{ host.IP }}<br>
+								{{ host.Hostname }}<br>
+			{% for port in host.ports_set.all %}
+				<a class="thumbnail" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-port-id="{{ port.PortID }}" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
+					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
+				</a>
+				Port: {{ port.Port }}<br>
+				<a href="viewer?destination={{ port.PortID }}" target="_blank">Open</a>
+			{% endfor %}
+			</div>
+		{% endif %}
+		{% if host.ports_set.all|length_is:"2" %}
+			<div class="col-lg-4 col-md-6 col-sm-6 col-xs-8 well" style="text-align:left">
+				{{ host.IP }}<br>
+								{{ host.Hostname }}<br>
+			<div class="row">
+			{% for port in host.ports_set.all %}
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align:left">
+				<a class="thumbnail" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-port-id="{{ port.PortID }}" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
+					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
+				</a>
+				Port: {{ port.Port }}<br>
+				<a href="viewer?destination={{ port.PortID }}" target="_blank">Open</a>
+				</div>
+			{% endfor %}
+			</div>
+			</div>
+		{% endif %}
+		{% if host.ports_set.all|length_is:"3" %}
+			<div class="col-lg-6 col-md-9 col-sm-9 col-xs-12 well" style="text-align:left">
+								{{ host.IP }}<br>
+				{{ host.Hostname }}<br>
+			<div class="row">
+			{% for port in host.ports_set.all %}
+				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="text-align:left">
+				<a class="thumbnail" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-port-id="{{ port.PortID }}" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
+					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
+				</a>
+				Port: {{ port.Port }}<br>
+				<a href="viewer?destination={{ port.PortID }}" target="_blank">Open</a>
+				</div>
+			{% endfor %}
+			</div>
+			</div>
+		{% endif %}
+		{% if host.ports_set.all|length_is:"4" %}
+			<div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 well" style="text-align:left">
+								{{ host.IP }}<br>
+				{{ host.Hostname }}<br>
+			<div class="row">
+			{% for port in host.ports_set.all %}
+				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="text-align:left">
+				<a class="thumbnail" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-port-id="{{ port.PortID }}" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
+					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
+				</a>
+				Port: {{ port.Port }}<br>
+				<a href="viewer?destination={{ port.PortID }}" target="_blank">Open</a>
+				</div>
+			{% endfor %}
+			</div>
+			</div>
+		{% endif %}
+	{% endfor %}
+	</div>
+
+	<!-- Pagination -->
+	<nav>
+	<div align="center">
+		<ul class="pagination" align="center">		
+						{% if hosts.has_previous %}
+				<li><a href="?page={{ hosts.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+			{% endif %}
+			{% if hosts.paginator.num_pages < 12 %}
+				{% for page in hosts.paginator.page_range %}
+					{% if hosts.number == page %}
+						<li class="active"><a href="?page={{ page }}"> {{ page }} <span class="sr-only">(current)</span></a></li>
+					{% else %}
+						<li><a href="?page={{ page }}"> {{ page }} </a></li>
+					{% endif %}
+				{% endfor %}
+			{% elif hosts.paginator.num_pages > 11 %}
+				{% if hosts.number < 7 %}
+					{% for page in "nnnnnnnnnnn" %}
+						{% if hosts.number == forloop.counter %}
+							<li class="active"><a href="?page={{ forloop.counter }}"> {{ forloop.counter }} <span class="sr-only">(current)</span></a></li>
+						{% else %}
+							<li><a href="?page={{ forloop.counter }}"> {{ forloop.counter }} </a></li>
+						{% endif %}
+					{% endfor %}
+				{% elif hosts.number|add:5 <= hosts.paginator.num_pages %}
+					<li><a href="?page={{ hosts.previous_page_number|add:"-4" }}"> {{ hosts.previous_page_number|add:"-4" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-3" }}"> {{ hosts.previous_page_number|add:"-3" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-2" }}"> {{ hosts.previous_page_number|add:"-2" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-1" }}"> {{ hosts.previous_page_number|add:"-1" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number }}"> {{ hosts.previous_page_number }} </a></li>
+					<li class="active"><a href="?page={{ hosts.number }}"> {{ hosts.number }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number }}"> {{ hosts.next_page_number }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"1" }}"> {{ hosts.next_page_number|add:"1" }} </a></li>	
+					<li><a href="?page={{ hosts.next_page_number|add:"2" }}"> {{ hosts.next_page_number|add:"2" }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"3" }}"> {{ hosts.next_page_number|add:"3" }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"4" }}"> {{ hosts.next_page_number|add:"4" }} </a></li>
+				{% elif hosts.number|add:5 > hosts.paginator.num_pages %}
+					{% for minus_number in nav_list %}
+						{% if hosts.number == hosts.paginator.num_pages|add:minus_number %}
+							<li class="active"><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
+						{% else %}
+							<li><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
+						{% endif %}	
+					{% endfor %}
+					{% if hosts.paginator.num_pages == hosts.number %}
+						<li class="active"><a href="?page={{ hosts.paginator.num_pages }}"> {{ hosts.paginator.num_pages }} </a></li>
+					{% else %}
+						<li><a href="?page={{ hosts.paginator.num_pages }}"> {{ hosts.paginator.num_pages }} </a></li>
+					{% endif %}
+				{% endif %}
+			{% endif %}
+						{% if hosts.has_next %}
+								<li><a href="?page={{ hosts.next_page_number }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+						{% endif %}
+
+		</ul>			
+	</div>
+	</nav>
+
+</div>
+<!-- Screenshot Popup Box -->
+<div class="modal fade" id="image-gallery" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog" style="width:70%">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title" id="image-gallery-title" align="center"></h4>
+			</div>
+			<div class="modal-body">
+			 	<div class="row">
+			 		<div class="well col-md-4">
+			 			<div class="alert alert-success" id="success-alert">
+							<button type="button" class="close" data-dismiss="alert">x</button>
+							<strong>Success! </strong>
+							Notes updated for this interface.
+						</div>
+						<div style="padding-bottom:5px"><h3>Interface Information</h3></div>
+			 			<div style="padding-bottom:5px"><b>Protocol:</b>&#160<span id="image-gallery-name"></span><br>
+			 			</div>
+			 			<div style="padding-bottom:5px"><b>Product:</b>&#160&#160<span id="image-gallery-product"></span><br>
+			 			</div>
+			 			<div style="padding-bottom:5px"><b>OS:</b>&#160&#160&#160&#160&#160&#160&#160&#160&#160&#160<span id="image-gallery-os"></span><br>
+			 			</div>
+			 			<div style="padding-bottom:5px"><b>Device:</b>&#160&#160<span id="image-gallery-device"></span><br>
+			 			</div>
+			 			<div style="padding-bottom:5px"><h3>Documentation</h3></div>
+			 			<form id="note-form" method="POST">
+							<div class="form-group">
+								{% csrf_token %}
+  										<input type="hidden" id="image-gallery-default-credshidden" value="No" name="default-creds" />
+  										<input type="checkbox" id="image-gallery-default-creds" value="Yes" name="default-creds" />&#160&#160Default Credentials<br>
+  										<input type="hidden" id="image-gallery-http-authhidden" value="No" name="http-auth" />
+  										<input type="checkbox" id="image-gallery-http-auth" value="Yes" name="http-auth" />&#160&#160HTTP Authentication<br><br>
+								<input type="hidden" id="image-gallery-id" class="form-control" name="record" value=""/>
+			 					<label for="image-gallery-notes">Notes:</label>
+								<textarea placeholder="Notes..." value="" class="form-control" rows="3" id="image-gallery-note" name="note"></textarea>
+								<button id="note-submit" type="submit" class="btn btn-primary">Submit</button>
+							</div>
+						</form>
+						<script>
+							$(function() {
+								if(document.getElementById("image-gallery-default-creds").checked) {
+									document.getElementById("image-gallery-default-credshidden").disabled = true;
+								}
+								if(document.getElementById("image-gallery-http-auth").checked) {
+									document.getElementById("image-gallery-http-authhidden").disabled = true;
+								}
+							//twitter bootstrap script
+								$("#success-alert").hide();
+								$("button#note-submit").click(function(e){
+									e.preventDefault();
+									$.ajax({
+										type: "POST",
+										url: "",
+										data: $('form#note-form').serialize(),
+										success: function(msg){
+											$("#success-alert").alert();
+											$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+			   									$("#success-alert").hide();
+			   								});	
+										},
+										error: function(){
+											alert("failure");
+										}
+								  	});
+								});
+							});
+						</script>
+			 		</div>	
+					<div class="well col-md-8">
+						<img id="image-gallery-image" class="img-responsive" src="">
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="row">
+					<div class="col-md-2">
+						<button type="button" class="btn btn-primary" id="show-previous-image" style="width:100%;">Previous</button>
+					</div>
+
+					<div class="col-md-3 text-justify">
+					</div>
+
+					<div class="col-md-2 text-justify">
+						<a href="" id="image-gallery-link" style="text-align:left" target="_blank"><button type="button" class="btn btn-primary" style="width:100%;">Open</button></a>
+					</div>
+
+					<div class="col-md-3 text-justify">
+					</div>
+
+					<div class="col-md-2">
+						<button type="button" id="show-next-image" class="btn btn-primary" style="width:100%;">Next</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
+
+
+

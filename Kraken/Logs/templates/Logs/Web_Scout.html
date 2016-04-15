@@ -1,0 +1,67 @@
+<html>
+
+
+<head>
+<script src="http://code.jquery.com/jquery-2.1.1.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<meta charset="UTF-8">
+
+<!-- If IE use the latest rendering engine -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- Set the page to the width of the device and set the zoom level -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kraken Operations Center</title>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-inverse navbar-">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">Kraken</a>
+			<ul class="nav navbar-nav">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">WebScout <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="../../WebScout">Web Interfaces</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="../../WebScout/setup">Setup</a></li>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Scanning <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#">Kickoff</a></li>
+						<li><a href="#">Custom</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="#">Setup</a></li>
+
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Logs <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#">Logs</a></li>
+						<li><a href="../../Logs/reports">Reports</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+</head>
+<body>
+<div class="container">
+	<h3>Default Creds</h3>
+	{% for entry in default_creds %}
+		{{ entry.hosts.IP }}:{{ entry.Port }} - {{ entry.Notes }}<br>
+	{% endfor %}
+	<br>
+	<h3>HTTP Auth</h3>
+	{% for entry in http_auth %}
+		{{ entry.hosts.IP }}:{{ entry.Port }} - {{ entry.Notes }}<br>
+	{% endfor %}
+</div>
+</body>
