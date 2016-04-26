@@ -46,31 +46,31 @@ $(document).ready(function(){
 
 		function updateGallery(selector) {
 			var $sel = selector;
-			current_image = $sel.data('image-id');
-			$('#image-gallery-name').text($sel.data('name'));
-			$('#image-gallery-title').text($sel.data('title'));
-			$('#image-gallery-image').attr('src', $sel.data('image'));
-			$('#image-gallery-link').attr('href', $sel.data('link'));
-			$('#image-gallery-os').text($sel.data('os'));
-			$('#image-gallery-device').text($sel.data('device'));
-			$('#image-gallery-product').text($sel.data('product'));
+			current_image = $sel.attr('data-image-id');
+			$('#image-gallery-name').text($sel.attr('data-name'));
+			$('#image-gallery-title').text($sel.attr('data-title'));
+			$('#image-gallery-image').attr('src', $sel.attr('data-image'));
+			$('#image-gallery-link').attr('href', $sel.attr('data-link'));
+			$('#image-gallery-os').text($sel.attr('data-os'));
+			$('#image-gallery-device').text($sel.attr('data-device'));
+			$('#image-gallery-product').text($sel.attr('data-product'));
 			$('#image-gallery-note').val('');
-			$('#image-gallery-note').val($sel.data('note'));
-			$('#image-gallery-id').attr('value', $sel.data('port-id'));
-			if($sel.data('default-creds') == "True"){
+			$('#image-gallery-note').val($sel.attr('data-note'));
+			$('#image-gallery-id').attr('value', $sel.attr('id'));
+			if($sel.attr('data-default-creds') == "True"){
 				$("#image-gallery-default-creds").prop("checked", true);
 			}
 			else{
 				$("#image-gallery-default-creds").prop("checked", false);
 			}
-			if($sel.data('http-auth') == "True"){
+			if($sel.attr('data-http-auth') == "True"){
 				$("#image-gallery-http-auth").prop("checked", true);
 			}
 			else{
 				$("#image-gallery-http-auth").prop("checked", false);
 			}
 
-			disableButtons(counter, $sel.data('image-id'));
+			disableButtons(counter, $sel.attr('data-image-id'));
 		}
 
 		if(setIDs == true){
@@ -241,7 +241,7 @@ $(document).ready(function(){
 								{{ host.IP }}<br>
 								{{ host.Hostname }}<br>
 			{% for port in host.ports_set.all %}
-				<a class="thumbnail" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-port-id="{{ port.PortID }}" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
+				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -256,7 +256,7 @@ $(document).ready(function(){
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align:left">
-				<a class="thumbnail" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-port-id="{{ port.PortID }}" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
+				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -273,7 +273,7 @@ $(document).ready(function(){
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="text-align:left">
-				<a class="thumbnail" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-port-id="{{ port.PortID }}" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
+				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -290,7 +290,7 @@ $(document).ready(function(){
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="text-align:left">
-				<a class="thumbnail" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-port-id="{{ port.PortID }}" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
+				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -422,7 +422,20 @@ $(document).ready(function(){
 											$("#success-alert").alert();
 											$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
 			   									$("#success-alert").hide();
-			   								});	
+			   								});
+											$($("#"+$("#image-gallery-id").attr('value')).selector).attr('data-note', $("#image-gallery-note").val());
+											if(document.getElementById("image-gallery-default-creds").checked) {
+												$($("#"+$("#image-gallery-id").attr('value')).selector).attr('data-default-creds', "True");
+											}
+											else{
+												$($("#"+$("#image-gallery-id").attr('value')).selector).attr('data-default-creds', "False");
+											};
+											if(document.getElementById("image-gallery-http-auth").checked) {
+												$($("#"+$("#image-gallery-id").attr('value')).selector).attr('data-http-auth', "True");
+											}
+											else{
+												$($("#"+$("#image-gallery-id").attr('value')).selector).attr('data-http-auth', "False");
+											};
 										},
 										error: function(){
 											alert("failure");
