@@ -35,7 +35,8 @@ def nmap_parse(filepath):
 		except:
 			host_object.Hostname = ""
 		host_object.save()
-		for port in host[3].findall('port'):
+		ports = host.find('ports')
+		for port in ports.findall('port'):
 			port_object = host_object.ports_set.create()
 			try:
 				host_object.DeviceType = port[1].get('devicetype')
