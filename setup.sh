@@ -44,6 +44,7 @@ pip install --upgrade pip
 pip install Django
 pip install virtualenvwrapper
 pip install selenium
+pip install psycopg2
 echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bash_profile
 echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bash_profile
 source ~/.bash_profile
