@@ -26,6 +26,9 @@ You can cycle through the interfaces on each page using the popup by either clic
 ## Troubleshooting
 
 If you run the setup script more than once and Kraken is not working, you may find that you have double entries in 
+
 /etc/apache2/ports.conf
+
 /etc/apache2/sites-available/000-default.conf
+
 Simply delete the double entry so that there is a single, unique entry in each file, restart the Apache service, and you should be back up and running.
