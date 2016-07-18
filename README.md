@@ -6,6 +6,7 @@ Kraken is a tool to help make your pentest workflow more efficient when enumerat
 Clone the repository down and run the following commands:
 
 ```# chmod 755 setup.sh```
+
 ```# ./setup.sh```
 
 Once setup is complete, open your browser and visit http://localhost:8000.
@@ -13,6 +14,7 @@ Once setup is complete, open your browser and visit http://localhost:8000.
 ## Usage
 
 To get started, make your way over to Web Scout's Setup page. Web Scout is what you will use to scan for and review the web interfaces available to you on a given network. Currently, this requires the XML file from the following Nmap scan:
+
 ```nmap -sV --open -T4 -v7 -p80,280,443,591,593,981,1311,2031,2480,3181,4444,4445,4567,4711,4712,5104,5280,7000,7001,7002,8000,8008,8011,8012,8013,8014,8042,8069,8080,8081,8243,8280,8281,8443,8531,8887,8888,9080,9443,11371,12443,16080,18091,18092 -iL live-hosts.txt -oA web```
 
 I plan to add better parsing functionality at some point to provide more options. Once you have this XML file, visit Web Scout's Setup page and enter the absolute path to the XML file and click "Parse File". This will parse the Nmap XML data into the database. A popup message will notify you when complete. The last step for setup is to click the "Take Screenshots" button. This will take a while. The screenshot-taking script currently uses 25 threads, each with a Selenium PhantomJS web driver, so it is fairly resource intensive. Progress can be tracked by looking in the '/opt/Kraken/Web_Scout/static/Web_Scout/' folder as screenshots are saved there. A progress bar is going to be added in the future for better process tracking.
