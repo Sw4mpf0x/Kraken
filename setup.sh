@@ -4,7 +4,9 @@
 #chown www-data /var/www/ghostdriver.log
 
 #Setup Postgresql
-/etc/init.d/postgresql start
+# Install RabbitMQ
+apt-get -y install rabbitmq-server postgresql
+sudo /etc/init.d/postgresql start
 su postgres << 'EOF'
 createdb kraken_db
 psql -c "CREATE USER kraken WITH PASSWORD 'kraken' CREATEDB;"
@@ -16,10 +18,10 @@ mv celeryd /etc/init.d/celeryd
 mv Kraken.sh /usr/bin/Kraken
 mv Kraken/ /opt/
 #Install PhantomJS
+apt-get update
 apt-get -y install python-requests python-m2crypto build-essential chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev
 
-# Install RabbitMQ
-apt-get -y install rabbitmq-server postgresql
+
 
 pip install celery
 
@@ -36,11 +38,12 @@ fi
 wget --referer='https://bitbucket.org' https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2
 tar xvjf $PHANTOM_JS.tar.bz2
 
-mv $PHANTOM_JS /usr/local/share
-ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin
+sudo mv $PHANTOM_JS /usr/local/share
+sudo ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin
 rm $PHANTOM_JS.tar.bz2
 
-
+chown root /etc/default/celeryd
+chmod 640 /etc/default/celeryd
 chmod 755 /usr/bin/Kraken
 chmod 755 /etc/init.d/celeryd
 
@@ -105,13 +108,13 @@ echo "    WSGIScriptAlias / /opt/Kraken/Kraken/wsgi.py" >> /etc/apache2/sites-av
 echo "" >> /etc/apache2/sites-available/000-default.conf
 echo "</VirtualHost>" >> /etc/apache2/sites-available/000-default.conf
 echo "listen 8000" >> /etc/apache2/ports.conf
-/etc/init.d/apache2 restart
+
 
 
 echo ""
 echo ""
 echo "Setup complete!"
-echo "Open your browser and visit http://localhost:8000/"
+echo "Run 'Kraken start' and open your browser and visit http://localhost:8000/"
 echo ""
 
 
