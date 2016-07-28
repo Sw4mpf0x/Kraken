@@ -11,6 +11,9 @@ psql -c "CREATE USER kraken WITH PASSWORD 'kraken' CREATEDB;"
 psql -c 'GRANT ALL PRIVILEGES ON DATABASE "kraken_db" TO kraken;'
 EOF
 
+mv celeryd.conf /etc/default/celeryd
+mv celeryd /etc/init.d/celeryd
+mv Kraken.sh /usr/bin/Kraken
 mv Kraken/ /opt/
 #Install PhantomJS
 apt-get -y install python-requests python-m2crypto build-essential chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev
@@ -36,9 +39,7 @@ tar xvjf $PHANTOM_JS.tar.bz2
 mv $PHANTOM_JS /usr/local/share
 ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin
 rm $PHANTOM_JS.tar.bz2
-cp celeryd.conf /etc/default/celeryd
-cp celeryd /etc/init.d/celeryd
-cp Kraken.sh /usr/bin/Kraken
+
 
 chmod 755 /usr/bin/Kraken
 chmod 755 /etc/init.d/celeryd
