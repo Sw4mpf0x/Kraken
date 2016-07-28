@@ -15,6 +15,8 @@ Once setup is complete, open your browser and visit http://localhost:8000 and us
 
 admin:2wsxXSW@
 
+Password change and add user functionality can be found at localhost:8000/admin
+
 ## Usage
 
 To get started, make your way over to Web Scout's Setup page. Web Scout is what you will use to scan for and review the web interfaces available to you on a given network. Currently, this requires the XML file from the following Nmap scan:
