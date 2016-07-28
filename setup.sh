@@ -19,7 +19,7 @@ mv Kraken/ /opt/
 apt-get -y install python-requests python-m2crypto build-essential chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev
 
 # Install RabbitMQ
-apt-get -y install rabbitmq-server
+apt-get -y install rabbitmq-server postgresql
 
 pip install celery
 
