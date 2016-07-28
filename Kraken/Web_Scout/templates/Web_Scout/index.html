@@ -1,12 +1,7 @@
-<html>
-
-
-<head>
-<script src="http://code.jquery.com/jquery-2.1.1.js"></script>
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
+{% extends "base.html" %}
+{% block head %}
+	<script>
+	$(document).ready(function(){
 
 	loadGallery(true, 'a.thumbnail');
 
@@ -69,6 +64,12 @@ $(document).ready(function(){
 			else{
 				$("#image-gallery-http-auth").prop("checked", false);
 			}
+			if($sel.attr('data-reviewed') == "True"){
+				$("#image-gallery-reviewed").prop("checked", true);
+			}
+			else{
+				$("#image-gallery-reviewed").prop("checked", false);
+			}
 
 			disableButtons(counter, $sel.attr('data-image-id'));
 		}
@@ -111,118 +112,224 @@ $(document).ready(function(){
 			updateGallery($(this));
 		});
 	}
-});
-</script>
-<meta charset="UTF-8">
+	});
+	</script>
 
-<!-- If IE use the latest rendering engine -->
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<style>
+		.advsearch{
+			display:inline-block;
+			padding:6px 12px;
+			margin-bottom:0;
+			font-size:14px;
+			font-weight:400;
+			line-height:1.42857143;
+			text-align:center;
+			white-space:nowrap;
+			vertical-align:middle;
+			-ms-touch-action:manipulation;
+			touch-action:manipulation;
+			cursor:pointer;
+			-webkit-user-select:none;
+			-moz-user-select:none;
+			-ms-user-select:none;
+			user-select:none;
+			background-image:none;
+			border:1px solid transparent;
+			border-radius:4px;
+			color:#9D9D9D;
+			background-color:#222
+			}
+		.advsearch.active.focus,
+		.advsearch.active:focus,
+		.advsearch.focus,
+		.advsearch:active.focus,
+		.advsearch:active:focus,
+		.advsearch:focus{
+			outline:5px auto -webkit-focus-ring-color;
+			outline-offset:-2px
+			}
+		.advsearch.focus,
+		.advsearch:focus,
+		.advsearch:hover{
+			color:#FFFFFF;
+			text-decoration:none
+			}
+		.advsearch.active,
+		.advsearch:active{
+			background-image:none;
+			border:none;
+			outline:0;
+			}
+	</style>
+{% endblock %}
 
-<!-- Set the page to the width of the device and set the zoom level -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kraken Operations Center</title>
+{% block navbarright %}
 
-<!-- Navigation Bar -->
-<nav class="navbar navbar-inverse navbar-">
-	<div class="container-fluid">
-		<div class="navbar-header">
-			<a class="navbar-brand" href="#">Kraken</a>
-			<ul class="nav navbar-nav">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">WebScout <span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="../../WebScout">Web Interfaces</a></li>
-						<li role="separator" class="divider"></li>
-						<li><a href="../../WebScout/setup">Setup</a></li>
-					</ul>
-				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Scanning <span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="#">Kickoff</a></li>
-						<li><a href="#">Custom</a></li>
-						<li role="separator" class="divider"></li>
-						<li><a href="#">Setup</a></li>
+<li><button type="button" class="advsearch navbar-btn" data-toggle="collapse" data-target="#filter-panel"><span class="glyphicon glyphicon-cog"></span> Advanced Search</button></li>
+{% endblock %}
 
-					</ul>
-				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Logs <span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="#">Logs</a></li>
-						<li><a href="../../Logs/reports">Reports</a></li>
-					</ul>
-				</li>
-			</ul>
-		</div>
-	</div>
-</nav>
-<style>
-.thumbnail {
-	max-width: 150px;
-	padding: 0px;
-	margin-bottom: 0px;
-}
-</style>
-</head>
-<body>
-
+{% block body %}
 <!-- Body Content -->
-<div class="container-fluid">
 
+
+<div class="container-fluid">
+<div class="container">
+	<div class="row">
+        <div id="filter-panel" class="collapse filter-panel">
+            <div class="panel panel-default" style="background-color:#F5F5F5">
+                <div class="panel-body">
+                    <form id="filterform" style="text-align:center" class="form-inline" role="form" method="GET">
+                        <div class="form-group">
+                            <label class="filter-col" style="padding-left:10px;padding-right:10px;" for="pref-perpage">Rows per page:</label><br>
+                            <select id="pref-perpage" class="form-control" name="hosts_per_page">
+                                {% if hosts_per_page > 0 %}
+                                	{% if hosts_per_page == 20 %}
+                                		<option selected="selected" value="20">20</option>
+                                	{% else %}
+                                		<option value="20">20</option>
+                                	{% endif %}
+                                	{% if hosts_per_page == 30 %}
+                                		<option selected="selected" value="30">30</option>
+                                	{% else %}
+                                		<option value="30">30</option>
+                                	{% endif %}
+                                	{% if hosts_per_page == 40 %}
+                                		<option selected="selected" value="40">40</option>
+                                	{% else %}
+                                		<option value="40">40</option>
+                                	{% endif %}
+                                	{% if hosts_per_page == 50 %}
+                                		<option selected="selected" value="50">50</option>
+                                	{% else %}
+                                		<option value="50">50</option>
+                                	{% endif %}
+                                	{% if hosts_per_page == 100 %}
+                                		<option selected="selected" value="100">100</option>
+                                	{% else %}
+                                		<option value="100">100</option>
+                                	{% endif %}
+                                {% else %}
+                                	<option selected="selected" value="20">20</option>
+                                	<option value="30">30</option>
+                                	<option value="40">40</option>
+                                	<option value="50">50</option>
+                                	<option value="100">100</option>
+                                {% endif %}
+                            </select>                                
+                        </div> <!-- form group [rows] -->
+                        <div class="form-group">
+                            <label class="filter-col" style="margin-right:0;" for="pref-search">Search:</label><br>
+                            <input type="text" class="form-control input-sm" id="pref-search" name="search" value="{{ search }}">
+                        </div><!-- form group [search] -->
+                        <div class="form-group" style="padding-left:15px">
+                            <label class="filter-col" style="margin-right:0;" for="pref-orderby">Order by:</label><br>
+                            <select id="pref-orderby" class="form-control" name="organize_by">
+                                {% if not org == 'IP' %}
+                                	<option>IP</option>
+                                	{% if org == 'Hostname' %}
+                                		<option selected="selected">Hostname</option>
+                                	{% else %}
+                                		<option>Hostname</option>
+                                	{% endif %}
+                                	{% if org == 'Rating' %}
+                                		<option selected="selected">Rating</option>
+                                	{% else %}
+                                		<option>Rating</option>
+                                	{% endif %}
+                                {% else %}
+                                	<option>IP</option>
+                                	<option>Hostname</option>
+                                	<option>Rating</option>
+                                {% endif %}
+                            </select>                                
+                        </div> <!-- form group [order by] --> 
+                        <div class="form-group"> <br>
+                           	{% if reviewed == 'on' %}
+                           		<div class="checkbox" style="margin-left:10px; margin-right:10px;">
+                                	<label>
+                                		<br><input type="checkbox" name="hide_reviewed" checked="checked">Hide Reviewed
+                                	</label>
+                            	</div>
+                           	{% else %}
+                           		<div class="checkbox" style="margin-left:10px; margin-right:10px;">
+                                	<label>
+                                		<input type="checkbox" name="hide_reviewed">Hide Reviewed
+                        			</label>
+                            	</div>
+                           	{% endif %}
+                        </div>
+                        <div class="form-group">
+                           	<br>
+                            <button type="submit" class="btn btn-default filter-col">
+                                <span class="glyphicon glyphicon-filter"></span> Filter
+                            </button>
+                            <br>  
+                        </div>
+                        <div class="form-group">
+                    		<br>
+                    		<a href="{% url 'webscout:index' %}"><button type="button" class="btn btn-default filter-col">
+                    			Clear Filter
+                    		</button></a>
+                    	</div>
+                    </form>
+                </div>
+            </div>
+        </div>    
+	</div>
+</div>
 	<!-- Pagination -->
 	<nav>
 	<div align="center">
 		<ul class="pagination" align="center">		
-						{% if hosts.has_previous %}
-				<li><a href="?page={{ hosts.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+			{% if hosts.has_previous %}
+				<li><a href="?page={{ hosts.previous_page_number }}{{ pagination_parameters }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
 			{% endif %}
 			{% if hosts.paginator.num_pages < 12 %}
 				{% for page in hosts.paginator.page_range %}
 					{% if hosts.number == page %}
-						<li class="active"><a href="?page={{ page }}"> {{ page }} <span class="sr-only">(current)</span></a></li>
+						<li class="active"><a href="?page={{ page }}{{ pagination_parameters }}"> {{ page }} <span class="sr-only">(current)</span></a></li>
 					{% else %}
-						<li><a href="?page={{ page }}"> {{ page }} </a></li>
+						<li><a href="?page={{ page }}{{ pagination_parameters }}"> {{ page }} </a></li>
 					{% endif %}
 				{% endfor %}
 			{% elif hosts.paginator.num_pages > 11 %}
 				{% if hosts.number < 7 %}
 					{% for page in "nnnnnnnnnnn" %}
 						{% if hosts.number == forloop.counter %}
-							<li class="active"><a href="?page={{ forloop.counter }}"> {{ forloop.counter }} <span class="sr-only">(current)</span></a></li>
+							<li class="active"><a href="?page={{ forloop.counter }}{{ pagination_parameters }}"> {{ forloop.counter }} <span class="sr-only">(current)</span></a></li>
 						{% else %}
-							<li><a href="?page={{ forloop.counter }}"> {{ forloop.counter }} </a></li>
+							<li><a href="?page={{ forloop.counter }}{{ pagination_parameters }}"> {{ forloop.counter }} </a></li>
 						{% endif %}
 					{% endfor %}
 				{% elif hosts.number|add:5 <= hosts.paginator.num_pages %}
-					<li><a href="?page={{ hosts.previous_page_number|add:"-4" }}"> {{ hosts.previous_page_number|add:"-4" }} </a></li>
-					<li><a href="?page={{ hosts.previous_page_number|add:"-3" }}"> {{ hosts.previous_page_number|add:"-3" }} </a></li>
-					<li><a href="?page={{ hosts.previous_page_number|add:"-2" }}"> {{ hosts.previous_page_number|add:"-2" }} </a></li>
-					<li><a href="?page={{ hosts.previous_page_number|add:"-1" }}"> {{ hosts.previous_page_number|add:"-1" }} </a></li>
-					<li><a href="?page={{ hosts.previous_page_number }}"> {{ hosts.previous_page_number }} </a></li>
-					<li class="active"><a href="?page={{ hosts.number }}"> {{ hosts.number }} </a></li>
-					<li><a href="?page={{ hosts.next_page_number }}"> {{ hosts.next_page_number }} </a></li>
-					<li><a href="?page={{ hosts.next_page_number|add:"1" }}"> {{ hosts.next_page_number|add:"1" }} </a></li>	
-					<li><a href="?page={{ hosts.next_page_number|add:"2" }}"> {{ hosts.next_page_number|add:"2" }} </a></li>
-					<li><a href="?page={{ hosts.next_page_number|add:"3" }}"> {{ hosts.next_page_number|add:"3" }} </a></li>
-					<li><a href="?page={{ hosts.next_page_number|add:"4" }}"> {{ hosts.next_page_number|add:"4" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-4" }}{{ pagination_parameters }}"> {{ hosts.previous_page_number|add:"-4" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-3" }}{{ pagination_parameters }}"> {{ hosts.previous_page_number|add:"-3" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-2" }}{{ pagination_parameters }}"> {{ hosts.previous_page_number|add:"-2" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-1" }}{{ pagination_parameters }}"> {{ hosts.previous_page_number|add:"-1" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number }}{{ pagination_parameters }}"> {{ hosts.previous_page_number }} </a></li>
+					<li class="active"><a href="?page={{ hosts.number }}{{ pagination_parameters }}"> {{ hosts.number }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number }}{{ pagination_parameters }}"> {{ hosts.next_page_number }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"1" }}{{ pagination_parameters }}"> {{ hosts.next_page_number|add:"1" }} </a></li>	
+					<li><a href="?page={{ hosts.next_page_number|add:"2" }}{{ pagination_parameters }}"> {{ hosts.next_page_number|add:"2" }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"3" }}{{ pagination_parameters }}"> {{ hosts.next_page_number|add:"3" }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"4" }}{{ pagination_parameters }}"> {{ hosts.next_page_number|add:"4" }} </a></li>
 				{% elif hosts.number|add:5 > hosts.paginator.num_pages %}
 					{% for minus_number in nav_list %}
 						{% if hosts.number == hosts.paginator.num_pages|add:minus_number %}
-							<li class="active"><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
+							<li class="active"><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}{{ pagination_parameters }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
 						{% else %}
-							<li><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
+							<li><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}{{ pagination_parameters }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
 						{% endif %}	
 					{% endfor %}
 					{% if hosts.paginator.num_pages == hosts.number %}
-						<li class="active"><a href="?page={{ hosts.paginator.num_pages }}"> {{ hosts.paginator.num_pages }} </a></li>
+						<li class="active"><a href="?page={{ hosts.paginator.num_pages }}{{ pagination_parameters }}"> {{ hosts.paginator.num_pages }} </a></li>
 					{% else %}
-						<li><a href="?page={{ hosts.paginator.num_pages }}"> {{ hosts.paginator.num_pages }} </a></li>
+						<li><a href="?page={{ hosts.paginator.num_pages }}{{ pagination_parameters }}"> {{ hosts.paginator.num_pages }} </a></li>
 					{% endif %}
 				{% endif %}
 			{% endif %}
 						{% if hosts.has_next %}
-								<li><a href="?page={{ hosts.next_page_number }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+								<li><a href="?page={{ hosts.next_page_number }}{{ pagination_parameters }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
 						{% endif %}
 
 		</ul>			
@@ -241,7 +348,7 @@ $(document).ready(function(){
 								{{ host.IP }}<br>
 								{{ host.Hostname }}<br>
 			{% for port in host.ports_set.all %}
-				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
+				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -256,7 +363,7 @@ $(document).ready(function(){
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align:left">
-				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
+				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -273,7 +380,7 @@ $(document).ready(function(){
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="text-align:left">
-				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
+				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -290,7 +397,7 @@ $(document).ready(function(){
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="text-align:left">
-				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery">
+				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -308,54 +415,54 @@ $(document).ready(function(){
 	<div align="center">
 		<ul class="pagination" align="center">		
 						{% if hosts.has_previous %}
-				<li><a href="?page={{ hosts.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+				<li><a href="?page={{ hosts.previous_page_number }}{{ pagination_parameters }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
 			{% endif %}
 			{% if hosts.paginator.num_pages < 12 %}
 				{% for page in hosts.paginator.page_range %}
 					{% if hosts.number == page %}
-						<li class="active"><a href="?page={{ page }}"> {{ page }} <span class="sr-only">(current)</span></a></li>
+						<li class="active"><a href="?page={{ page }}{{ pagination_parameters }}"> {{ page }} <span class="sr-only">(current)</span></a></li>
 					{% else %}
-						<li><a href="?page={{ page }}"> {{ page }} </a></li>
+						<li><a href="?page={{ page }}{{ pagination_parameters }}"> {{ page }} </a></li>
 					{% endif %}
 				{% endfor %}
 			{% elif hosts.paginator.num_pages > 11 %}
 				{% if hosts.number < 7 %}
 					{% for page in "nnnnnnnnnnn" %}
 						{% if hosts.number == forloop.counter %}
-							<li class="active"><a href="?page={{ forloop.counter }}"> {{ forloop.counter }} <span class="sr-only">(current)</span></a></li>
+							<li class="active"><a href="?page={{ forloop.counter }}{{ pagination_parameters }}"> {{ forloop.counter }} <span class="sr-only">(current)</span></a></li>
 						{% else %}
-							<li><a href="?page={{ forloop.counter }}"> {{ forloop.counter }} </a></li>
+							<li><a href="?page={{ forloop.counter }}{{ pagination_parameters }}"> {{ forloop.counter }} </a></li>
 						{% endif %}
 					{% endfor %}
 				{% elif hosts.number|add:5 <= hosts.paginator.num_pages %}
-					<li><a href="?page={{ hosts.previous_page_number|add:"-4" }}"> {{ hosts.previous_page_number|add:"-4" }} </a></li>
-					<li><a href="?page={{ hosts.previous_page_number|add:"-3" }}"> {{ hosts.previous_page_number|add:"-3" }} </a></li>
-					<li><a href="?page={{ hosts.previous_page_number|add:"-2" }}"> {{ hosts.previous_page_number|add:"-2" }} </a></li>
-					<li><a href="?page={{ hosts.previous_page_number|add:"-1" }}"> {{ hosts.previous_page_number|add:"-1" }} </a></li>
-					<li><a href="?page={{ hosts.previous_page_number }}"> {{ hosts.previous_page_number }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-4" }}{{ pagination_parameters }}"> {{ hosts.previous_page_number|add:"-4" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-3" }}{{ pagination_parameters }}"> {{ hosts.previous_page_number|add:"-3" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-2" }}{{ pagination_parameters }}"> {{ hosts.previous_page_number|add:"-2" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-1" }}{{ pagination_parameters }}"> {{ hosts.previous_page_number|add:"-1" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number }}{{ pagination_parameters }}"> {{ hosts.previous_page_number }} </a></li>
 					<li class="active"><a href="?page={{ hosts.number }}"> {{ hosts.number }} </a></li>
-					<li><a href="?page={{ hosts.next_page_number }}"> {{ hosts.next_page_number }} </a></li>
-					<li><a href="?page={{ hosts.next_page_number|add:"1" }}"> {{ hosts.next_page_number|add:"1" }} </a></li>	
-					<li><a href="?page={{ hosts.next_page_number|add:"2" }}"> {{ hosts.next_page_number|add:"2" }} </a></li>
-					<li><a href="?page={{ hosts.next_page_number|add:"3" }}"> {{ hosts.next_page_number|add:"3" }} </a></li>
-					<li><a href="?page={{ hosts.next_page_number|add:"4" }}"> {{ hosts.next_page_number|add:"4" }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number }}{{ pagination_parameters }}"> {{ hosts.next_page_number }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"1" }}{{ pagination_parameters }}"> {{ hosts.next_page_number|add:"1" }} </a></li>	
+					<li><a href="?page={{ hosts.next_page_number|add:"2" }}{{ pagination_parameters }}"> {{ hosts.next_page_number|add:"2" }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"3" }}{{ pagination_parameters }}"> {{ hosts.next_page_number|add:"3" }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"4" }}{{ pagination_parameters }}"> {{ hosts.next_page_number|add:"4" }} </a></li>
 				{% elif hosts.number|add:5 > hosts.paginator.num_pages %}
 					{% for minus_number in nav_list %}
 						{% if hosts.number == hosts.paginator.num_pages|add:minus_number %}
-							<li class="active"><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
+							<li class="active"><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}{{ pagination_parameters }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
 						{% else %}
-							<li><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
+							<li><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}{{ pagination_parameters }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
 						{% endif %}	
 					{% endfor %}
 					{% if hosts.paginator.num_pages == hosts.number %}
-						<li class="active"><a href="?page={{ hosts.paginator.num_pages }}"> {{ hosts.paginator.num_pages }} </a></li>
+						<li class="active"><a href="?page={{ hosts.paginator.num_pages }}{{ pagination_parameters }}"> {{ hosts.paginator.num_pages }} </a></li>
 					{% else %}
-						<li><a href="?page={{ hosts.paginator.num_pages }}"> {{ hosts.paginator.num_pages }} </a></li>
+						<li><a href="?page={{ hosts.paginator.num_pages }}{{ pagination_parameters }}"> {{ hosts.paginator.num_pages }} </a></li>
 					{% endif %}
 				{% endif %}
 			{% endif %}
 						{% if hosts.has_next %}
-								<li><a href="?page={{ hosts.next_page_number }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+								<li><a href="?page={{ hosts.next_page_number }}{{ pagination_parameters }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
 						{% endif %}
 
 		</ul>			
@@ -395,7 +502,9 @@ $(document).ready(function(){
   										<input type="hidden" id="image-gallery-default-credshidden" value="No" name="default-creds" />
   										<input type="checkbox" id="image-gallery-default-creds" value="Yes" name="default-creds" />&#160&#160Default Credentials<br>
   										<input type="hidden" id="image-gallery-http-authhidden" value="No" name="http-auth" />
-  										<input type="checkbox" id="image-gallery-http-auth" value="Yes" name="http-auth" />&#160&#160HTTP Authentication<br><br>
+  										<input type="checkbox" id="image-gallery-http-auth" value="Yes" name="http-auth" />&#160&#160HTTP Authentication<br>
+  										<input type="hidden" id="image-gallery-reviewedhidden" value="No" name="reviewed" />
+  										<input type="checkbox" id="image-gallery-reviewed" value="Yes" name="reviewed" />&#160&#160Reviewed<br><br>
 								<input type="hidden" id="image-gallery-id" class="form-control" name="record" value=""/>
 			 					<label for="image-gallery-notes">Notes:</label>
 								<textarea placeholder="Notes..." value="" class="form-control" rows="3" id="image-gallery-note" name="note"></textarea>
@@ -474,8 +583,7 @@ $(document).ready(function(){
 		</div>
 	</div>
 </div>
-</body>
-</html>
+{% endblock %}
 
 
 

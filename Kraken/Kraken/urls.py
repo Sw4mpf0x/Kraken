@@ -15,14 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from Web_Scout import views
-from Logs import views
-from Scans import views
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
+    url(r'^$', views.index, name='home'),
     url(r'^admin/', admin.site.urls),
-    url(r'^WebScout/', include('Web_Scout.urls')),
-    url(r'^Logs/', include('Logs.urls')),
+    url(r'^WebScout/', include('Web_Scout.urls', namespace='webscout')),
+    url(r'^Logs/', include('Logs.urls', namespace='logs')),
+    url(r'^Login/', 'django.contrib.auth.views.login'),
+    url(r'^Logout/', views.logout_page, name='logout'),
 ]

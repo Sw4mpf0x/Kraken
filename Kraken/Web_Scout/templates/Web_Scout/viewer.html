@@ -35,6 +35,13 @@
 								<span class="navbar-text" style="margin-top:0px;margin-bottom:0px;"><input type="hidden" id="http-authhidden" value="No" name="http-auth" />
 	  							<input type="checkbox" id="http-auth" value="Yes" name="http-auth" />&#160&#160HTTP Authentication</span>
 	  						{% endif %}
+	  						{% if host.Reviewed %}
+	  							<span class="navbar-text" style="margin-top:0px;margin-bottom:0px;"><input type="hidden" id="reviewedhidden" value="No" name="reviewed" />
+	  							<input type="checkbox" id="reviewed" value="Yes" name="reviewed" checked/>&#160&#160Reviewed</span>
+							{% else %}
+								<span class="navbar-text" style="margin-top:0px;margin-bottom:0px;"><input type="hidden" id="reviewedhidden" value="No" name="reviewed" />
+	  							<input type="checkbox" id="reviewed" value="Yes" name="reviewed" />&#160&#160Reviewed</span>
+	  						{% endif %}
 	  						<input type="hidden" id="id" class="form-control" name="record" value="{{ port.PortID }}"/>
 			 		</div>
 			 		<div class="form-group">

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <script src="http://code.jquery.com/jquery-2.1.1.js"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <meta charset="UTF-8">
+  
+  <!-- If IE use the latest rendering engine -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <!-- Set the page to the width of the device and set the zoom level -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <title>Kraken | Login</title>
+<style>
+
+body, html {
+    height: 100%;
+    background-repeat: no-repeat;
+    background-color: #d9d9d9;
+}
+
+.card-container.card {
+    max-width: 350px;
+    padding: 40px 40px;
+}
+
+.btn {
+    font-weight: 700;
+    height: 36px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+/*
+ * Card component
+ */
+.card {
+    background-color: #F7F7F7;
+    /* just in case there no content*/
+    padding: 20px 25px 30px;
+    margin: 0 auto 25px;
+    margin-top: 100px;
+    /* shadows and rounded borders */
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.profile-img-card {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 10px;
+    display: block;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+
+/*
+ * Form styles
+ */
+.title{
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.subtitle {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px 0 0;
+    margin-bottom: 10px;
+    min-height: 1em;
+}
+
+.form-signin #id_username,
+.form-signin #id_password {
+    direction: ltr;
+    height: 44px;
+    font-size: 16px;
+}
+
+.form-signin input[type=email],
+.form-signin input[type=password],
+.form-signin input[type=text],
+.form-signin button {
+    width: 100%;
+    display: block;
+    margin-bottom: 10px;
+    z-index: 1;
+    position: relative;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.form-signin .form-control:focus {
+    border-color: rgb(104, 145, 162);
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(104, 145, 162);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(104, 145, 162);
+}
+
+.btn.btn-signin {
+    /*background-color: #4d90fe; */
+    background-color: rgb(104, 145, 162);
+    /* background-color: linear-gradient(rgb(104, 145, 162), rgb(12, 97, 33));*/
+    padding: 0px;
+    font-weight: 700;
+    font-size: 14px;
+    height: 36px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    border: none;
+    -o-transition: all 0.218s;
+    -moz-transition: all 0.218s;
+    -webkit-transition: all 0.218s;
+    transition: all 0.218s;
+}
+
+
+.btn.btn-signin:hover,
+.btn.btn-signin:active,
+.btn.btn-signin:focus {
+    background-color: rgb(12, 97, 33);
+}
+</style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card card-container">
+            <p class="title">Kraken</p>
+            <p class="subtitle">Web Interface Survey Tool</p>
+            <form class="form-signin" method="post" action=".">
+                {% csrf_token %}
+                <span id="reauth-email" class="reauth-email"></span>
+                <input type="text" id="id_username" name="username" class="form-control" placeholder="Username" required autofocus>
+                <input type="password" id="id_password" name="password" class="form-control" placeholder="Password" required>
+                {% if next %}
+                  <input type="hidden" name="next" value="{{ next }}" />
+                {% else %}
+                  <input type="hidden" name="next" value="/" />
+                {% endif %}
+                {% if form.errors %}
+                  <div style="color:red;margin-bottom:8px;text-align:center">Login Failed</div>
+                {% endif %}
+                <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Sign in</button>
+            </form><!-- /form -->
+        </div><!-- /card-container -->
+    </div><!-- /container -->

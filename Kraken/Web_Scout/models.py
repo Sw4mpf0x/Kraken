@@ -11,10 +11,11 @@ class Hosts(models.Model):
 	DeviceType = models.CharField(max_length=25)
 	OS = models.CharField(max_length=25)
 	Rating = models.CharField(max_length=10)
+	Reviewed = models.BooleanField(default=False)
 
 class Ports(models.Model):
-        def __str__(self):
-                return self.Port
+	def __str__(self):
+		return self.Port
 	hosts = models.ForeignKey(Hosts, on_delete=models.CASCADE)
 	PortID = models.CharField(max_length=25)
 	Port = models.CharField(max_length=6)
@@ -29,3 +30,8 @@ class Ports(models.Model):
 	DefaultCreds = models.BooleanField(default=False)
 	HttpAuth = models.BooleanField(default=False)
 
+class Tasks(models.Model):
+	def __str__(self):
+		return self.Task
+	Task = models.CharField(max_length=25)
+	Task_Id = models.CharField(max_length=75)
