@@ -33,7 +33,7 @@ else
 	export PHANTOM_JS="phantomjs-1.9.8-linux-i686"
 fi
 
-wget https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2
+wget --referer='https://bitbucket.org' https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2
 tar xvjf $PHANTOM_JS.tar.bz2
 
 mv $PHANTOM_JS /usr/local/share
