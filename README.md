@@ -15,7 +15,7 @@ Once setup is complete, open your browser and visit http://localhost:8000 and us
 
 admin:2wsxXSW@
 
-Password change and add user functionality can be found at localhost:8000/admin
+Password change and add user functionality can be found at http://localhost:8000/admin
 
 ## Usage
 
