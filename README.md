@@ -9,7 +9,11 @@ Clone the repository down and run the following commands:
 
 ```# ./setup.sh```
 
-Once setup is complete, open your browser and visit http://localhost:8000.
+```# Kraken start```
+
+Once setup is complete, open your browser and visit http://localhost:8000 and use the following default credentials to log in:
+
+admin:2wsxXSW@
 
 ## Usage
 
