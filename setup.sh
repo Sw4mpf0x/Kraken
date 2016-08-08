@@ -115,10 +115,17 @@ cat <<'EOF' >> /etc/apache2/sites-available/000-default.conf
 
 <VirtualHost *:8000>
 
+	Alias /js /opt/Kraken/common/js/
+	Alias /css /opt/Kraken/common/css/
+	Alias /fonts /opt/Kraken/common/fonts/
     Alias /static /opt/Kraken/Web_Scout/static/
     <Directory /opt/Kraken/Web_Scout/static/Web_Scout/>
         Require all granted
     </Directory>
+    <Directory /opt/Kraken/common/>
+        Require all granted
+    </Directory>
+
     <Directory /opt/Kraken/>
         <Files wsgi.py>
             Require all granted
@@ -128,11 +135,11 @@ cat <<'EOF' >> /etc/apache2/sites-available/000-default.conf
     WSGIProcessGroup Kraken
     WSGIScriptAlias / /opt/Kraken/Kraken/wsgi.py
 
-    ServerName kraken.oc
+    ServerName kraken.com
     SSLEngine on
     SSLCertificateFile /etc/apache2/ssl/kraken.crt
     SSLCertificateKeyFile /etc/apache2/ssl/kraken.key
-
+    
 </VirtualHost>
 
 EOF

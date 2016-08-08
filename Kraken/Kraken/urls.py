@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.contrib.auth.views import login
 from . import views
 
 urlpatterns = [
@@ -22,6 +23,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^WebScout/', include('Web_Scout.urls', namespace='webscout')),
     url(r'^Logs/', include('Logs.urls', namespace='logs')),
-    url(r'^Login/', 'django.contrib.auth.views.login'),
+    url(r'^Login/', login),
     url(r'^Logout/', views.logout_page, name='logout'),
 ]
