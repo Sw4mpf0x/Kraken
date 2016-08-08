@@ -1,5 +1,6 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
+from django.utils.html import strip_tags
 from django.http import HttpResponse
 from models import Ports, Hosts, Tasks
 import subprocess
@@ -7,7 +8,6 @@ import os
 from . import tasks
 from celery.result import AsyncResult
 import json
-#import models
 from search import build_query
 from django.contrib.auth.decorators import login_required
 # Create your views here.
@@ -38,7 +38,7 @@ def index(request):
 			host.Reviewed = False
 		host.save()
 
-		return HttpResponse(str(default_creds))
+		return HttpResponse()
 	else:
 		search = request.GET.get('search', '')
 		reviewed = request.GET.get('hide_reviewed', '')
@@ -117,12 +117,10 @@ def setup(request):
 					task.Task = 'parse'
 				task.Task_Id = job.id
 				task.save()
-				#return HttpResponse("Success. Script="+request.POST['script']+" and path="+path)
 				return HttpResponse()
 			else:
-				return HttpResponse("File specified does not exist. Script="+request.POST['script']+" and path="+path)
+				return HttpResponse("File specified does not exist or is not accessible.")
 		elif request.POST['script'] == 'screenshot':
-			#subprocess.call("python /opt/Kraken/Web_Scout/screenshot.py", shell=True)
 			job = tasks.startscreenshot.delay()
 			try:
 				task = Tasks.objects.get(Task='screenshot')
@@ -133,7 +131,7 @@ def setup(request):
 			task.save()
 			return HttpResponse()
 		else:
-			return HttpResponse("Nope. Script="+request.POST['script']+" and path="+request.POST['path'])
+			return HttpResponse("Failure.")
 	else:
 		return render(request, 'Web_Scout/setup.html')
 
@@ -142,16 +140,16 @@ def viewer(request):
 	RecordID = request.GET['destination']
 	PortRecord = Ports.objects.get(PortID=RecordID)
 	HostRecord = PortRecord.hosts
+	HostRecord.Reviewed = True
+	HostRecord.save()
 	return render(request, 'Web_Scout/viewer.html', {'port':PortRecord, 'host':HostRecord})
 
 @login_required
 def task_state(request):
 	#""" A view to report the progress to the user """
 	data = 'Fail'
-	#if request.is_ajax():
 	if request.GET['task']:
 		URL_task_id = request.GET['task']
-		#INSERT validation for URL_task_id
 		try:
 			db_task = Tasks.objects.get(Task=URL_task_id)
 		except:

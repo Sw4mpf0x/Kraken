@@ -348,7 +348,7 @@
 								{{ host.IP }}<br>
 								{{ host.Hostname }}<br>
 			{% for port in host.ports_set.all %}
-				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -363,7 +363,7 @@
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align:left">
-				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -380,7 +380,7 @@
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="text-align:left">
-				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -397,7 +397,7 @@
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="text-align:left">
-				<a class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }}" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>

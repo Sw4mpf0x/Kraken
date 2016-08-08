@@ -68,6 +68,7 @@ def removescreenshots():
 def nmap_parse(filepath):
 	import xml.etree.cElementTree as ET
 	import os
+	HttpPorts = [80, 280, 443, 591, 593, 981, 1311, 2031, 2480, 3181, 4444, 4445, 4567, 4711, 4712, 5104, 5280, 7000, 7001, 7002, 8000, 8008, 8011, 8012, 8013, 8014, 8042, 8069, 8080, 8081, 8243, 8280, 8281, 8443, 8531, 8887, 8888, 9080, 9443, 11371 ,12443, 16080, 18091, 18092]
 
 	nmap = ET.parse(filepath)
 	root = nmap.getroot()
@@ -85,67 +86,68 @@ def nmap_parse(filepath):
 		host_object.save()
 		ports = host.find('ports')
 		for port in ports.findall('port'):
-			port_object = host_object.ports_set.create()
-			try:
-				host_object.DeviceType = port[1].get('devicetype')
-				if not host_object.DeviceType:
+			if port in HttpPorts: 
+				port_object = host_object.ports_set.create()
+				try:
+					host_object.DeviceType = port[1].get('devicetype')
+					if not host_object.DeviceType:
+						host_object.DeviceType = ""
+				except:
 					host_object.DeviceType = ""
-			except:
-				host_object.DeviceType = ""
-			try:
-				host_object.OS = port[1].get('ostype')
-				if not host_object.OS:
+				try:
+					host_object.OS = port[1].get('ostype')
+					if not host_object.OS:
+						host_object.OS = ""
+				except:
 					host_object.OS = ""
-			except:
-				host_object.OS = ""
-			
-			port_object.Port = port.get('portid')
-			port_object.Name = port[1].get('name')
-			if not port_object.Name:
-				port_object.Name = ""
-	
-			try:
-				port_object.Product = port[1].get('product')
-				if not port_object.Product:
+				
+				port_object.Port = port.get('portid')
+				port_object.Name = port[1].get('name')
+				if not port_object.Name:
+					port_object.Name = ""
+		
+				try:
+					port_object.Product = port[1].get('product')
+					if not port_object.Product:
+						port_object.Product = ""
+				except:
 					port_object.Product = ""
-			except:
-				port_object.Product = ""
-			try:
-				port_object.Version = port[1].get('version')
-				if not port_object.Version:
+				try:
+					port_object.Version = port[1].get('version')
+					if not port_object.Version:
+						port_object.Version = ""
+				except:
 					port_object.Version = ""
-			except:
-				port_object.Version = ""
-			try:
-				port_object.Extra_Info = port[1].get('extra_info')
-				if not port_object.Extra_Info:
+				try:
+					port_object.Extra_Info = port[1].get('extra_info')
+					if not port_object.Extra_Info:
+						port_object.Extra_Info = ""
+				except:
 					port_object.Extra_Info = ""
-			except:
-				port_object.Extra_Info = ""
-			
-			port_object.PortID = host_object.IP.replace('.', '') + port_object.Port
+				
+				port_object.PortID = host_object.IP.replace('.', '') + port_object.Ports
 
-			#Need to test this
-			port_object.Banner = ""
-			port_object.ImgLink = "Web_Scout/" + host_object.IP.replace('.', '') + port_object.Port + ".png" 
-			port_object.Banner = ""
+				#Need to test this
+				port_object.Banner = ""
+				port_object.ImgLink = "Web_Scout/" + host_object.IP.replace('.', '') + port_object.Port + ".png" 
+				port_object.Banner = ""
 
-			if host_object.Hostname:
-				if port_object.Port == "80":
-					port_object.Link = "http://" + host_object.Hostname
-				elif port_object.Port == "443" or port_object.Port == "8443" or port_object.Port == "12443":
-					port_object.Link = "https://" + host_object.Hostname
+				if host_object.Hostname:
+					if port_object.Port == "80":
+						port_object.Link = "http://" + host_object.Hostname
+					elif port_object.Port == "443" or port_object.Port == "8443" or port_object.Port == "12443":
+						port_object.Link = "https://" + host_object.Hostname
+					else:
+						port_object.Link = "http://" + host_object.Hostname + ":" + port_object.Port
 				else:
-					port_object.Link = "http://" + host_object.Hostname + ":" + port_object.Port
-			else:
-				if port_object.Port == "80":
-					port_object.Link = "http://" + host_object.IP
-				elif port_object.Port == "443" or port_object.Port == "8443" or port_object.Port == "12443":
-					port_object.Link = "https://" + host_object.IP
-				else:
-					port_object.Link = "http://" + host_object.IP + ":" + port_object.Port
+					if port_object.Port == "80":
+						port_object.Link = "http://" + host_object.IP
+					elif port_object.Port == "443" or port_object.Port == "8443" or port_object.Port == "12443":
+						port_object.Link = "https://" + host_object.IP
+					else:
+						port_object.Link = "http://" + host_object.IP + ":" + port_object.Port
 			
-			port_object.save()
+				port_object.save()
 		host_object.save()
 
 

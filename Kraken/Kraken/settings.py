@@ -25,6 +25,16 @@ SECRET_KEY = ')x#j0hyt5@1xe(=ftkv2*&(ugct$w%kv0-wc08h^5$2mqa570('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Security Settings
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 1576800
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+CSRF_COOKIE_HTTPONLY = True
+
+
 ALLOWED_HOSTS = []
 
 
@@ -129,7 +139,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT = '/opt/Kraken/static/'
 
 # CELERY STUFF
 #BROKER_URL = 'redis://localhost:6379'
