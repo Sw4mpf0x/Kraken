@@ -6,7 +6,7 @@
 #Setup Postgresql
 # Install RabbitMQ
 sudo apt-get update
-apt-get -y install rabbitmq-server postgresql python-requests python-m2crypto build-essential openssl chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev python-pip python-dev build-essential libpq-dev swig apache2 libapache2-mod-wsgi apt-get install apache2-prefork-dev
+apt-get -y install rabbitmq-server postgresql python-requests python-m2crypto build-essential openssl chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev python-pip python-dev build-essential libpq-dev swig apache2 libapache2-mod-wsgi apache2-prefork-dev
 pip install --upgrade pip
 pip install Django psycopg2 virtualenvwrapper selenium celery
 
