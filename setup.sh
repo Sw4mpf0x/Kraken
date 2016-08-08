@@ -37,14 +37,7 @@ chown celery /opt/Kraken/ghostdriver.log
 chgrp celery /opt/Kraken/ghostdriver.log
 chmod 755 /opt/Kraken/ghostdriver.log
 
-
-#sudo apt-get -y install python-requests python-m2crypto build-essential openssl chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev
-
-
-
-
 # Install PhantomJS
-cd ~
 MACHINE_TYPE=`uname -m`
 if [ ${MACHINE_TYPE} == 'x86_64' ]; then
 	PHANTOM_JS="phantomjs-1.9.8-linux-x86_64"
@@ -54,12 +47,10 @@ else
 	export PHANTOM_JS="phantomjs-1.9.8-linux-i686"
 fi
 
-wget --referer='https://bitbucket.org' https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2
 tar xvjf $PHANTOM_JS.tar.bz2
 
 sudo mv $PHANTOM_JS /usr/local/share
 sudo ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin
-rm $PHANTOM_JS.tar.bz2
 
 
 #Make Kraken Directory
