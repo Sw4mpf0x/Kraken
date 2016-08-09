@@ -31,13 +31,16 @@ chmod 755 /etc/init.d/celeryd
 printf "\033[1;31mAdding celery user\033[0m\n"
 useradd -r -s /bin/sh celery
 
-chown celery /opt/Kraken/Web_Scout/static/Web_Scout/
-chgrp celery /opt/Kraken/Web_Scout/static/Web_Scout/
-chmod 755 /opt/Kraken/Web_Scout/static/Web_Scout/
+chown -R www-data /opt/Kraken
+chgrp -R www-data /opt/Kraken
+chmod 775 /opt/Kraken/Web_Scout/static/Web_Scout/
+chmod 775 /opt/Kraken/ghostdriver.log
+#chgrp celery /opt/Kraken/Web_Scout/static/Web_Scout/
+#chmod 755 /opt/Kraken/Web_Scout/static/Web_Scout/
 
-chown celery /opt/Kraken/ghostdriver.log
-chgrp celery /opt/Kraken/ghostdriver.log
-chmod 755 /opt/Kraken/ghostdriver.log
+#chown celery /opt/Kraken/ghostdriver.log
+#chgrp celery /opt/Kraken/ghostdriver.log
+#chmod 755 /opt/Kraken/ghostdriver.log
 
 printf "\033[1;31mInstalling PhantomJS\033[0m\n"
 # Install PhantomJS
@@ -83,6 +86,10 @@ printf "\033[1;31mCreating Django Superuser\033[0m\n"
 # Create django super user. Default creds = admin:2wsxXSW@
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@kraken.com', '2wsxXSW@')" | python ./manage.py shell
 deactivate
+
+chmod 774 /opt/Kraken/Kraken/kraken.db
+chown www-data /opt/Kraken/Kraken/kraken.db
+chgrp www-data /opt/Kraken/Kraken/kraken.db
 
 printf "\033[1;31mSetting up Apache config\033[0m\n"
 #Setup Apache
