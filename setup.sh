@@ -6,16 +6,16 @@
 printf "\033[1;31mInstalling Dependencies\033[0m\n"
 # Install RabbitMQ
 sudo apt-get update
-apt-get -y install rabbitmq-server postgresql python-requests python-m2crypto build-essential openssl chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev python-pip python-dev build-essential libpq-dev swig apache2 libapache2-mod-wsgi
+apt-get -y install rabbitmq-server python-requests python-m2crypto build-essential openssl chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev python-pip python-dev build-essential libpq-dev swig apache2 libapache2-mod-wsgi #postgresql
 pip install --upgrade pip
-pip install Django psycopg2 virtualenvwrapper selenium celery
+pip install Django virtualenvwrapper selenium celery #psycopg2
 
-sudo /etc/init.d/postgresql start
-su postgres << 'EOF'
-createdb kraken_db
-psql -c "CREATE USER kraken WITH PASSWORD 'kraken' CREATEDB;"
-psql -c 'GRANT ALL PRIVILEGES ON DATABASE "kraken_db" TO kraken;'
-EOF
+#sudo /etc/init.d/postgresql start
+#su postgres << 'EOF'
+#createdb kraken_db
+#psql -c "CREATE USER kraken WITH PASSWORD 'kraken' CREATEDB;"
+#psql -c 'GRANT ALL PRIVILEGES ON DATABASE "kraken_db" TO kraken;'
+#EOF
 
 printf "\033[1;31mMoving files around and changing permissions\033[0m\n"
 mv celeryd.conf /etc/default/celeryd
@@ -30,6 +30,7 @@ chmod 755 /etc/init.d/celeryd
 
 printf "\033[1;31mAdding celery user\033[0m\n"
 useradd -r -s /bin/sh celery
+usermod -a -G www-data celery
 
 chown -R www-data /opt/Kraken
 chgrp -R www-data /opt/Kraken
@@ -133,6 +134,7 @@ cat <<'EOF' >> /etc/apache2/sites-available/000-default.conf
 </VirtualHost>
 
 EOF
+
 sudo a2enmod ssl
 
 printf "\033[1;31mStarting Kraken\033[0m\n"

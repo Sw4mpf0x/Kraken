@@ -90,7 +90,7 @@ WSGI_APPLICATION = 'Kraken.wsgi.application'
 DATABASES = {
     'default': {
     'ENGINE': 'django.db.backends.sqlite3',
-    'NAME': '/opt/Kraken/Kraken/kraken_db',
+    'NAME': '/opt/Kraken/Kraken/kraken.db',
     }
 }
 
