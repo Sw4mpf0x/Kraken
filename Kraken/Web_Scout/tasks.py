@@ -86,7 +86,7 @@ def nmap_parse(filepath):
 		host_object.save()
 		ports = host.find('ports')
 		for port in ports.findall('port'):
-			if port in HttpPorts: 
+			if int(port.get('portid')) in HttpPorts: 
 				port_object = host_object.ports_set.create()
 				try:
 					host_object.DeviceType = port[1].get('devicetype')
@@ -125,7 +125,7 @@ def nmap_parse(filepath):
 				except:
 					port_object.Extra_Info = ""
 				
-				port_object.PortID = host_object.IP.replace('.', '') + port_object.Ports
+				port_object.PortID = host_object.IP.replace('.', '') + port_object.Port
 
 				#Need to test this
 				port_object.Banner = ""

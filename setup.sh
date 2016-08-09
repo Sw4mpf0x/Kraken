@@ -3,10 +3,10 @@
 #chmod 755 /var/www/ghostdriver.log
 #chown www-data /var/www/ghostdriver.log
 
-#Setup Postgresql
+printf "\033[1;31mInstalling Dependencies\033[0m\n"
 # Install RabbitMQ
 sudo apt-get update
-apt-get -y install rabbitmq-server postgresql python-requests python-m2crypto build-essential openssl chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev python-pip python-dev build-essential libpq-dev swig apache2 libapache2-mod-wsgi apache2-prefork-dev
+apt-get -y install rabbitmq-server postgresql python-requests python-m2crypto build-essential openssl chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev python-pip python-dev build-essential libpq-dev swig apache2 libapache2-mod-wsgi
 pip install --upgrade pip
 pip install Django psycopg2 virtualenvwrapper selenium celery
 
@@ -17,6 +17,7 @@ psql -c "CREATE USER kraken WITH PASSWORD 'kraken' CREATEDB;"
 psql -c 'GRANT ALL PRIVILEGES ON DATABASE "kraken_db" TO kraken;'
 EOF
 
+printf "\033[1;31mMoving files around and changing permissions\033[0m\n"
 mv celeryd.conf /etc/default/celeryd
 mv celeryd /etc/init.d/celeryd
 mv Kraken.sh /usr/bin/Kraken
@@ -27,6 +28,7 @@ chmod 640 /etc/default/celeryd
 chmod 755 /usr/bin/Kraken
 chmod 755 /etc/init.d/celeryd
 
+printf "\033[1;31mAdding celery user\033[0m\n"
 useradd -r -s /bin/sh celery
 
 chown celery /opt/Kraken/Web_Scout/static/Web_Scout/
@@ -37,6 +39,7 @@ chown celery /opt/Kraken/ghostdriver.log
 chgrp celery /opt/Kraken/ghostdriver.log
 chmod 755 /opt/Kraken/ghostdriver.log
 
+printf "\033[1;31mInstalling PhantomJS\033[0m\n"
 # Install PhantomJS
 MACHINE_TYPE=`uname -m`
 if [ ${MACHINE_TYPE} == 'x86_64' ]; then
@@ -53,19 +56,13 @@ sudo mv $PHANTOM_JS /usr/local/share
 sudo ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin
 
 
-#Make Kraken Directory
-#start postgresql service at boot
+printf "\033[1;31mSetting up Python Virtual Environment\033[0m\n"
 #Install Python Virtual Environment
-#apt-get -y install python-pip python-dev build-essential libpq-dev swig
-#pip install --upgrade pip
-#pip install Django 
-#pip install psycopg2
-#pip install virtualenvwrapper
-#pip install selenium
 echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bash_profile
 echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bash_profile
 source ~/.bash_profile
 cd /opt/Kraken
+printf "\033[1;31mCreating new Django private key\033[0m\n"
 secretkey=$(echo 'import random;print "".join([random.SystemRandom().choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)") for i in range(50)])' | python)
 echo SECRET_KEY = \'$secretkey\' >> /opt/Kraken/Kraken/settings.py
 mkvirtualenv Kraken --no-site-packages
@@ -82,18 +79,13 @@ pip install Pillow==2.6.1 requests
 ./manage.py makemigrations
 ./manage.py migrate
 
+printf "\033[1;31mCreating Django Superuser\033[0m\n"
 # Create django super user. Default creds = admin:2wsxXSW@
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@kraken.com', '2wsxXSW@')" | python ./manage.py shell
-
-
 deactivate
 
-
-echo "import random;print ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])" | python
-
+printf "\033[1;31mSetting up Apache config\033[0m\n"
 #Setup Apache
-#apt-get -y install apache2 libapache2-mod-wsgi
-# Create self-signed SSL cert and move to /etc/apache2/ssl
 openssl req -x509 -nodes -days 1825 -newkey rsa:4096 -keyout kraken.key -out kraken.crt -subj '/C=US/ST=Oregon/L=Portland/CN=www.kraken.oc'
 mkdir /etc/apache2/ssl
 mv kraken.crt /etc/apache2/ssl/
@@ -134,12 +126,12 @@ cat <<'EOF' >> /etc/apache2/sites-available/000-default.conf
 </VirtualHost>
 
 EOF
-
 sudo a2enmod ssl
 
+printf "\033[1;31mStarting Kraken\033[0m\n"
 sudo /etc/init.d/rabbitmq-server start
 sudo /etc/init.d/apache2 start
-
+sudo /etc/init.d/celeryd start
 
 
 
@@ -147,5 +139,6 @@ echo ""
 echo ""
 echo "Setup complete!"
 echo "Run 'Kraken start' and open your browser and visit http://localhost:8000/"
+echo "Login with admin:2wsxXSW@"
 echo ""
 
