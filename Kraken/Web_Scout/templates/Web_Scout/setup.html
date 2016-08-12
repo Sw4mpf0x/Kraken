@@ -18,7 +18,7 @@
                 {% csrf_token %}
                 <input type="hidden" class="form-control" name="script" value="cleardb"/>
 		<label style="font-size:20px" for="cleardb">Clear the Hosts and Ports tables:</label><br>
-        <div style="margin-bottom:5px"><b>Progress:&#160&#160</b><span id="cleardb_progress"></span></div>
+        <div style="margin-bottom:5px"><span id="cleardb_progress"></span></div>
 		<button id ="cleardb" class="btn btn-primary" type="submit">Clear Database</button>
 	</div>
 </form>
@@ -28,7 +28,7 @@
                 {% csrf_token %}
                 <input type="hidden" class="form-control" name="script" value="removescreenshots"/>
         <label style="font-size:20px" for="removescreenshots">Remove all screenshots in screenshot folder:</label><br>
-        <div style="margin-bottom:5px"><b>Progress:&#160&#160</b><span id="removescreenshots_progress"></span></div>
+        <div style="margin-bottom:5px"><span id="removescreenshots_progress"></span></div>
         <button id ="removescreenshots" class="btn btn-primary" type="submit">Remove Screenshots</button>
     </div>
 </form>
@@ -39,7 +39,7 @@
 		<input type="hidden" class="form-control" name="script" value="parse"/>
 		<label style="font-size:20px" for="path">Enter path to Nmap XML file (.xml)</label>
 		<input class="form-control" name="path" id="path"/>
-        <div style="margin-bottom:5px"><b>Progress:&#160&#160</b><span id="parse_progress"></span></div>
+        <div style="margin-bottom:5px"><span id="parse_progress"></span></div>
 		<button id="parse" type="submit" class="btn btn-primary" value="Submit">Parse File</button>
 	</div>
 </form>
@@ -50,7 +50,7 @@
                 {% csrf_token %}
                 <input type="hidden" class="form-control" name="script" value="screenshot"/>
                 <label style="font-size:20px" for="screenshot">Retrieve web interface screenshots:</label><br>
-                <div style="margin-bottom:5px"><b>Progress:&#160&#160</b><span id="screenshot_progress"></span></div>
+                <div style="margin-bottom:5px"><span id="screenshot_progress"></span></div>
                 <button id ="screenshot" class="btn btn-primary" type="submit">Take Screenshots</button>
         </div>
 </form>
@@ -182,9 +182,9 @@
                 console.log(task);
                 console.log(task.process_percent);
                 if (task.process_percent) {
-                    $('#' + task_id + '_progress').text(task.process_percent + '% Complete');
+                    $('#' + task_id + '_progress').text('Progress:  ' +task.process_percent + '% Complete');
                 } else if (task == 'SUCCESS' || task == 'PENDING'){
-                    $('#' + task_id + '_progress').text(task);
+                    $('#' + task_id + '_progress').text('Progress:  ' + task);
                 };
      
                 // create the infinite loop of Ajax calls to check the state

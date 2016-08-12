@@ -29,9 +29,12 @@ class Ports(models.Model):
 	Link = models.CharField(max_length=35)
 	DefaultCreds = models.BooleanField(default=False)
 	HttpAuth = models.BooleanField(default=False)
+	Default_Credentials = models.CharField(max_length=100)
+	Category = models.CharField(max_length=25)
 
 class Tasks(models.Model):
 	def __str__(self):
 		return self.Task
 	Task = models.CharField(max_length=25)
 	Task_Id = models.CharField(max_length=75)
+	Count = models.IntegerField(default=0)

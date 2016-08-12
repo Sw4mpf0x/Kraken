@@ -4,8 +4,8 @@ from . import views
 
 app_name = 'Logs'
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^reports/$', views.reports, name='reports'),
+    url(r'^LogView.html$', views.krakenlog, name='krakenlog'),
+    url(r'^Reports.html$', views.reports, name='reports'),
 ]
 
 

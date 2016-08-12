@@ -6,7 +6,8 @@ from time import sleep
 from selenium import webdriver
 from urlparse import urlparse
 from random   import shuffle	
-from PIL      import Image, ImageDraw, ImageFont
+from PIL	  import Image, ImageDraw, ImageFont
+from Kraken.krakenlib import LogKrakenEvent
 import Queue
 import argparse
 import sys
@@ -28,35 +29,20 @@ django.setup()
 from Web_Scout.models import Hosts,Ports
 
 try:
-    from urllib.parse import quote
+	from urllib.parse import quote
 except:
-    from urllib import quote
+	from urllib import quote
 
 reload(sys)
 sys.setdefaultencoding("utf8")
 
-
-testlist = []
-
-@task
-def printtestlist():
-	print 'printed with printtestlist'
-	print(testlist)
-
-@task
-def test():
-	print(testlist)
-	for i in range(1, 10):
-		testlist.append(i)
-		process_percent = (i / 300) * 100
-		sleep(1)
-		current_task.update_state(state='PROGRESS', meta={'process_percent': int(process_percent)})
-	printtestlist.delay()
-
 @task
 def cleardb():
-	Hosts.objects.all().delete()
-	Ports.objects.all().delete()
+	try:
+		Hosts.objects.all().delete()
+		Ports.objects.all().delete()
+	except:
+		LogKrakenEvent('', 'Error clearing database', 'error')
 
 @task
 def removescreenshots():
@@ -149,31 +135,37 @@ def nmap_parse(filepath):
 			
 				port_object.save()
 		host_object.save()
+	for row in Ports.objects.all():
+		if Ports.objects.filter(PortID=row.PortID).count() > 1:
+			row.delete()
+	number_of_hosts = Hosts.objects.all().count()
+	number_of_ports = Ports.objects.all().count()
+	LogKrakenEvent('Celery', 'Parsing Complete. Hosts: ' + str(number_of_hosts) + ', Ports: ' + str(number_of_ports), 'info')
 
 
 @task(time_limit=120)
 def getscreenshot(urlItem, tout, debug, proxy,):
-	
+
 	def timeoutFn(func, args=(), kwargs={}, timeout_duration=1, default=None):
-	    import signal
+		import signal
 	
-	    class TimeoutError(Exception):
-	        pass
+		class TimeoutError(Exception):
+			pass
 	
-	    def handler(signum, frame):
-	        raise TimeoutError()
+		def handler(signum, frame):
+			raise TimeoutError()
 	
-	    # set the timeout handler
-	    signal.signal(signal.SIGALRM, handler)
-	    signal.alarm(timeout_duration)
-	    try:
-	        result = func(*args, **kwargs)
-	    except TimeoutError as exc:
-	        result = default
-	    finally:
-	        signal.alarm(0)
+		# set the timeout handler
+		signal.signal(signal.SIGALRM, handler)
+		signal.alarm(timeout_duration)
+		try:
+			result = func(*args, **kwargs)
+		except TimeoutError as exc:
+			result = default
+		finally:
+			signal.alarm(0)
 	
-	    return result
+		return result
 	
 	def setupBrowserProfile(tout, proxy):
 		browser = None
@@ -204,7 +196,7 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 		image.save(filename)
 	
 	def doGet(*args, **kwargs):
-		url        = args[0]
+		url		= args[0]
 		proxy = kwargs.pop('proxy',None)
 	
 		kwargs['allow_redirects'] = False
@@ -220,8 +212,75 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 			return True
 		else:
 			return False
+
+	def default_creds(port_record, source_code):
+		#port_record.Default_Credentials = None
+		#port_record.Category = None
+		print 'Checking for default creds'
+		try:
+			sigpath = '/opt/Kraken/Web_Scout/signatures.txt'
+			catpath = '/opt/Kraken/Web_Scout/categories.txt'
+			with open(sigpath) as sig_file:
+				signatures = sig_file.readlines()
 	
-	# 
+			with open(catpath) as cat_file:
+				categories = cat_file.readlines()
+			
+			# Loop through and see if there are any matches from the source code
+			# Kraken obtained
+			if source_code is not None:
+				print 'source code present'
+				for sig in signatures:
+					# Find the signature(s), split them into their own list if needed
+					# Assign default creds to its own variable
+					sig_list = sig.split('|')
+					page_identifiers = sig_list[0].split(";")
+					page_id = sig_list[1].strip()
+					credential_info = sig_list[2].strip()
+	
+					# Set our variable to 1 if the signature was not identified.  If it is
+					# identified, it will be added later on.  Find total number of
+					# "signatures" needed to uniquely identify the web app
+					# signature_range = len(page_sig)
+	
+					# This is used if there is more than one "part" of the
+					# web page needed to make a signature Delimete the "signature"
+					# by ";" before the "|", and then have the creds after the "|"
+					if all([x.lower() in source_code.lower() for x in page_identifiers]):
+						print('default cred found!!!! ' + credential_info)
+						if port_record.Default_Credentials is None:
+							port_record.Default_Credentials = credential_info
+						else:
+							port_record.Default_Credentials += '\n' + credential_info
+						port_record.Product = page_id
+						port_record.save()
+	
+				for cat in categories:
+					# Find the signature(s), split them into their own list if needed
+					# Assign default creds to its own variable
+					cat_split = cat.split('|')
+					cat_sig = cat_split[0].split(";")
+					cat_name = cat_split[1]
+	
+					# Set our variable to 1 if the signature was not identified.  If it is
+					# identified, it will be added later on.  Find total number of
+					# "signatures" needed to uniquely identify the web app
+					# signature_range = len(page_sig)
+	
+					# This is used if there is more than one "part" of the
+					# web page needed to make a signature Delimete the "signature"
+					# by ";" before the "|", and then have the creds after the "|"
+					if all([x.lower() in source_code.lower() for x in cat_sig]):
+						port_record.Category = cat_name.strip()
+						port_record.save()
+						break
+    	
+		except IOError:
+			print("[*] WARNING: Credentials file not in the same directory"
+				" as Kraken")
+			print '[*] Skipping credential check'
+			return
+
 	box = (0, 0, 1024, 768)
 	browser = None
 	
@@ -237,7 +296,7 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 		return
 
 	# Set screenshot file name. If screenshot exists, go to next interface.
-	screenshotName = '/opt/Kraken/Web_Scout/static/Web_Scout/'+urlItem[3].replace('.', '')+urlItem[4]
+	screenshotName = '/opt/Kraken/Web_Scout/static/Web_Scout/'+urlItem[1]
 	if(debug):
 		print '[+] Got URL: '+urlItem[0]
 		print '[+] screenshotName: '+screenshotName
@@ -277,7 +336,7 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 					if(debug):
 						print "[-] Didn't work with SSLv3 either..."+urlItem[0]
 					browser2.quit()
-					copy('/opt/Kraken/Web_Scout/static/blank.png', screenshotName + 'png')
+					shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', screenshotName + 'png')
 				else:
 					print '[+] Saving: '+screenshotName
 					screen = browser.get_screenshot_as_png()
@@ -292,37 +351,37 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 			im = Image.open(StringIO.StringIO(screen))
 			region = im.crop(box)
 			region.save(screenshotName+".png", 'PNG', optimize=True, quality=95)
+			port_record = Ports.objects.get(PortID=urlItem[1])
+			default_creds(port_record, browser.page_source)
 			browser.quit()
 	except Exception as e:
 		print e
 		browser.set_window_size(1024, 768)
-		if(urlItem[2] > 0):
-			urlItem[2] = urlItem[2] - 1;
 		if(debug):
 			exc_type, exc_value, exc_traceback = sys.exc_info()
 			lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
 			print ''.join('!! ' + line for line in lines) 
 		browser.quit()
-		copy('/opt/Kraken/Web_Scout/static/blank.png', screenshotName + 'png')
+		shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', screenshotName + 'png')
 		return
 	
 @task
 def startscreenshot():
-
+	import datetime
 	def signal_handler(signal, frame):
-	        print "[-] Ctrl-C received! Killing Thread(s)..."
+		print "[-] Ctrl-C received! Killing Thread(s)..."
 		os._exit(0)
 	
 	signal.signal(signal.SIGINT, signal_handler)
 
-	
+	start_time = datetime.datetime.now()
 	# Fire up the workers
-	urlQueue      = []
+	urlQueue	  = []
 	total_count   = 0
 	
 	for host in Hosts.objects.all():
 		for port in host.ports_set.all():
-			urlQueue.append([port.Link, False, 0, host.IP, port.Port])
+			urlQueue.append([port.Link, port.PortID])
 			total_count +=1
 
 	jobs = group(getscreenshot.s(item, 20, True, None) for item in urlQueue)
@@ -341,3 +400,7 @@ def startscreenshot():
 	for port in Ports.objects.all():
 		if not os.path.exists('/opt/Kraken/Web_Scout/static/Web_Scout/' + port.PortID + '.png'):
 			shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', '/opt/Kraken/Web_Scout/static/Web_Scout/' + port.PortID + '.png')
+	end_time = datetime.datetime.now()
+	total_time = end_time - start_time
+	number_of_ports = Ports.objects.all().count()
+	LogKrakenEvent('Celery', 'Screenshots Complete. Elapsed time: ' + str(total_time) + ' to screenshot ' + str(number_of_ports) + ' interfaces', 'info')

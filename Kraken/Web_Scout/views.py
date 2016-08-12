@@ -1,14 +1,13 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.html import strip_tags
 from django.http import HttpResponse
 from models import Ports, Hosts, Tasks
-import subprocess
 import os
 from . import tasks
 from celery.result import AsyncResult
 import json
-from search import build_query
+from Kraken.krakenlib import BuildQuery, LogKrakenEvent
 from django.contrib.auth.decorators import login_required
 # Create your views here.
 
@@ -20,22 +19,24 @@ def index(request):
 		default_creds = request.POST.get('default-creds')
 		http_auth = request.POST.get('http-auth')
 		reviewed = request.POST.get('reviewed')
-		port = Ports.objects.filter(PortID=record)
-		host = port[0].hosts
-		port.update(Notes=note)
+		port = Ports.objects.get(PortID=record)
+		host = port.hosts
+		port.Notes = note
 
 		if http_auth == "Yes":
-			port.update(HttpAuth=True)
+			port.HttpAuth = True
 		else:
-			port.update(HttpAuth=False)
+			port.HttpAuth = False
 		if default_creds == "Yes":
-			port.update(DefaultCreds=True)
+			port.DefaultCreds = True
 		else:
-			port.update(DefaultCreds=False)
+			port.DefaultCreds = False
 		if reviewed == "Yes":
 			host.Reviewed = True
+			LogKrakenEvent(request.user, 'Reviewed - ' + host.IP + ' (' + host.Hostname + ')', 'info')
 		else:
 			host.Reviewed = False
+		port.save()
 		host.save()
 
 		return HttpResponse()
@@ -48,7 +49,7 @@ def index(request):
 		host_array = []
 
 		if search:
-			entry_query = build_query(search, ['IP', 'Hostname'])
+			entry_query = BuildQuery(search, ['IP', 'Hostname', 'ports__Category', 'ports__Product'])
 			host_array = Hosts.objects.all().filter(entry_query)
 
 		if org in ("IP", "Hostname", "Rating"):
@@ -71,7 +72,6 @@ def index(request):
 		parameters = ''
 		for key,value in request.GET.items():
 			if not key == 'page' and not value == "":
-				print value
 				parameters = parameters + '&' + key + '=' + value
 
 		page = request.GET.get('page')
@@ -94,7 +94,9 @@ def setup(request):
 				task = Tasks()
 				task.Task = 'cleardb'
 			task.Task_Id = job.id
+			task.Count = 0
 			task.save()
+			LogKrakenEvent(request.user, 'Database Cleared', 'info')
 			return HttpResponse()
 		elif request.POST['script'] == 'removescreenshots':
 			job = tasks.removescreenshots.delay()
@@ -104,7 +106,9 @@ def setup(request):
 				task = Tasks()
 				task.Task = 'removescreenshots'
 			task.Task_Id = job.id
+			task.Count = 0
 			task.save()
+			LogKrakenEvent(request.user, 'Screenshots Deleted', 'info')
 			return HttpResponse()
 		elif request.POST['script'] == 'parse':
 			path = request.POST['path']
@@ -116,7 +120,9 @@ def setup(request):
 					task = Tasks()
 					task.Task = 'parse'
 				task.Task_Id = job.id
+				task.Count = 0
 				task.save()
+				LogKrakenEvent(request.user, 'Database populated with data from ' + path, 'info')
 				return HttpResponse()
 			else:
 				return HttpResponse("File specified does not exist or is not accessible.")
@@ -128,7 +134,9 @@ def setup(request):
 				task = Tasks()
 				task.Task = 'screenshot'
 			task.Task_Id = job.id
+			task.Count = 0
 			task.save()
+			LogKrakenEvent(request.user, 'Screenshot taking task initiated', 'info')
 			return HttpResponse()
 		else:
 			return HttpResponse("Failure.")
@@ -142,7 +150,12 @@ def viewer(request):
 	HostRecord = PortRecord.hosts
 	HostRecord.Reviewed = True
 	HostRecord.save()
-	return render(request, 'Web_Scout/viewer.html', {'port':PortRecord, 'host':HostRecord})
+	LogKrakenEvent(request.user, 'Reviewed - ' + HostRecord.IP + ' (' + HostRecord.Hostname + ')', 'info')
+	external = request.GET.get('external', '')
+	if external == 'true':
+		return redirect(PortRecord.Link)
+	else:
+		return render(request, 'Web_Scout/viewer.html', {'port':PortRecord, 'host':HostRecord})
 
 @login_required
 def task_state(request):
@@ -155,13 +168,15 @@ def task_state(request):
 		except:
 			return HttpResponse()
 		task = AsyncResult(db_task.Task_Id)
-		#task = AsyncResult(str(URL_task_id))
 		data = task.result or task.state
 	else:
 		data = 'No task_id in the request'
-	#else:
-	#	data = 'This is not an ajax request'
-
-	json_data = json.dumps(data)
-
-	return HttpResponse(json_data, content_type='application/json')
+	if data == 'SUCCESS' and db_task.Count < 4:
+		db_task.Count += 1
+		db_task.save()
+	if db_task.Count < 3:
+		json_data = json.dumps(data)
+		return HttpResponse(json_data, content_type='application/json')
+	else:
+		return HttpResponse()
+	

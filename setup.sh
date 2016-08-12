@@ -1,21 +1,9 @@
-#apt-get update
-#touch /var/www/ghostdriver.log
-#chmod 755 /var/www/ghostdriver.log
-#chown www-data /var/www/ghostdriver.log
-
 printf "\033[1;31mInstalling Dependencies\033[0m\n"
 # Install RabbitMQ
 sudo apt-get update
-apt-get -y install rabbitmq-server python-requests python-m2crypto build-essential openssl chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev python-pip python-dev build-essential libpq-dev swig apache2 libapache2-mod-wsgi #postgresql
+apt-get -y install  sqlite3 rabbitmq-server python-requests python-m2crypto build-essential openssl chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev python-pip python-dev build-essential libpq-dev swig apache2 libapache2-mod-wsgi
 pip install --upgrade pip
-pip install Django virtualenvwrapper selenium celery #psycopg2
-
-#sudo /etc/init.d/postgresql start
-#su postgres << 'EOF'
-#createdb kraken_db
-#psql -c "CREATE USER kraken WITH PASSWORD 'kraken' CREATEDB;"
-#psql -c 'GRANT ALL PRIVILEGES ON DATABASE "kraken_db" TO kraken;'
-#EOF
+pip install Django virtualenvwrapper selenium celery
 
 printf "\033[1;31mMoving files around and changing permissions\033[0m\n"
 mv celeryd.conf /etc/default/celeryd
@@ -36,12 +24,6 @@ chown -R www-data /opt/Kraken
 chgrp -R www-data /opt/Kraken
 chmod 775 /opt/Kraken/Web_Scout/static/Web_Scout/
 chmod 775 /opt/Kraken/ghostdriver.log
-#chgrp celery /opt/Kraken/Web_Scout/static/Web_Scout/
-#chmod 755 /opt/Kraken/Web_Scout/static/Web_Scout/
-
-#chown celery /opt/Kraken/ghostdriver.log
-#chgrp celery /opt/Kraken/ghostdriver.log
-#chmod 755 /opt/Kraken/ghostdriver.log
 
 printf "\033[1;31mInstalling PhantomJS\033[0m\n"
 # Install PhantomJS
@@ -71,12 +53,7 @@ secretkey=$(echo 'import random;print "".join([random.SystemRandom().choice("abc
 echo SECRET_KEY = \'$secretkey\' >> /opt/Kraken/Kraken/settings.py
 mkvirtualenv Kraken --no-site-packages
 workon Kraken
-pip install psycopg2 M2Crypto celery selenium Django
-#pip install M2Crypto
-#pip install celery
-#Install Django
-#pip install selenium
-#pip install Django
+pip install M2Crypto celery selenium Django
 
 pip install Pillow==2.6.1 requests
 ./manage.py migrate
@@ -88,16 +65,17 @@ printf "\033[1;31mCreating Django Superuser\033[0m\n"
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@kraken.com', '2wsxXSW@')" | python ./manage.py shell
 deactivate
 
+chmod 774 /opt/Kraken/Kraken/
 chmod 774 /opt/Kraken/Kraken/kraken.db
 chown www-data /opt/Kraken/Kraken/kraken.db
 chgrp www-data /opt/Kraken/Kraken/kraken.db
 
 printf "\033[1;31mSetting up Apache config\033[0m\n"
 #Setup Apache
-openssl req -x509 -nodes -days 1825 -newkey rsa:4096 -keyout kraken.key -out kraken.crt -subj '/C=US/ST=Oregon/L=Portland/CN=www.kraken.oc'
-mkdir /etc/apache2/ssl
-mv kraken.crt /etc/apache2/ssl/
-mv kraken.key /etc/apache2/ssl/
+#openssl req -x509 -nodes -days 1825 -newkey rsa:4096 -keyout kraken.key -out kraken.crt -subj '/C=US/ST=Oregon/L=Portland/CN=www.kraken.oc'
+#mkdir /etc/apache2/ssl
+#mv kraken.crt /etc/apache2/ssl/
+#mv kraken.key /etc/apache2/ssl/
 
 
 # Setup Apache 
@@ -125,25 +103,16 @@ cat <<'EOF' >> /etc/apache2/sites-available/000-default.conf
     WSGIDaemonProcess Kraken python-path=/opt/Kraken:/root/.virtualenvs/Kraken/lib/python2.7/site-packages
     WSGIProcessGroup Kraken
     WSGIScriptAlias / /opt/Kraken/Kraken/wsgi.py
-
-    ServerName kraken.com
-    SSLEngine on
-    SSLCertificateFile /etc/apache2/ssl/kraken.crt
-    SSLCertificateKeyFile /etc/apache2/ssl/kraken.key
     
 </VirtualHost>
 
 EOF
 
-sudo a2enmod ssl
+#sudo a2enmod ssl
 
 printf "\033[1;31mStarting Kraken\033[0m\n"
-sudo /etc/init.d/rabbitmq-server start
-sudo /etc/init.d/apache2 start
-sudo /etc/init.d/celeryd start
 
-
-
+Kraken reset
 echo ""
 echo ""
 echo "Setup complete!"

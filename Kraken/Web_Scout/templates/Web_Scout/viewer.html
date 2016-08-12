@@ -11,13 +11,18 @@
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<a class="navbar-brand" href="#">Kraken</a>
+		</div>
+		<div class="collapse navbar-collapse">
 			<ul class="nav navbar-nav">
 				<li>
-					<span class="navbar-text">
-						<h4>URL: <a href="{{ port.Link }}">{{ port.Link }}</a></h4>
+					<span class="navbar-text" style="margin-top:8px;margin-bottom:0px;">
+						URL: <a href="{{ port.Link }}">{{ port.Link }}</a><br>
+						Default Credentials: <span style="color:#337ab7">{{ port.Default_Credentials }}</span>
 					</span>
 				</li>
-				<form class="navbar-form navbar-left" id="note-form" method="POST">
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<form class="navbar-form navbar-right" id="note-form" method="POST">
 					<div class="form-group">
 						{% csrf_token %}
 							{% if port.DefaultCreds %}
@@ -89,7 +94,7 @@
 						});
 					});
 				</script>
-<div style="margin-top:70px;">
+<div style="margin-top:56px;">
         <iframe src="{{ port.Link }}" style="width:100%;height:100%;"></iframe>
 </div>
 </body>

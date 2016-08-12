@@ -46,7 +46,8 @@
 			$('#image-gallery-title').text($sel.attr('data-title'));
 			$('#image-gallery-image').attr('src', $sel.attr('data-image'));
 			$('#image-gallery-link').attr('href', $sel.attr('data-link'));
-			$('#image-gallery-os').text($sel.attr('data-os'));
+			$('#image-gallery-extlink').attr('href', $sel.attr('data-link')+'&external=true');
+			$('#image-gallery-category').text($sel.attr('data-category'));
 			$('#image-gallery-device').text($sel.attr('data-device'));
 			$('#image-gallery-product').text($sel.attr('data-product'));
 			$('#image-gallery-note').val('');
@@ -166,6 +167,7 @@
 {% block navbarright %}
 
 <li><button type="button" class="advsearch navbar-btn" data-toggle="collapse" data-target="#filter-panel"><span class="glyphicon glyphicon-cog"></span> Advanced Search</button></li>
+
 {% endblock %}
 
 {% block body %}
@@ -180,7 +182,7 @@
                 <div class="panel-body">
                     <form id="filterform" style="text-align:center" class="form-inline" role="form" method="GET">
                         <div class="form-group">
-                            <label class="filter-col" style="padding-left:10px;padding-right:10px;" for="pref-perpage">Rows per page:</label><br>
+                            <label class="filter-col" style="padding-left:10px;padding-right:10px;" for="pref-perpage">Hosts per page:</label><br>
                             <select id="pref-perpage" class="form-control" name="hosts_per_page">
                                 {% if hosts_per_page > 0 %}
                                 	{% if hosts_per_page == 20 %}
@@ -348,7 +350,7 @@
 								{{ host.IP }}<br>
 								{{ host.Hostname }}<br>
 			{% for port in host.ports_set.all %}
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -363,7 +365,7 @@
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align:left">
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -380,7 +382,7 @@
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="text-align:left">
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -397,7 +399,7 @@
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="text-align:left">
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-os="{{ host.OS }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -413,7 +415,7 @@
 	<!-- Pagination -->
 	<nav>
 	<div align="center">
-		<ul class="pagination" align="center">		
+		<ul style="margin-bottom:5px" class="pagination" align="center">		
 						{% if hosts.has_previous %}
 				<li><a href="?page={{ hosts.previous_page_number }}{{ pagination_parameters }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
 			{% endif %}
@@ -465,11 +467,14 @@
 								<li><a href="?page={{ hosts.next_page_number }}{{ pagination_parameters }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
 						{% endif %}
 
-		</ul>			
+		</ul>
+		<div>	
+			Page {{ hosts.number }} out of {{ hosts.paginator.num_pages }}<br><br>
+		</div>		
 	</div>
 	</nav>
-
 </div>
+
 <!-- Screenshot Popup Box -->
 <div class="modal fade" id="image-gallery" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog" style="width:70%">
@@ -491,7 +496,7 @@
 			 			</div>
 			 			<div style="padding-bottom:5px"><b>Product:</b>&#160&#160<span id="image-gallery-product"></span><br>
 			 			</div>
-			 			<div style="padding-bottom:5px"><b>OS:</b>&#160&#160&#160&#160&#160&#160&#160&#160&#160&#160<span id="image-gallery-os"></span><br>
+			 			<div style="padding-bottom:5px"><b>Category:</b>&#160&#160<span id="image-gallery-category"></span><br>
 			 			</div>
 			 			<div style="padding-bottom:5px"><b>Device:</b>&#160&#160<span id="image-gallery-device"></span><br>
 			 			</div>
@@ -565,14 +570,17 @@
 						<button type="button" class="btn btn-primary" id="show-previous-image" style="width:100%;">Previous</button>
 					</div>
 
-					<div class="col-md-3 text-justify">
+					<div class="col-md-2 text-justify">
+					</div>
+
+					<div class="col-md-4 text-justify" style="text-align: center">
+						<div class="btn-group" role="group">
+							<a href="" id="image-gallery-extlink" style="text-align:left" target="_blank"><button type="button" class="btn btn-primary">Open</button></a>
+							<a href="" id="image-gallery-link" style="text-align:left" target="_blank"><button type="button" class="btn btn-primary" >KrakenView</button></a>
+						</div>
 					</div>
 
 					<div class="col-md-2 text-justify">
-						<a href="" id="image-gallery-link" style="text-align:left" target="_blank"><button type="button" class="btn btn-primary" style="width:100%;">Open</button></a>
-					</div>
-
-					<div class="col-md-3 text-justify">
 					</div>
 
 					<div class="col-md-2">

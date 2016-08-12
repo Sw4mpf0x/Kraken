@@ -4,8 +4,9 @@ from django.db import models
 
 # Create your models here.
 
-class Log(models.Model):
-	#TimeStamp
+class KrakenLog(models.Model):
+	TimeStamp = models.CharField(max_length=100)
 	User = models.CharField(max_length=25)
-	Type = models.CharField(max_length=20)
 	Message = models.CharField(max_length=150)
+	Type = models.CharField(max_length=20)
+	

@@ -2,6 +2,12 @@
 {% block body %}
 <div class="container">
 <div class="well">
+	<h3>By The Numbers</h3>
+	Hosts: <br>
+	Interfaces: <br>
+	Printers: <br>
+ 
+	<br>
 	<h3>Default Creds</h3>
 	{% for entry in default_creds %}
 		{{ entry.hosts.IP }}:{{ entry.Port }} - {{ entry.Notes }}<br>
@@ -11,6 +17,12 @@
 	{% for entry in http_auth %}
 		{{ entry.hosts.IP }}:{{ entry.Port }} - {{ entry.Notes }}<br>
 	{% endfor %}
+	<br>	
+	<h3>Notes</h3>
+	{% for entry in notes %}
+		{{ entry.hosts.IP }}:{{ entry.Port }} - {{ entry.Notes }}<br>
+	{% endfor %}
+	<br>
 </div>
 </div>
 {% endblock %}
