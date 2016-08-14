@@ -12,6 +12,7 @@ class Hosts(models.Model):
 	OS = models.CharField(max_length=25)
 	Rating = models.CharField(max_length=10)
 	Reviewed = models.BooleanField(default=False)
+	Category = models.CharField(max_length=25)
 
 class Ports(models.Model):
 	def __str__(self):
@@ -22,7 +23,6 @@ class Ports(models.Model):
 	Name = models.CharField(max_length=100)
 	Product = models.CharField(max_length=100)
 	Version = models.CharField(max_length=100)
-	Extra_Info = models.CharField(max_length=200)
 	Banner = models.CharField(max_length=300)
 	ImgLink = models.CharField(max_length=100)
 	Notes = models.CharField(max_length=500)
@@ -30,7 +30,6 @@ class Ports(models.Model):
 	DefaultCreds = models.BooleanField(default=False)
 	HttpAuth = models.BooleanField(default=False)
 	Default_Credentials = models.CharField(max_length=100)
-	Category = models.CharField(max_length=25)
 
 class Tasks(models.Model):
 	def __str__(self):

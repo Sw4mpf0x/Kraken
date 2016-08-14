@@ -72,7 +72,7 @@ def nmap_parse(filepath):
 		host_object.save()
 		ports = host.find('ports')
 		for port in ports.findall('port'):
-			if int(port.get('portid')) in HttpPorts: 
+			if port[0].get('state') == 'open' and int(port.get('portid')) in HttpPorts or 'http' in str(port[1].get('extrainfo')) or 'http' in str(port[1].get('product')): 
 				port_object = host_object.ports_set.create()
 				try:
 					host_object.DeviceType = port[1].get('devicetype')
@@ -93,7 +93,7 @@ def nmap_parse(filepath):
 					port_object.Name = ""
 		
 				try:
-					port_object.Product = port[1].get('product')
+					port_object.Product = port[1].get('extrainfo')
 					if not port_object.Product:
 						port_object.Product = ""
 				except:
@@ -104,12 +104,6 @@ def nmap_parse(filepath):
 						port_object.Version = ""
 				except:
 					port_object.Version = ""
-				try:
-					port_object.Extra_Info = port[1].get('extra_info')
-					if not port_object.Extra_Info:
-						port_object.Extra_Info = ""
-				except:
-					port_object.Extra_Info = ""
 				
 				port_object.PortID = host_object.IP.replace('.', '') + port_object.Port
 
@@ -134,6 +128,7 @@ def nmap_parse(filepath):
 						port_object.Link = "http://" + host_object.IP + ":" + port_object.Port
 			
 				port_object.save()
+		host_object.Category = ""
 		host_object.save()
 	for row in Ports.objects.all():
 		if Ports.objects.filter(PortID=row.PortID).count() > 1:
@@ -254,7 +249,7 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 							port_record.Default_Credentials += '\n' + credential_info
 						port_record.Product = page_id
 						port_record.save()
-	
+				host_record = port_record.hosts
 				for cat in categories:
 					# Find the signature(s), split them into their own list if needed
 					# Assign default creds to its own variable
@@ -271,8 +266,8 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 					# web page needed to make a signature Delimete the "signature"
 					# by ";" before the "|", and then have the creds after the "|"
 					if all([x.lower() in source_code.lower() for x in cat_sig]):
-						port_record.Category = cat_name.strip()
-						port_record.save()
+						host_record.Category = cat_name.strip()
+						host_record.save()
 						break
     	
 		except IOError:

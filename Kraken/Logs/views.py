@@ -42,7 +42,10 @@ def krakenlog(request):
 
 @login_required
 def reports(request):
+	host_count = str(Hosts.objects.all().count())
+	port_count = str(Ports.objects.all().count())
+	printer_count = str(Hosts.objects.filter(Category='printer').count())
 	default_creds = Ports.objects.filter(DefaultCreds=True)
 	http_auth = Ports.objects.filter(HttpAuth=True)
 	notes = Ports.objects.exclude(Notes__exact='')
-	return render(request, 'Logs/Web_Scout.html', {'default_creds':default_creds, 'http_auth':http_auth, 'notes':notes})
+	return render(request, 'Logs/Web_Scout.html', {'default_creds':default_creds, 'http_auth':http_auth, 'notes':notes, 'host_count':host_count, 'port_count':port_count, 'printer_count':printer_count})
