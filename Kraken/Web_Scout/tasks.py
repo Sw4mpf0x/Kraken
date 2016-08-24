@@ -128,13 +128,18 @@ def nmap_parse(filepath):
 						port_object.Link = "http://" + host_object.IP + ":" + port_object.Port
 			
 				port_object.save()
+		host_object.HostID = host_object.IP.replace('.', '')
 		host_object.Category = ""
 		host_object.save()
 	for row in Ports.objects.all():
 		if Ports.objects.filter(PortID=row.PortID).count() > 1:
 			row.delete()
+	for row in Hosts.objects.all():
+		if Hosts.objects.filter(HostID=row.HostID).count() > 1:
+			row.delete()
 	number_of_hosts = Hosts.objects.all().count()
 	number_of_ports = Ports.objects.all().count()
+	os.remove('/opt/Kraken/tmp/nmap.xml')
 	LogKrakenEvent('Celery', 'Parsing Complete. Hosts: ' + str(number_of_hosts) + ', Ports: ' + str(number_of_ports), 'info')
 
 
@@ -278,7 +283,19 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 
 	box = (0, 0, 1024, 768)
 	browser = None
-	
+	port_record = Ports.objects.get(PortID=urlItem[1])
+
+	# Set screenshot file name. If screenshot exists, go to next interface.
+	screenshotName = '/opt/Kraken/Web_Scout/static/Web_Scout/'+urlItem[1]
+	if(debug):
+		print '[+] Got URL: '+urlItem[0]
+		print '[+] screenshotName: '+screenshotName
+	if(os.path.exists(screenshotName+".png")):
+		if(debug):
+	 		print "[-] Screenshot already exists, skipping"
+	 	if not port_record.Retry:
+			return
+
 	# Setup Headless Selenium instance
 	try:
 		browser = setupBrowserProfile(tout, proxy)
@@ -290,16 +307,7 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 			print ''.join('!! ' + line for line in lines)
 		return
 
-	# Set screenshot file name. If screenshot exists, go to next interface.
-	screenshotName = '/opt/Kraken/Web_Scout/static/Web_Scout/'+urlItem[1]
-	if(debug):
-		print '[+] Got URL: '+urlItem[0]
-		print '[+] screenshotName: '+screenshotName
-	if(os.path.exists(screenshotName+".png")):
-		if(debug):
-	 		print "[-] Screenshot already exists, skipping"
-	 	browser.quit()
-		return
+
 	
 	# Main screenshot taking logic.
 	try:
@@ -337,6 +345,8 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 					screen = browser.get_screenshot_as_png()
 					im = Image.open(StringIO.StringIO(screen))
 					region = im.crop(box)
+					port_record.Retry = False
+					port_record.save()
 					region.save(screenshotName+".png", 'PNG', optimize=True, quality=95)
 					browser2.quit()
 					return
@@ -346,8 +356,9 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 			im = Image.open(StringIO.StringIO(screen))
 			region = im.crop(box)
 			region.save(screenshotName+".png", 'PNG', optimize=True, quality=95)
-			port_record = Ports.objects.get(PortID=urlItem[1])
 			default_creds(port_record, browser.page_source)
+			port_record.Retry = False
+			port_record.save()
 			browser.quit()
 	except Exception as e:
 		print e
@@ -357,6 +368,8 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 			lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
 			print ''.join('!! ' + line for line in lines) 
 		browser.quit()
+		port_record.Retry = True
+		port_record.save()
 		shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', screenshotName + 'png')
 		return
 	
@@ -394,6 +407,8 @@ def startscreenshot():
 
 	for port in Ports.objects.all():
 		if not os.path.exists('/opt/Kraken/Web_Scout/static/Web_Scout/' + port.PortID + '.png'):
+			port.Retry = True
+			port.save()
 			shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', '/opt/Kraken/Web_Scout/static/Web_Scout/' + port.PortID + '.png')
 	end_time = datetime.datetime.now()
 	total_time = end_time - start_time

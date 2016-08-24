@@ -1,4 +1,22 @@
 {% extends "base.html" %}
+{% block head %}
+<style>
+    .modal.loading .modal-content:before {
+        content: 'Oh, Jeppers...';
+        text-align: center;
+        line-height: 155px;
+        font-size: 20px;
+        background: rgba(0, 0, 0, .8);
+        position: absolute;
+        top: 55px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        color: #EEE;
+        z-index: 1000;
+    }
+</style>
+{% endblock %}
 {% block body %}
 <div class="alert alert-success" id="success-alert" style="position: fixed;width: 100%;">
         <button type="button" class="close" data-dismiss="alert">x</button>
@@ -10,168 +28,96 @@
         <strong>Warning!</strong>
         <span id="warning-text"></span>
 </div>
+
+<div class="modal fade" id="confirm-action" tabindex="-1" role="dialog" aria-labelledby="ConfirmAction" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">Jeppers Check</h4>
+            </div>
+            <div class="modal-body">
+                <p>You are about to <b><i class="title"></i></b>.
+                <p>Do you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-ok">Confirm</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container">
 
 <div class="well">
 <form  id="cleardb-form" method = "POST">
 	<div class="form-group">
-                {% csrf_token %}
-                <input type="hidden" class="form-control" name="script" value="cleardb"/>
+        {% csrf_token %}
+        <input type="hidden" class="form-control" name="script" value="cleardb"/>
 		<label style="font-size:20px" for="cleardb">Clear the Hosts and Ports tables:</label><br>
         <div style="margin-bottom:5px"><span id="cleardb_progress"></span></div>
-		<button id ="cleardb" class="btn btn-primary" type="submit">Clear Database</button>
+		<button data-toggle="modal" data-target="#confirm-action" data-description="clear the database" data-action="cleardb" id="cleardb" class="btn btn-primary">Clear Database</button>
 	</div>
 </form>
+
 
 <form  id="removescreenshots-form" method = "POST">
     <div class="form-group">
-                {% csrf_token %}
-                <input type="hidden" class="form-control" name="script" value="removescreenshots"/>
+        {% csrf_token %}
+        <input type="hidden" class="form-control" name="script" value="removescreenshots"/>
         <label style="font-size:20px" for="removescreenshots">Remove all screenshots in screenshot folder:</label><br>
         <div style="margin-bottom:5px"><span id="removescreenshots_progress"></span></div>
-        <button id ="removescreenshots" class="btn btn-primary" type="submit">Remove Screenshots</button>
+        <button data-toggle="modal" data-target="#confirm-action" data-description="remove screenshots" data-action="removescreenshots" id="removescreenshots" class="btn btn-primary">Remove Screenshots</button>
     </div>
 </form>
 
-<form id="parse-form" method="POST" role="form">
+<form id="parse-form" method="POST" role="form" enctype="multipart/form-data">
 	<div class="form-group">
-                {% csrf_token %}
+        {% csrf_token %}
 		<input type="hidden" class="form-control" name="script" value="parse"/>
+        
 		<label style="font-size:20px" for="path">Enter path to Nmap XML file (.xml)</label>
-		<input class="form-control" name="path" id="path"/>
         <div style="margin-bottom:5px"><span id="parse_progress"></span></div>
-		<button id="parse" type="submit" class="btn btn-primary" value="Submit">Parse File</button>
+        <div class="input-group">
+            <label class="input-group-btn">
+                <span class="btn btn-primary">
+                    Browse&hellip; <input name="parsefile" type="file" style="display: none;" multiple>
+                </span>
+            </label>
+            <input type="text" class="form-control" readonly>
+        </div><br>
+		<button data-toggle="modal" data-target="#confirm-action" data-description="parse a file into the Kraken database" data-action="parse" id="parse" class="btn btn-primary">Parse File</button>
 	</div>
 </form>
-<!-- <input type="file" data-filename-placement="inside"> -->
 
 <form  id="screenshot-form" method = "POST">
-        <div class="form-group">
-                {% csrf_token %}
-                <input type="hidden" class="form-control" name="script" value="screenshot"/>
-                <label style="font-size:20px" for="screenshot">Retrieve web interface screenshots:</label><br>
-                <div style="margin-bottom:5px"><span id="screenshot_progress"></span></div>
-                <button id ="screenshot" class="btn btn-primary" type="submit">Take Screenshots</button>
-        </div>
+    <div class="form-group">
+        {% csrf_token %}
+        <input type="hidden" class="form-control" name="script" value="screenshot"/>
+        <label style="font-size:20px" for="screenshot">Retrieve web interface screenshots:</label><br>
+        <div style="margin-bottom:5px"><span id="screenshot_progress"></span></div>
+        <button data-toggle="modal" data-target="#confirm-action" data-description="take screenshots" data-action="screenshot" id="screenshot" class="btn btn-primary">Take Screenshots</button>
+    </div>
 </form>
 </div>
 
 <script>
-    $(function() {
-        //twitter bootstrap script
+{% if uploaded %}
+    $("#success-text").text("File uploaded.")
+    $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
         $("#success-alert").hide();
+    }); 
+{% else %}
+    $("#success-alert").hide();
+{% endif %}
+{% if failedupload %}
+    $("#warning-text").text("Failed to upload file.")
+    $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
         $("#warning-alert").hide();
-        $("button#cleardb").click(function(e){
-            $("#cleardb_progress").text("")
-            e.preventDefault();
-            $.ajax({
-                type: "POST",
-                url: "",
-                data: $('form#cleardb-form').serialize(),
-                success: function(msg){
-                    $("#success-text").text("Request to clear database submitted.")
-                    $("#success-alert").alert();
-                    PollState('cleardb');
-                    $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
-                        $("#success-alert").hide();
-                    });  
-                },
-                error: function(){
-                    $("#warning-text").text("A problem was encountered while submitting your request to clear the database.")
-                    $("#warning-alert").alert();
-                    PollState('cleardb');
-                    $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
-                        $("#warning-alert").hide();
-                    }); 
-                },
-            });
-        });
-        $("button#removescreenshots").click(function(e){
-            $("#removescreenshots_progress").text("")
-            e.preventDefault();
-            $.ajax({
-                type: "POST",
-                url: "",
-                data: $('form#removescreenshots-form').serialize(),
-                success: function(msg){
-                    $("#success-text").text("Request to remove screenshots submitted.")
-                    $("#success-alert").alert();
-                    PollState('removescreenshots');
-                    $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
-                        $("#success-alert").hide();
-                    });  
-                },
-                error: function(){
-                    $("#warning-text").text("A problem was encountered while submitting your request to remove screenshots.")
-                    $("#warning-alert").alert();
-                    PollState('removescreenshots');
-                    $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
-                        $("#warning-alert").hide();
-                    }); 
-                },
-            });
-        });
-        $("button#parse").click(function(e){
-            e.preventDefault();
-            $("#parse_progress").text("")
-            if (document.forms['parse-form'].path.value == ""){
-                $("#warning-text").text("You must enter an absolute path.");
-                $("#warning-alert").alert();
-                $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
-                    $("#warning-alert").hide();
-                }); 
-            } else {
-                $.ajax({
-                    type: "POST",
-                    url: "",
-                    data: $('form#parse-form').serialize(),
-                    success: function(msg){
-                        $("#success-text").text("Parsing request submitted.")
-                        $("#success-alert").alert();
-                        PollState('parse');
-                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
-                            $("#success-alert").hide();
-                        }); 
-                    },
-                    error: function(){
-                        $("#warning-text").text("A problem was encountered while submitting your parse request.")
-                        $("#warning-alert").alert();
-                        PollState('parse');
-                        $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
-                            $("#warning-alert").hide();
-                        }); 
-                    },
-                });
-            };
-        });
-        $("button#screenshot").click(function(e){
-            $("#screenshot_progress").text("")
-            e.preventDefault();
-            $.ajax({
-                type: "POST",
-                url: "",
-                data: $('form#screenshot-form').serialize(),
-                success: function(msg){
-                    $("#success-text").text("Screenshot request submitted.")
-                    $("#success-alert").alert();
-                    PollState('screenshot');
-                    $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
-                        $("#success-alert").hide();
-                    });
-                },
-                error: function(){
-                    $("#warning-text").text("A problem was encountered while submitting your request to take screenshots.")
-                    $("#warning-alert").alert();
-                    PollState('screenshot');
-                    $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
-                        $("#warning-alert").hide();
-                    }); 
-                },
-            });
-        });
     });
-    //jQuery(document).ready(function() {
-   
+{% else %}
+    $("#warning-alert").hide();
+{% endif %}
     // pole state of the current task
     var PollState = function(task_id) {
         jQuery.ajax({
@@ -196,13 +142,91 @@
                 };
             }
         });
-    }
-   
+    };
     PollState('cleardb');
     PollState('parse');
     PollState('screenshot');
     PollState('removescreenshots');
-    //});
+
+    $("button#cleardb").click(function(e){
+        $("#cleardb_progress").text("")
+        e.preventDefault();
+    });
+
+    $("button#removescreenshots").click(function(e){
+        $("#removescreenshots_progress").text("")
+        e.preventDefault();
+    });
+
+    $("button#parse").click(function(e){
+        //if (document.forms['parse-form'].path.value == ""){
+        //    e.stopPropagation();
+        //    $("#warning-text").text("You must enter an absolute path.");
+        //    $("#warning-alert").alert();
+        //    $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
+        //        $("#warning-alert").hide();
+        //    }); 
+        //};
+    });
+
+    $("button#screenshot").click(function(e){
+        $("#screenshot_progress").text("")
+        e.preventDefault();
+    });
+   
+    $('#confirm-action').on('click', '.btn-ok', function(e) {
+        var $modalDiv = $(e.delegateTarget);
+        var action = $(this).data('action');
+        var description = $(this).data('description')
+        $.ajax({
+            type: 'POST',
+            url: "",
+            data: $('form#' + action + '-form').serialize(),
+            success: function(msg){
+                $("#success-text").text("Request to " + description + " submitted.")
+                $("#success-alert").alert();
+                PollState(action);
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").hide();
+                });  
+            },
+            error: function(){
+                $("#warning-text").text("A problem was encountered while submitting your request to " + description + ".")
+                $("#warning-alert").alert();
+                PollState(action);
+                $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#warning-alert").hide();
+                }); 
+            },
+        })
+        $modalDiv.addClass('loading');
+        setTimeout(function() {
+            $modalDiv.modal('hide').removeClass('loading');
+        }, 1000)
+    });
+    $('#confirm-action').on('show.bs.modal', function(e) {
+        var data = $(e.relatedTarget).data();
+        $('.title', this).text(data.description);
+        $('.btn-ok', this).data('action', data.action);
+    });
+
+    $(document).on('change', ':file', function() {
+        var input = $(this),
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [label]);
+    });
+    
+    $(document).ready( function() {
+        $(':file').on('fileselect', function(event, label) {
+    
+            var input = $(this).parents('.input-group').find(':text');
+    
+            if( input.length ) {
+                input.val(label);
+            } else {
+                if( label ) alert(label);
+            }
+        });
+    });
 </script>
 {% endblock %}
-

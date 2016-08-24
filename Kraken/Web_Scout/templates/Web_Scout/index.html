@@ -53,6 +53,7 @@
 			$('#image-gallery-note').val('');
 			$('#image-gallery-note').val($sel.attr('data-note'));
 			$('#image-gallery-id').attr('value', $sel.attr('id'));
+			$('#image-gallery-host-id').attr('value', $sel.attr('data-host-id'));
 			if($sel.attr('data-default-creds') == "True"){
 				$("#image-gallery-default-creds").prop("checked", true);
 			}
@@ -172,8 +173,18 @@
 
 {% block body %}
 <!-- Body Content -->
-
-
+<div class="center-block" style="width:95%;">
+<div class="alert alert-success" id="success-alert" style="z-index:5;position:absolute;width:95%;top:55px">
+        <button type="button" class="close" data-dismiss="alert">x</button>
+        <strong>Success!</strong>
+        <span id="success-text"></span>
+</div>
+</div>
+<div class="alert alert-warning" id="warning-alert" style="position: fixed;width: 100%;">
+        <button type="button" class="close" data-dismiss="alert">x</button>
+        <strong>Warning!</strong>
+        <span id="warning-text"></span>
+</div>
 <div class="container-fluid">
 <div class="container">
 	<div class="row">
@@ -218,7 +229,7 @@
                                 	<option value="100">100</option>
                                 {% endif %}
                             </select>                                
-                        </div> <!-- form group [rows] -->
+                        </div> <!-- form group [hosts] -->
                         <div class="form-group">
                             <label class="filter-col" style="margin-right:0;" for="pref-search">Search:</label><br>
                             <input type="text" class="form-control input-sm" id="pref-search" name="search" value="{{ search }}">
@@ -278,13 +289,29 @@
             </div>
         </div>    
 	</div>
+
 </div>
+{% if hosts %}
+
 	<!-- Pagination -->
 	<nav>
 	<div align="center">
+        <div class="btn-group" style="position:absolute;left:0px;margin:20px">
+            <button type="button" id="checkall" class="btn btn-default">Bulk</button>
+            <input type="checkbox" id="flagstone" style="display: none;" />
+            <button style="box-sizing: border-box;" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <span class="caret" style="margin-right:-3px"></span>&#160
+    			<span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="" id="bulkreviewed">Reviewed</a></li>
+                <li><a href="" id="bulknotes" data-toggle="modal" data-target="#bulk-note-modal">Notes</a></li>
+                <!--<li><a href="#">Cred Check</a></li>-->
+            </ul>
+        </div>
 		<ul class="pagination" align="center">		
 			{% if hosts.has_previous %}
-				<li><a href="?page={{ hosts.previous_page_number }}{{ pagination_parameters }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+				<li><a href="?page={{ hosts.previous_page_number }}{{ pagination_parameters }}">&laquo;</a>
 			{% endif %}
 			{% if hosts.paginator.num_pages < 12 %}
 				{% for page in hosts.paginator.page_range %}
@@ -331,7 +358,7 @@
 				{% endif %}
 			{% endif %}
 						{% if hosts.has_next %}
-								<li><a href="?page={{ hosts.next_page_number }}{{ pagination_parameters }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+								<li><a href="?page={{ hosts.next_page_number }}{{ pagination_parameters }}">&raquo;</a>
 						{% endif %}
 
 		</ul>			
@@ -341,16 +368,37 @@
 
 	
 	<!-- List of screenshots -->
+	<form id="bulk-form" name="bulk-form">
+	{% csrf_token %}
+	<div class="modal fade" id="bulk-note-modal" tabindex="-1" role="dialog">
+    	<div class="modal-dialog">
+ 	        <div class="modal-content">
+    	        <div class="modal-header">
+        	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            	    <h4 class="modal-title" id="myModalLabel">Bulk Notes</h4>
+	            </div>
+    	        <div class="modal-body">
+        	        <textarea placeholder="Notes..." value="" class="form-control" rows="7" id="bulk-note" name="note"></textarea>
+	            </div>
+    	        <div class="modal-footer">
+        	        <button type="button" class="btn btn-danger btn-ok" id="bulk-note-submit">Submit</button>
+            	    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+	            </div>
+    	    </div>
+    	</div>
+	</div>
+	<input type="hidden" class="form-control" name="bulk" value="True"/>
 	<div class="row">
 	{% load staticfiles %}
 	
 	{% for host in hosts %}
 		{% if host.ports_set.all|length_is:"1" %}
-			<div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 well" style="text-align:left">
-								{{ host.IP }}<br>
-								{{ host.Hostname }}<br>
+			<div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 well" style="word-wrap: break-word;text-align:left">
+				<input type="checkbox" id="{{ host.HostID }}" value="0" name="{{ host.HostID }}" style="float:right"/>
+				{{ host.IP }}&#160{% if host.Reviewed %}<span id="{{ host.HostID}}-check" style="color:green" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span id="{{ host.HostID}}-check" style="color:green;display: none;" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %}<br>
+				{{ host.Hostname }}<br>
 			{% for port in host.ports_set.all %}
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" data-host-id="{{ host.HostID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -359,13 +407,14 @@
 			</div>
 		{% endif %}
 		{% if host.ports_set.all|length_is:"2" %}
-			<div class="col-lg-4 col-md-6 col-sm-6 col-xs-8 well" style="text-align:left">
-				{{ host.IP }}<br>
-								{{ host.Hostname }}<br>
+			<div class="col-lg-4 col-md-6 col-sm-6 col-xs-8 well" style="word-wrap: break-word;text-align:left">
+				<input type="checkbox" id="{{ host.HostID }}" value="0" name="{{ host.HostID }}" style="float:right"/>
+				{{ host.IP }}&#160{% if host.Reviewed %}<span id="{{ host.HostID}}-check" style="color:green" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span id="{{ host.HostID}}-check" style="color:green;display: none;" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %}<br>
+				{{ host.Hostname }}<br>
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align:left">
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" data-host-id="{{ host.HostID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -377,12 +426,13 @@
 		{% endif %}
 		{% if host.ports_set.all|length_is:"3" %}
 			<div class="col-lg-6 col-md-9 col-sm-9 col-xs-12 well" style="text-align:left">
-								{{ host.IP }}<br>
+				<input type="checkbox" id="{{ host.HostID }}" value="0" name="{{ host.HostID }}" style="float:right"/>
+				{{ host.IP }}&#160{% if host.Reviewed %}<span id="{{ host.HostID}}-check" style="color:green" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span id="{{ host.HostID}}-check" style="color:green;display: none;" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %}<br>
 				{{ host.Hostname }}<br>
 			<div class="row">
 			{% for port in host.ports_set.all %}
-				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="text-align:left">
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
+				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="word-wrap: break-word;text-align:left">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" data-host-id="{{ host.HostID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -394,12 +444,13 @@
 		{% endif %}
 		{% if host.ports_set.all|length_is:"4" %}
 			<div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 well" style="text-align:left">
-								{{ host.IP }}<br>
+				<input type="checkbox" id="{{ host.HostID }}" value="0" name="{{ host.HostID }}" style="float:right"/>
+				{{ host.IP }}&#160{% if host.Reviewed %}<span id="{{ host.HostID}}-check" style="color:green" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span id="{{ host.HostID}}-check" style="color:green;display: none;" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %}<br>
 				{{ host.Hostname }}<br>
 			<div class="row">
 			{% for port in host.ports_set.all %}
-				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="text-align:left">
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
+				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="word-wrap: break-word;text-align:left">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" data-host-id="{{ host.HostID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -411,12 +462,12 @@
 		{% endif %}
 	{% endfor %}
 	</div>
-
+	</form>
 	<!-- Pagination -->
 	<nav>
 	<div align="center">
 		<ul style="margin-bottom:5px" class="pagination" align="center">		
-						{% if hosts.has_previous %}
+			{% if hosts.has_previous %}
 				<li><a href="?page={{ hosts.previous_page_number }}{{ pagination_parameters }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
 			{% endif %}
 			{% if hosts.paginator.num_pages < 12 %}
@@ -473,6 +524,12 @@
 		</div>		
 	</div>
 	</nav>
+{% else %}
+<div class="well" style="width:70%;margin:0 auto">
+	<h3>Kraken doesn't have any data!</h3>
+	<p>There is not currently any data to populate this page with. Vists the <a href="{% url 'webscout:setup' %}">Setup Page</a> to ingest data and take screenshots. If you need help, please referece the <a href="https://github.com/Sw4mpf0x/Kraken">Kraken Github page</a> for a more detailed walkthrough</p>
+</div>
+{% endif %}
 </div>
 
 <!-- Screenshot Popup Box -->
@@ -486,7 +543,7 @@
 			<div class="modal-body">
 			 	<div class="row">
 			 		<div class="well col-md-4">
-			 			<div class="alert alert-success" id="success-alert">
+			 			<div class="alert alert-success" id="modal-success-alert">
 							<button type="button" class="close" data-dismiss="alert">x</button>
 							<strong>Success! </strong>
 							Notes updated for this interface.
@@ -510,6 +567,7 @@
   										<input type="checkbox" id="image-gallery-http-auth" value="Yes" name="http-auth" />&#160&#160HTTP Authentication<br>
   										<input type="hidden" id="image-gallery-reviewedhidden" value="No" name="reviewed" />
   										<input type="checkbox" id="image-gallery-reviewed" value="Yes" name="reviewed" />&#160&#160Reviewed<br><br>
+								<input type="hidden" id="image-gallery-host-id" class="form-control" name="hostid" value=""/>
 								<input type="hidden" id="image-gallery-id" class="form-control" name="record" value=""/>
 			 					<label for="image-gallery-notes">Notes:</label>
 								<textarea placeholder="Notes..." value="" class="form-control" rows="3" id="image-gallery-note" name="note"></textarea>
@@ -517,6 +575,40 @@
 							</div>
 						</form>
 						<script>
+							$("#success-alert").hide();
+							$("#warning-alert").hide();
+                            $('a#bulkreviewed').click(function(e){
+                                e.preventDefault();
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "",
+                                    data: $('form#bulk-form').serialize() + "&reviewed=Yes",
+                                    success: function(data){
+                                        $("#success-text").text("Bulk changes submitted.")
+                                        $("#success-alert").alert();
+                                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                                            $("#success-alert").hide();
+                                        });
+                                        console.log(data[0]);
+                                        console.log(data[1]);
+                                        $.each(data[0], function(index, host){
+                                        	console.log('host: '+host);
+                                        	$("#"+host+"-check")[0].style.display = 'inline';
+                                        });
+                                        $.each(data[1], function(index, interface){
+                                        	console.log('Int: '+interface);
+                                        	$("#"+interface).attr("data-reviewed", "True");
+                                        });
+                                    },
+                                    error: function(){
+                                        $("#warning-text").text("A problem was encountered while submitting bulk changes.")
+                                        $("#warning-alert").alert();
+                                        $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
+                                            $("#warning-alert").hide();
+                                        }); 
+                                    },
+                                });
+                            });
 							$(function() {
 								if(document.getElementById("image-gallery-default-creds").checked) {
 									document.getElementById("image-gallery-default-credshidden").disabled = true;
@@ -525,7 +617,7 @@
 									document.getElementById("image-gallery-http-authhidden").disabled = true;
 								}
 							//twitter bootstrap script
-								$("#success-alert").hide();
+								$("#modal-success-alert").hide();
 								$("button#note-submit").click(function(e){
 									e.preventDefault();
 									$.ajax({
@@ -533,28 +625,70 @@
 										url: "",
 										data: $('form#note-form').serialize(),
 										success: function(msg){
-											$("#success-alert").alert();
-											$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
-			   									$("#success-alert").hide();
+											$("#modal-success-alert").alert();
+											$("#modal-success-alert").fadeTo(2000, 500).slideUp(500, function(){
+			   									$("#modal-success-alert").hide();
 			   								});
-											$($("#"+$("#image-gallery-id").attr('value')).selector).attr('data-note', $("#image-gallery-note").val());
+											$($("#"+$("#image-gallery-id").attr('value'))).attr('data-note', $("#image-gallery-note").val());
 											if(document.getElementById("image-gallery-default-creds").checked) {
-												$($("#"+$("#image-gallery-id").attr('value')).selector).attr('data-default-creds', "True");
+												$($("#"+$("#image-gallery-id").attr('value'))).attr('data-default-creds', "True");
 											}
 											else{
-												$($("#"+$("#image-gallery-id").attr('value')).selector).attr('data-default-creds', "False");
+												$($("#"+$("#image-gallery-id").attr('value'))).attr('data-default-creds', "False");
 											};
 											if(document.getElementById("image-gallery-http-auth").checked) {
-												$($("#"+$("#image-gallery-id").attr('value')).selector).attr('data-http-auth', "True");
+												$($("#"+$("#image-gallery-id").attr('value'))).attr('data-http-auth', "True");
 											}
 											else{
-												$($("#"+$("#image-gallery-id").attr('value')).selector).attr('data-http-auth', "False");
+												$($("#"+$("#image-gallery-id").attr('value'))).attr('data-http-auth', "False");
+											};
+											if(document.getElementById("image-gallery-reviewed").checked) {
+												$($("#"+$("#image-gallery-id").attr('value'))).attr('data-reviewed', "True");
+												$($("#"+$("#image-gallery-host-id").attr('value')+"-check"))[0].style.display = 'inline';
+											}
+											else{
+												$($("#"+$("#image-gallery-id").attr('value'))).attr('data-reviewed', "False");
+												$($("#"+$("#image-gallery-host-id").attr('value')+"-check"))[0].style.display = 'none';
 											};
 										},
 										error: function(){
 											alert("failure");
 										}
 								  	});
+								});
+								$("button#bulk-note-submit").click(function(e){
+									e.preventDefault();
+									$.ajax({
+										type: "POST",
+										url: "",
+										data: $('form#bulk-form').serialize(),
+										success: function(data){
+											$("#success-text").text("Bulk changes submitted.")
+											$("#success-alert").alert();
+											$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+			   									$("#success-alert").hide();
+			   								});
+			   								console.log(data);
+											$.each(data[1], function(index, interface){
+												console.log(interface);
+												$("#"+interface).attr('data-note', $("#bulk-note").val());
+											});
+										},
+										error: function(){
+											alert("failure");
+										}
+								  	});
+								  	$('#bulk-note-modal').modal('hide');
+								});
+								$("button#checkall").click(function(){
+									if(document.getElementById("flagstone").checked){
+										$('#flagstone').prop('checked', false);
+										$('#bulk-form input:checkbox').not(this).prop('checked', false);
+									}else{
+										$('#flagstone').prop('checked', true);
+										$('#bulk-form input:checkbox').not(this).prop('checked', true);
+									}
+    								
 								});
 							});
 						</script>

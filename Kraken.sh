@@ -22,7 +22,8 @@ start(){
 	sudo /etc/init.d/celeryd start
 	sudo /etc/init.d/apache2 start
 	echo ""
-	printf "\033[1;31mOpen browser and navigate to http://localhost:8000\033[0m\n"
+	printf "\033[1;31mKraken started.\033[0m\n"
+	printf "\033[1;31mOpen a browser and navigate to http://localhost:8000\033[0m\n"
 	echo ""
 }
 
@@ -30,23 +31,17 @@ stop(){
 	sudo /etc/init.d/rabbitmq-server stop
 	sudo /etc/init.d/celeryd stop
 	sudo /etc/init.d/apache2 stop
+	printf "\033[1;31mKraken stopped.\033[0m\n"
 }
 
 reset(){
-	sudo/etc/init.d/rabbitmq-server stop
-	sudo/etc/init.d/celeryd stop
-	sudo/etc/init.d/apache2 stop
-	sudo/etc/init.d/rabbitmq-server start
-	sudo/etc/init.d/celeryd start
-	sudo/etc/init.d/apache2 start
-	echo ""
-	printf "\033[1;31mOpen browser and navigate to http://localhost:8000\033[0m\n"
-	echo ""
+	stop
+	start
 }
 
 update(){
 	printf "\033[1;31mWARNING! This will delete your Kraken database!\033[0m\n"
-	read -p "Press [enter] to continue or Ctrl+C to cancel."
+	read -p "Press [enter] to continue or Ctrl+c to cancel."
 	printf "\033[1;31mStopping Kraken\033[0m\n"
 	stop
 	rm -rf /tmp/Kraken
@@ -64,8 +59,11 @@ update(){
 	chmod 775 /opt/Kraken/ghostdriver.log
 	echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@kraken.com', '2wsxXSW@')" | python ./manage.py shell
 	printf "\033[1;31mStarting Kraken\033[0m\n"
+	chmod 755 /tmp/Kraken/update.sh
+	/tmp/Kraken/update.sh
 	start
 	rm -rf /tmp/Kraken
+	printf "\033[1;31mUpdate complete!\033[0m\n"
 }
 
 case "$1" in

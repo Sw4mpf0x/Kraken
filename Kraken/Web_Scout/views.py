@@ -7,39 +7,65 @@ import os
 from . import tasks
 from celery.result import AsyncResult
 import json
+from .forms import ParseForm
 from Kraken.krakenlib import BuildQuery, LogKrakenEvent
 from django.contrib.auth.decorators import login_required
+from base64 import b64encode
 # Create your views here.
 
 @login_required
 def index(request):
 	if request.method == 'POST':
-		note = request.POST.get('note')
-		record = request.POST.get('record')
-		default_creds = request.POST.get('default-creds')
-		http_auth = request.POST.get('http-auth')
-		reviewed = request.POST.get('reviewed')
-		port = Ports.objects.get(PortID=record)
-		host = port.hosts
-		port.Notes = note
+		if request.POST.get('bulk') == "True":
+			note = request.POST.get('note', '')
+			reviewed = request.POST.get('reviewed', '')
+			changedhosts = []
+			changedinterfaces = []
+			for key,value in request.POST.items():
+				if str(value) == "0":
+					try:
+						host = Hosts.objects.get(HostID=key)
+						changedhosts.append(key)
+						ports = host.ports_set.all()
+						for port in ports:
+							changedinterfaces.append(port.PortID)
+						if note:
+							ports.update(Notes=note)
+						if reviewed == "Yes":
+							host.Reviewed = True
+						host.save()
+					except:
+						continue
+			data = [changedhosts, changedinterfaces]
+			json_data = json.dumps(data)
+			return HttpResponse(json_data, content_type='application/json')
+		else:
+			note = request.POST.get('note')
+			record = request.POST.get('record')
+			default_creds = request.POST.get('default-creds')
+			http_auth = request.POST.get('http-auth')
+			reviewed = request.POST.get('reviewed')
+			port = Ports.objects.get(PortID=record)
+			host = port.hosts
+			port.Notes = note
 
-		if http_auth == "Yes":
-			port.HttpAuth = True
-		else:
-			port.HttpAuth = False
-		if default_creds == "Yes":
-			port.DefaultCreds = True
-		else:
-			port.DefaultCreds = False
-		if reviewed == "Yes":
-			host.Reviewed = True
-			LogKrakenEvent(request.user, 'Reviewed - ' + host.IP + ' (' + host.Hostname + ')', 'info')
-		else:
-			host.Reviewed = False
-		port.save()
-		host.save()
-
-		return HttpResponse()
+			if http_auth == "Yes":
+				port.HttpAuth = True
+			else:
+				port.HttpAuth = False
+			if default_creds == "Yes":
+				port.DefaultCreds = True
+			else:
+				port.DefaultCreds = False
+			if reviewed == "Yes":
+				host.Reviewed = True
+				LogKrakenEvent(request.user, 'Reviewed - ' + host.IP + ' (' + host.Hostname + ')', 'info')
+			else:
+				host.Reviewed = False
+			port.save()
+			host.save()
+			return HttpResponse()
+		
 	else:
 		search = request.GET.get('search', '')
 		reviewed = request.GET.get('hide_reviewed', '')
@@ -49,7 +75,7 @@ def index(request):
 		host_array = []
 
 		if search:
-			entry_query = BuildQuery(search, ['IP', 'Hostname', 'ports__Category', 'ports__Product'])
+			entry_query = BuildQuery(search, ['IP', 'Hostname', 'Category', 'ports__Product'])
 			host_array = Hosts.objects.all().filter(entry_query)
 
 		if org in ("IP", "Hostname", "Rating"):
@@ -111,9 +137,12 @@ def setup(request):
 			LogKrakenEvent(request.user, 'Screenshots Deleted', 'info')
 			return HttpResponse()
 		elif request.POST['script'] == 'parse':
-			path = request.POST['path']
-			if os.path.exists(path):
-				job = tasks.nmap_parse.delay(path)
+			form = ParseForm(request.POST, request.FILES)
+			if form.is_valid:
+				with open('/opt/Kraken/tmp/nmap.xml', 'wb+') as destination:
+					for chunk in request.FILES["parsefile"].chunks():
+						destination.write(chunk)
+				job = tasks.nmap_parse.delay('/opt/Kraken/tmp/nmap.xml')
 				try:
 					task = Tasks.objects.get(Task='parse')
 				except:
@@ -122,10 +151,23 @@ def setup(request):
 				task.Task_Id = job.id
 				task.Count = 0
 				task.save()
-				LogKrakenEvent(request.user, 'Database populated with data from ' + path, 'info')
-				return HttpResponse()
+				return render(request, 'Web_Scout/setup.html', {'form':form, 'uploaded':True, 'failedupload':False})
+			#path = request.POST['path']
+			#if os.path.exists(path):
+			#	job = tasks.nmap_parse.delay(path)
+			#	try:
+			#		task = Tasks.objects.get(Task='parse')
+			#	except:
+			#		task = Tasks()
+			#		task.Task = 'parse'
+			#	task.Task_Id = job.id
+			#	task.Count = 0
+			#	task.save()
+			#	LogKrakenEvent(request.user, 'Database populated with data from ' + path, 'info')
 			else:
-				return HttpResponse("File specified does not exist or is not accessible.")
+				return render(request, 'Web_Scout/setup.html', {'form':form, 'uploaded':False, 'failedupload':True})
+			#else:
+			#	return HttpResponse("File specified does not exist or is not accessible.")
 		elif request.POST['script'] == 'screenshot':
 			job = tasks.startscreenshot.delay()
 			try:
@@ -141,7 +183,8 @@ def setup(request):
 		else:
 			return HttpResponse("Failure.")
 	else:
-		return render(request, 'Web_Scout/setup.html')
+		form = ParseForm()
+		return render(request, 'Web_Scout/setup.html', {'form':form, 'uploaded':False, 'failedupload':False})
 
 @login_required
 def viewer(request):
