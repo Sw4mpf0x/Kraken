@@ -1,7 +1,7 @@
 printf "\033[1;31mInstalling Dependencies\033[0m\n"
 # Install RabbitMQ
 sudo apt-get update
-sudo apt-get -y install apache2 libapache2-mod-wsgi sqlite3 rabbitmq-server python-requests python-m2crypto build-essential openssl chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev python-pip python-dev build-essential libpq-dev swig apache2 libapache2-mod-wsgi
+sudo apt-get -y install apache2 libapache2-mod-wsgi sqlite3 rabbitmq-server python-requests python-m2crypto build-essential openssl chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev python-pip python-dev build-essential libpq-dev swig
 pip install --upgrade pip
 pip install Django virtualenvwrapper selenium celery
 
@@ -16,11 +16,14 @@ chmod 640 /etc/default/celeryd
 chmod 755 /usr/bin/Kraken
 chmod 755 /etc/init.d/celeryd
 
-printf "\033[1;31mAdding celery user\033[0m\n"
+
 usercheck=$(id -u celery)
 if [ -z $usercheck ]
     then
+        printf "\033[1;31mAdding celery user\033[0m\n"
         useradd -r -s /bin/sh celery
+else
+    printf "\033[1;31mCelery user exists.\033[0m\n"
 fi
 usermod -a -G www-data celery
 
@@ -35,6 +38,7 @@ printf "\033[1;31mInstalling PhantomJS\033[0m\n"
 phantomjscheck=$(which phantomjs)
 if [ -z $phantomjscheck ]
     then
+        printf "\033[1;31mInstalling PhantomJS\033[0m\n"
         MACHINE_TYPE=`uname -m`
         if [ ${MACHINE_TYPE} == 'x86_64' ]; then
         	PHANTOM_JS="phantomjs-1.9.8-linux-x86_64"
@@ -48,6 +52,8 @@ if [ -z $phantomjscheck ]
         
         sudo mv $PHANTOM_JS /usr/local/share
         sudo ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin
+else
+    printf "\033[1;31mPhantomJS already installed.\033[0m\n"
 fi
 
 printf "\033[1;31mSetting up Python Virtual Environment\033[0m\n"
@@ -60,9 +66,11 @@ cd /opt/Kraken
 secretkeycheck=$(grep "SECRET_KEY" /opt/Kraken/Kraken/settings.py)
 if [ -z $secretkeycheck ]
     then
-        printf "\033[1;31mCreating new Django private key\033[0m\n"
+        printf "\033[1;31mCreating new Django private key.\033[0m\n"
         secretkey=$(echo 'import random;print "".join([random.SystemRandom().choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)") for i in range(50)])' | python)
         echo SECRET_KEY = \'$secretkey\' >> /opt/Kraken/Kraken/settings.py
+else
+    printf "\033[1;31mA Django private key exists.\033[0m\n"
 fi
 mkvirtualenv Kraken --no-site-packages
 workon Kraken
@@ -116,10 +124,9 @@ done
 
 echo "#Kraken Entry" >> /etc/apache2/ports.conf
 echo "listen $port" >> /etc/apache2/ports.conf
+echo "#Kraken Entry" >> /etc/apache2/sites-available/000-default.conf
+echo "<VirtualHost *:$port>" >> /etc/apache2/sites-available/000-default.conf
 cat <<'EOF' >> /etc/apache2/sites-available/000-default.conf
-
-#Kraken Entry
-<VirtualHost *:$port>
 
 	Alias /js /opt/Kraken/common/js/
 	Alias /css /opt/Kraken/common/css/
