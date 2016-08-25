@@ -23,7 +23,8 @@ start(){
 	sudo /etc/init.d/apache2 start
 	echo ""
 	printf "\033[1;31mKraken started.\033[0m\n"
-	printf "\033[1;31mOpen a browser and navigate to http://localhost:8000\033[0m\n"
+	port=awk 'c&&!--c{print $2};/\#Kraken\ Entry/{c=1}' /etc/apache2/ports.conf
+	printf "\033[1;31mOpen a browser and navigate to http://localhost:$port\033[0m\n"
 	echo ""
 }
 
@@ -57,6 +58,7 @@ update(){
 	chmod 775 /opt/Kraken/Kraken/kraken.db
 	chmod 775 /opt/Kraken/Web_Scout/static/Web_Scout/
 	chmod 775 /opt/Kraken/ghostdriver.log
+	chmod 775 /opt/Kraken/tmp/
 	echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@kraken.com', '2wsxXSW@')" | python ./manage.py shell
 	printf "\033[1;31mStarting Kraken\033[0m\n"
 	chmod 755 /tmp/Kraken/update.sh
