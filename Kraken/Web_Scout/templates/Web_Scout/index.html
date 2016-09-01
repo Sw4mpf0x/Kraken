@@ -56,23 +56,25 @@
 			$('#image-gallery-host-id').attr('value', $sel.attr('data-host-id'));
 			if($sel.attr('data-default-creds') == "True"){
 				$("#image-gallery-default-creds").prop("checked", true);
-			}
-			else{
+			}else{
 				$("#image-gallery-default-creds").prop("checked", false);
 			}
 			if($sel.attr('data-http-auth') == "True"){
 				$("#image-gallery-http-auth").prop("checked", true);
-			}
-			else{
+			}else{
 				$("#image-gallery-http-auth").prop("checked", false);
 			}
 			if($sel.attr('data-reviewed') == "True"){
 				$("#image-gallery-reviewed").prop("checked", true);
-			}
-			else{
+			}else{
 				$("#image-gallery-reviewed").prop("checked", false);
 			}
-
+			if($sel.attr('data-module') == "True"){
+				$("#runmodule").attr('data-id', $sel.attr('id'));
+				$("#runmodule")[0].style.display = 'inline';
+			}else{
+				$("#runmodule")[0].style.display = 'none';
+			}
 			disableButtons(counter, $sel.attr('data-image-id'));
 		}
 
@@ -398,7 +400,7 @@
 				{{ host.IP }}&#160{% if host.Reviewed %}<span id="{{ host.HostID}}-check" style="color:green" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span id="{{ host.HostID}}-check" style="color:green;display: none;" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %}<br>
 				{{ host.Hostname }}<br>
 			{% for port in host.ports_set.all %}
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" data-host-id="{{ host.HostID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" data-host-id="{{ host.HostID }}" data-module="{% if port.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -414,7 +416,7 @@
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align:left">
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" data-host-id="{{ host.HostID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" data-host-id="{{ host.HostID }}" data-module="{% if port.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -432,7 +434,7 @@
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="word-wrap: break-word;text-align:left">
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" data-host-id="{{ host.HostID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" data-host-id="{{ host.HostID }}" data-module="{% if port.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -450,7 +452,7 @@
 			<div class="row">
 			{% for port in host.ports_set.all %}
 				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="word-wrap: break-word;text-align:left">
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" data-host-id="{{ host.HostID }}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }} {{port.Version }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ port.PortID }}" data-host-id="{{ host.HostID }}" data-module="{% if port.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ port.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ port.Product }}" data-link="viewer/?destination={{ port.PortID }}" data-image-id="" data-toggle="modal" data-title="{{ host.IP }}:{{ port.Port }} ({{ host.Hostname }})" data-note="{{ port.Notes }}" data-default-creds="{{ port.DefaultCreds }}" data-http-auth="{{ port.HttpAuth }}" data-name="{{ port.Name }}" data-image="{% static port.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ port.Link }}">
 					<img class="img-responsive img-rounded center-block" src={% static port.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ port.Port }}<br>
@@ -542,31 +544,32 @@
 			</div>
 			<div class="modal-body">
 			 	<div class="row">
-			 		<div class="well col-md-4">
-			 			<div class="alert alert-success" id="modal-success-alert">
-							<button type="button" class="close" data-dismiss="alert">x</button>
-							<strong>Success! </strong>
-							Notes updated for this interface.
+			 			<div class="well col-md-4">
+			 			<div class="alert alert-success" id="gallery-success-alert">
+        					<button type="button" class="close" data-dismiss="alert">x</button>
+        					<strong>Success!</strong>
+        					<span id="gallery-success-text"></span>
+						</div>
+						<div class="alert alert-warning" id="gallery-warning-alert">
+        					<button type="button" class="close" data-dismiss="alert">x</button>
+        					<strong>Warning!</strong>
+        					<span id="gallery-warning-text"></span>
 						</div>
 						<div style="padding-bottom:5px"><h3>Interface Information</h3></div>
-			 			<div style="padding-bottom:5px"><b>Protocol:</b>&#160<span id="image-gallery-name"></span><br>
-			 			</div>
-			 			<div style="padding-bottom:5px"><b>Product:</b>&#160&#160<span id="image-gallery-product"></span><br>
-			 			</div>
-			 			<div style="padding-bottom:5px"><b>Category:</b>&#160&#160<span id="image-gallery-category"></span><br>
-			 			</div>
-			 			<div style="padding-bottom:5px"><b>Device:</b>&#160&#160<span id="image-gallery-device"></span><br>
-			 			</div>
+			 			<div style="padding-bottom:5px"><b>Protocol:</b>&#160<span id="image-gallery-name"></span><br></div>
+			 			<div style="padding-bottom:5px"><b>Product:</b>&#160&#160<span id="image-gallery-product"></span><br></div>
+			 			<div style="padding-bottom:5px"><b>Category:</b>&#160&#160<span id="image-gallery-category"></span><br></div>
+			 			<div style="padding-bottom:5px"><b>Device:</b>&#160&#160<span id="image-gallery-device"></span><br></div>
 			 			<div style="padding-bottom:5px"><h3>Documentation</h3></div>
 			 			<form id="note-form" method="POST">
 							<div class="form-group">
 								{% csrf_token %}
-  										<input type="hidden" id="image-gallery-default-credshidden" value="No" name="default-creds" />
-  										<input type="checkbox" id="image-gallery-default-creds" value="Yes" name="default-creds" />&#160&#160Default Credentials<br>
-  										<input type="hidden" id="image-gallery-http-authhidden" value="No" name="http-auth" />
-  										<input type="checkbox" id="image-gallery-http-auth" value="Yes" name="http-auth" />&#160&#160HTTP Authentication<br>
-  										<input type="hidden" id="image-gallery-reviewedhidden" value="No" name="reviewed" />
-  										<input type="checkbox" id="image-gallery-reviewed" value="Yes" name="reviewed" />&#160&#160Reviewed<br><br>
+  								<input type="hidden" id="image-gallery-default-credshidden" value="No" name="default-creds" />
+  								<input type="checkbox" id="image-gallery-default-creds" value="Yes" name="default-creds" />&#160&#160Default Credentials&#160<button data-id="" id="runmodule" style="padding:3px;margin-top:-3px" type="button" class="btn"><span class="glyphicon glyphicon-screenshot"></span></button><br>
+  								<input type="hidden" id="image-gallery-http-authhidden" value="No" name="http-auth" />
+  								<input type="checkbox" id="image-gallery-http-auth" value="Yes" name="http-auth" />&#160&#160HTTP Authentication<br>
+  								<input type="hidden" id="image-gallery-reviewedhidden" value="No" name="reviewed" />
+  								<input type="checkbox" id="image-gallery-reviewed" value="Yes" name="reviewed" />&#160&#160Reviewed<br><br>
 								<input type="hidden" id="image-gallery-host-id" class="form-control" name="hostid" value=""/>
 								<input type="hidden" id="image-gallery-id" class="form-control" name="record" value=""/>
 			 					<label for="image-gallery-notes">Notes:</label>
@@ -617,7 +620,8 @@
 									document.getElementById("image-gallery-http-authhidden").disabled = true;
 								}
 							//twitter bootstrap script
-								$("#modal-success-alert").hide();
+								$("#gallery-success-alert").hide();
+								$("#gallery-warning-alert").hide();
 								$("button#note-submit").click(function(e){
 									e.preventDefault();
 									$.ajax({
@@ -625,9 +629,10 @@
 										url: "",
 										data: $('form#note-form').serialize(),
 										success: function(msg){
-											$("#modal-success-alert").alert();
-											$("#modal-success-alert").fadeTo(2000, 500).slideUp(500, function(){
-			   									$("#modal-success-alert").hide();
+											$("#gallery-success-text").text("Notes updated for this interface.")
+											$("#gallery-success-alert").alert();
+											$("#gallery-success-alert").fadeTo(2000, 500).slideUp(500, function(){
+			   									$("#gallery-success-alert").hide();
 			   								});
 											$($("#"+$("#image-gallery-id").attr('value'))).attr('data-note', $("#image-gallery-note").val());
 											if(document.getElementById("image-gallery-default-creds").checked) {
@@ -690,6 +695,39 @@
 									}
     								
 								});
+								$("button#runmodule").click(function(){
+									$.ajax({
+										type: "GET",
+										url: "runmodule",
+										data: "port=" + $(this).attr('data-id'),
+										success: function(data){
+											if (data[0] == "Success"){
+												$("#gallery-success-text").text("Default credentials worked!")
+												$("#gallery-success-alert").alert();
+												$("#gallery-success-alert").fadeTo(2000, 500).slideUp(500, function(){
+			   										$("#gallery-success-alert").hide();
+			   									});
+			   									var currentNote = $("#image-gallery-note").val()
+			   									$("#image-gallery-note").val('Successfully authenticated with: (' + data[1] + ')\n' + currentNote);
+			   									$("#"+$("#image-gallery-id").attr('value')).attr('data-note', 'Successfully authenticated with: (' + data[1] + ')\n' + currentNote);
+			   									$("#image-gallery-default-creds").prop("checked", true);
+			   									$("#"+$('#image-gallery-id').attr('value')).attr('data-default-creds', "True");
+			   									//replace notes with db notes and check default creds box
+			   								};
+			   								if (data[0] == "Fail"){
+			   									$("#gallery-warning-text").text("Default credentials did not work.")
+												$("#gallery-warning-alert").alert();
+												$("#gallery-warning-alert").fadeTo(2000, 500).slideUp(500, function(){
+			   										$("#gallery-warning-alert").hide();
+			   									});
+			   								};
+										},
+										error: function(){
+											alert("failure");
+										}
+								  	});
+    								
+								});
 							});
 						</script>
 			 		</div>	
@@ -726,6 +764,3 @@
 	</div>
 </div>
 {% endblock %}
-
-
-

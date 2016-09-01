@@ -32,6 +32,7 @@ class Ports(models.Model):
 	HttpAuth = models.BooleanField(default=False)
 	Default_Credentials = models.CharField(max_length=100)
 	Retry = models.BooleanField(default=False)
+	Module = models.CharField(max_length=6)
 
 class Tasks(models.Model):
 	def __str__(self):

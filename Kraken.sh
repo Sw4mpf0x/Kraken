@@ -7,7 +7,7 @@ display_usage(){
 	echo "required to run Kraken, as well as update Kraken with the"
 	echo "latest version."
 	echo ""
-	echo "Usage: $0 [start|stop|reset|update]"
+	echo "Usage: $0 [start|stop|restart|update]"
 	echo "============================================================"
 }
 
@@ -23,7 +23,7 @@ start(){
 	sudo /etc/init.d/apache2 start
 	echo ""
 	printf "\033[1;31mKraken started.\033[0m\n"
-	port=awk 'c&&!--c{print $2};/\#Kraken\ Entry/{c=1}' /etc/apache2/ports.conf
+	port=$(awk 'c&&!--c{print $2};/\#Kraken\ Entry/{c=1}' /etc/apache2/ports.conf)
 	printf "\033[1;31mOpen a browser and navigate to http://localhost:$port\033[0m\n"
 	echo ""
 }
@@ -33,11 +33,6 @@ stop(){
 	sudo /etc/init.d/celeryd stop
 	sudo /etc/init.d/apache2 stop
 	printf "\033[1;31mKraken stopped.\033[0m\n"
-}
-
-reset(){
-	stop
-	start
 }
 
 update(){
@@ -62,7 +57,11 @@ update(){
 	echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@kraken.com', '2wsxXSW@')" | python ./manage.py shell
 	printf "\033[1;31mStarting Kraken\033[0m\n"
 	chmod 755 /tmp/Kraken/update.sh
-	/tmp/Kraken/update.sh
+	if [ -a "/tmp/Kraken/update.sh" ]
+		then
+			chmod 755 /tmp/Kraken/update.sh
+			/tmp/Kraken/update.sh
+	fi
 	start
 	rm -rf /tmp/Kraken
 	printf "\033[1;31mUpdate complete!\033[0m\n"
@@ -75,7 +74,8 @@ case "$1" in
   	stop)
         stop
         ;;
-  	reset|reload)
+  	reset|restart)
+        printf "\033[1;31mResetting Kraken.\033[0m\n"
         stop
         start
         ;;

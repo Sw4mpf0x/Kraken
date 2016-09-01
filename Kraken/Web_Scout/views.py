@@ -180,6 +180,18 @@ def setup(request):
 			task.save()
 			LogKrakenEvent(request.user, 'Screenshot taking task initiated', 'info')
 			return HttpResponse()
+		elif request.POST['script'] == 'runmodules':
+			job = tasks.runmodules.delay()
+			try:
+				task = Tasks.objects.get(Task='runmodules')
+			except:
+				task = Tasks()
+				task.Task = 'runmodules'
+			task.Task_Id = job.id
+			task.Count = 0
+			task.save()
+			LogKrakenEvent(request.user, 'Running default credential checks.', 'info')
+			return HttpResponse()
 		else:
 			return HttpResponse("Failure.")
 	else:
@@ -222,4 +234,23 @@ def task_state(request):
 		return HttpResponse(json_data, content_type='application/json')
 	else:
 		return HttpResponse()
+
+@login_required
+def runmodule(request):
+	port = request.GET['port']
+	result, credentials = tasks.runmodule(port)
+	data = [result, credentials]
+	json_data = json.dumps(data)
+	return HttpResponse(json_data, content_type='application/json')
+
+@login_required
+def runmodules(request):
+	portlist = request.GET.get('ports', '')
+	if portlist:
+		portlist = portlist.split(',')
+		tasks.runmodules.delay(portlist)
+	else:
+		tasks.runmodules.delay()
+
+	return HttpResponse()
 	

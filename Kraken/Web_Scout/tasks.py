@@ -214,8 +214,6 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 			return False
 
 	def default_creds(port_record, source_code):
-		#port_record.Default_Credentials = None
-		#port_record.Category = None
 		print 'Checking for default creds'
 		try:
 			sigpath = '/opt/Kraken/Web_Scout/signatures.txt'
@@ -225,7 +223,8 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 	
 			with open(catpath) as cat_file:
 				categories = cat_file.readlines()
-			
+			port_record.Default_Credentials = ""
+			port_record.save()
 			# Loop through and see if there are any matches from the source code
 			# Kraken obtained
 			if source_code is not None:
@@ -237,6 +236,7 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 					page_identifiers = sig_list[0].split(";")
 					page_id = sig_list[1].strip()
 					credential_info = sig_list[2].strip()
+					module = sig_list[3].strip()
 	
 					# Set our variable to 1 if the signature was not identified.  If it is
 					# identified, it will be added later on.  Find total number of
@@ -252,6 +252,8 @@ def getscreenshot(urlItem, tout, debug, proxy,):
 							port_record.Default_Credentials = credential_info
 						else:
 							port_record.Default_Credentials += '\n' + credential_info
+						if module:
+							port_record.Module = module
 						port_record.Product = page_id
 						port_record.save()
 				host_record = port_record.hosts
@@ -414,3 +416,45 @@ def startscreenshot():
 	total_time = end_time - start_time
 	number_of_ports = Ports.objects.all().count()
 	LogKrakenEvent('Celery', 'Screenshots Complete. Elapsed time: ' + str(total_time) + ' to screenshot ' + str(number_of_ports) + ' interfaces', 'info')
+
+@task
+def runmodule(portid):
+	from importlib import import_module
+	try:
+		port_record = Ports.objects.get(PortID=portid)
+		URL = port_record.Link
+		port_module = port_record.Module
+		module = import_module("Web_Scout.modules." + port_module)
+		result, credentials = module.run()
+		if result == 'Success':
+			port_record.DefaultCreds = True
+			port_record.Notes = 'Successfully authenticated with: (' + credentials + ')\n' + port_record.Notes
+			port_record.save()
+		return result, credentials
+	except:
+		return "error", "error"
+
+@task
+def runmodules(portlist=""):
+	import datetime
+	if not portlist:
+		portlist = Ports.objects.exclude(Module__exact='')
+	
+	total_count = len(portlist)
+	start_time = datetime.datetime.now()
+	
+	jobs = group(runmodule.s(port.PortID) for port in portlist)
+	result = jobs.apply_async()
+	while not result.ready():
+		print 'Failed Tasks? ' + str(result.failed())
+		print 'Waiting? ' + str(result.waiting())
+		print 'Completed: ' + str(result.completed_count())
+		print 'Total: ' + str(total_count)
+		process_percent = int((result.completed_count() / total_count) * 100)
+		sleep(.1)
+		print 'Percentage Complete: ' + str(process_percent) + '%'
+		current_task.update_state(state='PROGRESS', meta={'process_percent': process_percent })
+		sleep(5)
+	end_time = datetime.datetime.now()
+	total_time = end_time - start_time
+	LogKrakenEvent('Celery', 'Mass Module Execution Complete. Elapsed time: ' + str(total_time) + ' to test ' + str(total_count) + ' interfaces', 'info')

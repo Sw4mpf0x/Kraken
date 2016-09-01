@@ -101,6 +101,17 @@
         <button data-toggle="modal" data-target="#confirm-action" data-description="take screenshots" data-action="screenshot" id="screenshot" class="btn btn-primary">Take Screenshots</button>
     </div>
 </form>
+
+<form  id="runmodules-form" method = "POST">
+    <div class="form-group">
+        {% csrf_token %}
+        <input type="hidden" class="form-control" name="script" value="runmodules"/>
+        <label style="font-size:20px" for="runmodules">Test default credentials on interfaces identified by Kraken:</label><br>
+        <div style="margin-bottom:5px"><span id="runmodules_progress"></span></div>
+        <button data-toggle="modal" data-target="#confirm-action" data-description="check default credentials" data-action="runmodules" id="runmodules" class="btn btn-primary">Test Credentials</button>
+    </div>
+</form>
+
 </div>
 
 <script>
@@ -149,6 +160,7 @@
     PollState('parse');
     PollState('screenshot');
     PollState('removescreenshots');
+    PollState('runmodules');
 
     $("button#cleardb").click(function(e){
         $("#cleardb_progress").text("")
@@ -183,6 +195,11 @@
 
     $("button#screenshot").click(function(e){
         $("#screenshot_progress").text("")
+        e.preventDefault();
+    });
+
+    $("button#runmodules").click(function(e){
+        $("#runmodules_progress").text("")
         e.preventDefault();
     });
    

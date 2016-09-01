@@ -1,3 +1,10 @@
+sudocheck=$(sudo -v)
+if [ $sudocheck ]
+    then
+        printf "\033[1;31mYou must be a sudoer in order to install Kraken.\033[0m\n"
+        exit
+fi
+
 printf "\033[1;31mInstalling Dependencies\033[0m\n"
 # Install RabbitMQ
 sudo apt-get update
@@ -9,6 +16,10 @@ printf "\033[1;31mMoving files around and changing permissions\033[0m\n"
 mv celeryd.conf /etc/default/celeryd
 mv celeryd /etc/init.d/celeryd
 mv Kraken.sh /usr/bin/Kraken
+if [ -d "/opt/Kraken" ]
+    then
+        rm -rf /opt/Kraken
+fi
 mv Kraken/ /opt/
 
 chown root /etc/default/celeryd
@@ -117,6 +128,8 @@ portcheck=$(grep "listen $port" /etc/apache2/ports.conf)
 while [ "$portcheck" ]
         do
         printf "\033[1;31mPort $port is currently is use.\033[0m\n"
+        echo "If you insist on using this port, edit your /etc/apache2/ports.conf"
+        echo "so that port $port is not in use."
         echo "Enter a new port to use: "
         read port
         portcheck=$(grep "listen $port" /etc/apache2/ports.conf)
@@ -153,12 +166,7 @@ cat <<'EOF' >> /etc/apache2/sites-available/000-default.conf
 EOF
 
 printf "\033[1;31mStarting Kraken\033[0m\n"
-
-Kraken reset
-echo ""
-echo ""
 echo "Setup complete!"
-echo "Open your browser and visit http://localhost:$port/"
-echo "Login with admin:2wsxXSW@"
 echo ""
+Kraken reset
 
