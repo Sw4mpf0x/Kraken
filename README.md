@@ -19,7 +19,9 @@ Password change and add user functionality can be found at http://localhost:8000
 
 To get started, make your way over to Web Scout's Setup page. Web Scout is what you will use to scan for, and review, the web interfaces available to you on a given network. Kraken will parse port data from an Nmap XML file. The parser will look for either 'HTTP' to be present in the port entry, or one of the following known HTTP ports:
 
-```80,280,443,591,593,981,1311,2031,2480,3181,4444,4445,4567,4711,4712,5104,5280,7000,7001,7002,8000,8008,8011,8012,8013,8014,8042,8069,8080,8081,8243,8280,8281,8443,8531,8887,8888,9080,9443,11371,12443,16080,18091,18092```
+```
+80,280,443,591,593,981,1311,2031,2480,3181,4444,4445,4567,4711,4712,5104,5280,7000,7001,7002,8000,8008,8011,8012,8013,8014,8042,8069,8080,8081,8243,8280,8281,8443,8531,8887,8888,9080,9443,11371,12443,16080,18091,18092
+```
 
 Web Scout's Setup page provide file upload functionality for you to provide your XML file. This will parse the Nmap XML data into the SQLite database. The progress field will notify you when complete. The last step for setup is to click the "Take Screenshots" button. This may take a while depending on how many screenshots need to be taken. The screenshot-taking Celery task currently uses 5 threads, each with a Selenium headless PhantomJS web driver, so it can be fairly resource intensive. Progress can be tracked by looking at the progress field. During the screenshot taking process, interfaces are identified by type if possible, and any known default credentials are displayed in the 'viewer.html' page.
 
