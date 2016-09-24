@@ -36,15 +36,17 @@ stop(){
 }
 
 update(){
-	printf "\033[1;31mWARNING! This will delete your Kraken database!\033[0m\n"
-	read -p "Press [enter] to continue or Ctrl+c to cancel."
-	printf "\033[1;31mStopping Kraken\033[0m\n"
-	stop
-	rm -rf /tmp/Kraken
-	printf "\033[1;31mDownloading latest version of Kraken\033[0m\n"
-	git clone https://github.com/Sw4mpf0x/Kraken.git /tmp/
-	rm -rf /opt/Kraken
-	mv /tmp/Kraken/Kraken /opt/
+    printf "\033[1;31mWARNING! This will delete your Kraken database!\033[0m\n"
+    read -p "Press [enter] to continue or Ctrl+c to cancel."
+    printf "\033[1;31mStopping Kraken\033[0m\n"
+    stop
+    rm -rf /tmp/Kraken
+    printf "\033[1;31mDownloading latest version of Kraken\033[0m\n"
+    git clone https://github.com/Sw4mpf0x/Kraken.git /tmp/Kraken
+    rm -rf /opt/Kraken
+    mv /tmp/Kraken/Kraken /opt/
+    secretkey=$(echo 'import random;print "".join([random.SystemRandom().choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)") for i in range(50)])' | python)
+    echo SECRET_KEY = \'$secretkey\' >> /opt/Kraken/Kraken/settings.py
 	/opt/Kraken/manage.py makemigrations
 	/opt/Kraken/manage.py migrate
 	chown -R www-data /opt/Kraken
@@ -54,7 +56,7 @@ update(){
 	chmod 775 /opt/Kraken/Web_Scout/static/Web_Scout/
 	chmod 775 /opt/Kraken/ghostdriver.log
 	chmod 775 /opt/Kraken/tmp/
-	echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@kraken.com', '2wsxXSW@')" | python ./manage.py shell
+	echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@kraken.com', '2wsxXSW@')" | python /opt/Kraken/manage.py shell
 	printf "\033[1;31mStarting Kraken\033[0m\n"
 	chmod 755 /tmp/Kraken/update.sh
 	if [ -a "/tmp/Kraken/update.sh" ]
