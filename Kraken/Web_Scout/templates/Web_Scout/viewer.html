@@ -16,8 +16,8 @@
 			<ul class="nav navbar-nav">
 				<li>
 					<span class="navbar-text" style="margin-top:8px;margin-bottom:0px;">
-						URL: <a href="{{ port.Link }}">{{ port.Link }}</a><br>
-						Default Credentials: <span style="color:#337ab7">{{ port.Default_Credentials }}</span>
+						URL: <a href="{{ interface.Url }}">{{ interface.Url }}</a><br>
+						Default Credentials: <span style="color:#337ab7">{{ interface.Default_Credentials }}</span>
 					</span>
 				</li>
 			</ul>
@@ -25,7 +25,7 @@
 				<form class="navbar-form navbar-right" id="note-form" method="POST">
 					<div class="form-group">
 						{% csrf_token %}
-							{% if port.DefaultCreds %}
+							{% if interface.DefaultCreds %}
 								<span class="navbar-text" style="margin-top:0px;margin-bottom:0px;"><input type="hidden" id="default-credshidden" value="No" name="default-creds" />
 	  							<input type="checkbox" id="default-creds" value="Yes" name="default-creds" checked/>&#160&#160Default Credentials</span><br>
 	  						{% else %}
@@ -33,7 +33,7 @@
 	  							<input type="checkbox" id="default-creds" value="Yes" name="default-creds" />&#160&#160Default Credentials</span><br>
 	  						{% endif %}
 
-	  						{% if port.HttpAuth %}
+	  						{% if interface.HttpAuth %}
 	  							<span class="navbar-text" style="margin-top:0px;margin-bottom:0px;"><input type="hidden" id="http-authhidden" value="No" name="http-auth" />
 	  							<input type="checkbox" id="http-auth" value="Yes" name="http-auth" checked/>&#160&#160HTTP Authentication</span>
 							{% else %}
@@ -47,11 +47,11 @@
 								<span class="navbar-text" style="margin-top:0px;margin-bottom:0px;"><input type="hidden" id="reviewedhidden" value="No" name="reviewed" />
 	  							<input type="checkbox" id="reviewed" value="Yes" name="reviewed" />&#160&#160Reviewed</span>
 	  						{% endif %}
-	  						<input type="hidden" id="id" class="form-control" name="record" value="{{ port.PortID }}"/>
+	  						<input type="hidden" id="id" class="form-control" name="record" value="{{ interface.IntID }}"/>
 			 		</div>
 			 		<div class="form-group">
 			 				<span class="navbar-text" style="margin-top:0px;margin-bottom:0px;"><label for="image-gallery-notes">Notes:</label></span>
-							<textarea class="form-control" rows="1" id="image-gallery-note" name="note">{{ port.Notes }}</textarea>
+							<textarea class="form-control" rows="1" id="image-gallery-note" name="note">{{ interface.Notes }}</textarea>
 							<button id="note-submit" type="submit" class="btn btn-primary">Submit</button>
 					</div>
 				</form>
@@ -97,6 +97,6 @@
 					});
 				</script>
 <div style="margin-top:56px;">
-        <iframe src="{{ port.Link }}" style="width:100%;height:100%;"></iframe>
+        <iframe src="{{ interface.Url }}" style="width:100%;height:100%;"></iframe>
 </div>
 </body>

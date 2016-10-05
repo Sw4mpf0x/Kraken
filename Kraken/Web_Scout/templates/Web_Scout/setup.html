@@ -51,12 +51,112 @@
 </div>
 <div class="container">
 
+<div class="modal fade" id="add-url-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title" id="myModalLabel">Add URL</h4>
+            </div>
+            <div class="modal-body">
+                <form id="add-url-form">
+                {% csrf_token %}
+                <p>Enter a line delimited list of URLs to screenshot</p>
+                <textarea placeholder="URLs..." value="" class="form-control" rows="7" id="address-textarea" name="address-textarea"></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-ok" id="add-url-submit" data-action="add-url">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="add-address-modal" tabindex="-1" role="dialog">
+<div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title" id="myModalLabel">Add Address</h4>
+            </div>
+            <div class="modal-body">
+                <form id="add-address-form">
+                {% csrf_token %}
+                <p>Enter a line or comma delimited list of addresses with CIDR notation below</p>
+                <textarea placeholder="Addresses..." value="" class="form-control" rows="7" id="address-textarea" name="address-textarea"></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-ok" id="add-address-submit" data-action="add-address">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="add-hostname-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title" id="myModalLabel">Add Hostname</h4>
+            </div>
+            <div class="modal-body">
+                <form id="add-hostname-form">
+                {% csrf_token %}
+                <p>Enter a line delimited list of hostnames below</p>
+                <textarea placeholder="Addresses..." value="" class="form-control" rows="7" id="address-textarea" name="address-textarea"></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-ok" id="add-hostname-submit" data-action="add-hostname">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="well">
+
+    <h2>Scan Your Network</h2>
+    <p>
+    Use this page to perform Nmap scans on your networking using Kraken.
+    </p>
+    <div class="btn-group">
+        <button type="button" id="checkall" class="btn btn-sm btn-default">Select All</button>
+        <input type="checkbox" id="flagstone" style="display: none;" />
+        <button style="box-sizing: border-box;" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+            <span class="caret" style="margin-right:-3px"></span>&#160
+            <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a href="" id="delete">Delete Selected</a></li>
+        </ul>
+    </div>
+
+    <form id="scan-form" method="POST">
+        <div class="form-group">
+            {% csrf_token %}
+            <input type="hidden" class="form-control" name="action" value="scan"/>
+            <p><b>Addresses</b></p>
+            <div style="margin-left:20px" id="addresslist">
+            {% for address in addresses %}
+            <span id="{{ address.AddressID }}"><input type="checkbox" name="{{ address.AddressID }}" value="on"> &#160 {% if address.Hostname %}{{ address.Hostname }}{% else %}{{ address.Address }}/{{ address.Cidr }}{% endif %}<br></span>
+            {% endfor %}
+            </div><br><br>
+            <button data-toggle="modal" data-target="#add-address-modal" type="button" class="btn btn-sm btn-default">Add Address</button>
+            <button data-toggle="modal" data-target="#add-hostname-modal" type="button" class="btn btn-sm btn-default">Add Hostname</button>
+            <br><br>
+            <button data-toggle="modal" data-target="#confirm-action" data-description="begin scanning selected addresses" data-action="scan" id="scan-submit" class="btn btn-primary">Start Scan</button>
+        </div>
+    </form>
+
 <form  id="cleardb-form" method = "POST">
     <div class="form-group">
         {% csrf_token %}
-        <input type="hidden" class="form-control" name="script" value="cleardb"/>
-        <label style="font-size:20px" for="cleardb">Clear the Hosts and Ports tables:</label><br>
+        <input type="hidden" class="form-control" name="action" value="cleardb"/>
+        <label style="font-size:20px" for="cleardb">Clear the Hosts and Interfaces tables:</label><br>
         <div style="margin-bottom:5px"><span id="cleardb_progress"></span></div>
         <button data-toggle="modal" data-target="#confirm-action" data-description="clear the database" data-action="cleardb" id="cleardb" class="btn btn-primary">Clear Database</button>
     </div>
@@ -66,7 +166,7 @@
 <form  id="removescreenshots-form" method = "POST">
     <div class="form-group">
         {% csrf_token %}
-        <input type="hidden" class="form-control" name="script" value="removescreenshots"/>
+        <input type="hidden" class="form-control" name="action" value="removescreenshots"/>
         <label style="font-size:20px" for="removescreenshots">Remove all screenshots in screenshot folder:</label><br>
         <div style="margin-bottom:5px"><span id="removescreenshots_progress"></span></div>
         <button data-toggle="modal" data-target="#confirm-action" data-description="remove screenshots" data-action="removescreenshots" id="removescreenshots" class="btn btn-primary">Remove Screenshots</button>
@@ -76,7 +176,7 @@
 <form id="parse-form" method="POST" role="form" enctype="multipart/form-data">
     <div class="form-group">
         {% csrf_token %}
-        <input type="hidden" class="form-control" name="script" value="parse"/>
+        <input type="hidden" class="form-control" name="action" value="parse"/>
         
         <label style="font-size:20px" for="path">Enter path to Nmap XML file (.xml)</label>
         <div style="margin-bottom:5px"><span id="parse_progress"></span></div>
@@ -92,10 +192,19 @@
     </div>
 </form>
 
+<form  id="add-url-form" method = "POST">
+    <div class="form-group">
+        {% csrf_token %}
+        <input type="hidden" class="form-control" name="action" value="addurl"/>
+        <label style="font-size:20px" for="screenshot">Add specific URL(s) to screenshot:</label><br>
+        <button data-toggle="modal" data-target="#add-url-modal" type="button" class="btn btn-primary">Add URL</button>
+    </div>
+</form>
+
 <form  id="screenshot-form" method = "POST">
     <div class="form-group">
         {% csrf_token %}
-        <input type="hidden" class="form-control" name="script" value="screenshot"/>
+        <input type="hidden" class="form-control" name="action" value="screenshot"/>
         <label style="font-size:20px" for="screenshot">Retrieve web interface screenshots:</label><br>
         <div style="margin-bottom:5px"><span id="screenshot_progress"></span></div>
         <button data-toggle="modal" data-target="#confirm-action" data-description="take screenshots" data-action="screenshot" id="screenshot" class="btn btn-primary">Take Screenshots</button>
@@ -105,7 +214,7 @@
 <form  id="runmodules-form" method = "POST">
     <div class="form-group">
         {% csrf_token %}
-        <input type="hidden" class="form-control" name="script" value="runmodules"/>
+        <input type="hidden" class="form-control" name="action" value="runmodules"/>
         <label style="font-size:20px" for="runmodules">Test default credentials on interfaces identified by Kraken:</label><br>
         <div style="margin-bottom:5px"><span id="runmodules_progress"></span></div>
         <button data-toggle="modal" data-target="#confirm-action" data-description="check default credentials" data-action="runmodules" id="runmodules" class="btn btn-primary">Test Credentials</button>
@@ -172,6 +281,25 @@
         e.preventDefault();
     });
 
+    $("button#add-url-submit").click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data: $('form#add-url-form').serialize() + "&script=addurl",
+            success: function(data){
+                $("#success-text").text("URL(s) added.")
+                $("#success-alert").alert();
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").hide();
+                });
+            },
+            error: function(){
+                alert("failure");
+            }
+        });
+        $('#add-url-modal').modal('hide');
+    });
     $("button#parse").click(function(e){
         if ( document.getElementById("uploadfile").files.length == 0 ){
             e.preventDefault();
@@ -183,14 +311,6 @@
             });
             console.log("no files selected");
         };
-        //if (document.forms['parse-form'].path.value == ""){
-        //    e.stopPropagation();
-        //    $("#warning-text").text("You must enter an absolute path.");
-        //    $("#warning-alert").alert();
-        //    $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
-        //        $("#warning-alert").hide();
-        //    }); 
-        //};
     });
 
     $("button#screenshot").click(function(e){
@@ -202,7 +322,96 @@
         $("#runmodules_progress").text("")
         e.preventDefault();
     });
-   
+
+    $("button#checkall").click(function(){
+        if(document.getElementById("flagstone").checked){
+            $('#flagstone').prop('checked', false);
+            $('#scan-form input:checkbox').not(this).prop('checked', false);
+        }else{
+            $('#flagstone').prop('checked', true);
+            $('#scan-form input:checkbox').not(this).prop('checked', true);
+        }
+    });
+
+    $("button#add-address-submit").click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data: $('form#add-address-form').serialize() + "&action=addaddress",
+            success: function(data){
+                $("#success-text").text("Address(es) added.")
+                $("#success-alert").alert();
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").hide();
+                });
+                console.log(data);
+                $.each(data, function(index, address){
+                    console.log(address);
+                    $("#addresslist").append("<span id='" + address[0] + "''><input type='checkbox' name='" + address[0] + "' /> &#160 " + address[1] + "<br></span>");
+                });
+            },
+            error: function(){
+                alert("failure");
+            }
+        });
+        $('#add-address-modal').modal('hide');
+    });
+
+    $("button#add-hostname-submit").click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data: $('form#add-hostname-form').serialize() + "&action=addhostname",
+            success: function(data){
+                $("#success-text").text("Hostname(s) added.")
+                $("#success-alert").alert();
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").hide();
+                });
+                console.log(data);
+                $.each(data, function(index, address){
+                    console.log(address);
+                    $("#addresslist").append("<span id='" + address[0] + "'><input type='checkbox' name='" + address[0] + "' /> &#160 " + address[1] + "<br></span>");
+                });
+            },
+            error: function(){
+                alert("failure");
+            }
+        });
+        $('#add-hostname-modal').modal('hide');
+    });
+
+    $("button#scan-submit").click(function(e){
+        $("#scan_progress").text("")
+        e.preventDefault();
+    });
+
+    $('a#delete').click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data: $('form#scan-form').serialize() + "&action=delete",
+            success: function(data){
+                $("#success-text").text("Addresses deleted.")
+                $("#success-alert").alert();
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").hide();
+                });
+                console.log(data);
+                $.each(data, function(index, address){
+                    console.log(address);
+                    $("span#" + address).remove();
+                });
+            },
+            error: function(){
+                alert("failure");
+            }
+        });
+    });
+
     $('#confirm-action').on('click', '.btn-ok', function(e) {
         var $modalDiv = $(e.delegateTarget);
         var action = $(this).data('action');
@@ -235,6 +444,7 @@
             $modalDiv.modal('hide').removeClass('loading');
         }, 1000)
     });
+
     $('#confirm-action').on('show.bs.modal', function(e) {
         var data = $(e.relatedTarget).data();
         $('.title', this).text(data.description);

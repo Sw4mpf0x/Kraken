@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from models import KrakenLog
-from Web_Scout.models import Ports, Hosts
+from Web_Scout.models import Interfaces, Hosts
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from Kraken.krakenlib import BuildQuery
@@ -43,9 +43,9 @@ def krakenlog(request):
 @login_required
 def reports(request):
 	host_count = str(Hosts.objects.all().count())
-	port_count = str(Ports.objects.all().count())
+	interface_count = str(Interfaces.objects.all().count())
 	printer_count = str(Hosts.objects.filter(Category='printer').count())
-	default_creds = Ports.objects.filter(DefaultCreds=True)
-	http_auth = Ports.objects.filter(HttpAuth=True)
-	notes = Ports.objects.exclude(Notes__exact='')
-	return render(request, 'Logs/Web_Scout.html', {'default_creds':default_creds, 'http_auth':http_auth, 'notes':notes, 'host_count':host_count, 'port_count':port_count, 'printer_count':printer_count})
+	default_creds = Interfaces.objects.filter(DefaultCreds=True)
+	http_auth = Interfaces.objects.filter(HttpAuth=True)
+	notes = Interfaces.objects.exclude(Notes__exact='')
+	return render(request, 'Logs/Web_Scout.html', {'default_creds':default_creds, 'http_auth':http_auth, 'notes':notes, 'host_count':host_count, 'interface_count':interface_count, 'printer_count':printer_count})

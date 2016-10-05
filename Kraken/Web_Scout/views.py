@@ -2,13 +2,13 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
 from django.utils.html import strip_tags
 from django.http import HttpResponse
-from models import Ports, Hosts, Tasks
+from models import Addresses, Hosts, Interfaces, Tasks
 import os
 from . import tasks
 from celery.result import AsyncResult
 import json
 from .forms import ParseForm
-from Kraken.krakenlib import BuildQuery, LogKrakenEvent
+from Kraken.krakenlib import BuildQuery, LogKrakenEvent, AddUrl, AddAddress, AddHostname, DeleteAddress
 from django.contrib.auth.decorators import login_required
 from base64 import b64encode
 # Create your views here.
@@ -26,11 +26,11 @@ def index(request):
 					try:
 						host = Hosts.objects.get(HostID=key)
 						changedhosts.append(key)
-						ports = host.ports_set.all()
-						for port in ports:
-							changedinterfaces.append(port.PortID)
+						interfaces = host.interfaces_set.all()
+						for interface in interfaces:
+							changedinterfaces.append(interface.IntID)
 						if note:
-							ports.update(Notes=note)
+							interfaces.update(Notes=note)
 						if reviewed == "Yes":
 							host.Reviewed = True
 						host.save()
@@ -45,24 +45,24 @@ def index(request):
 			default_creds = request.POST.get('default-creds')
 			http_auth = request.POST.get('http-auth')
 			reviewed = request.POST.get('reviewed')
-			port = Ports.objects.get(PortID=record)
-			host = port.hosts
-			port.Notes = note
+			interface = Interfaces.objects.get(IntID=record)
+			host = interface.hosts
+			interface.Notes = note
 
 			if http_auth == "Yes":
-				port.HttpAuth = True
+				interface.HttpAuth = True
 			else:
-				port.HttpAuth = False
+				interface.HttpAuth = False
 			if default_creds == "Yes":
-				port.DefaultCreds = True
+				interface.DefaultCreds = True
 			else:
-				port.DefaultCreds = False
+				interface.DefaultCreds = False
 			if reviewed == "Yes":
 				host.Reviewed = True
 				LogKrakenEvent(request.user, 'Reviewed - ' + host.IP + ' (' + host.Hostname + ')', 'info')
 			else:
 				host.Reviewed = False
-			port.save()
+			interface.save()
 			host.save()
 			return HttpResponse()
 		
@@ -75,7 +75,7 @@ def index(request):
 		host_array = []
 
 		if search:
-			entry_query = BuildQuery(search, ['IP', 'Hostname', 'Category', 'ports__Product'])
+			entry_query = BuildQuery(search, ['IP', 'Hostname', 'Category', 'interfaces__Product'])
 			host_array = Hosts.objects.all().filter(entry_query)
 
 		if org in ("IP", "Hostname", "Rating"):
@@ -112,7 +112,7 @@ def index(request):
 @login_required
 def setup(request):
 	if request.method == 'POST':
-		if request.POST['script'] == 'cleardb':
+		if request.POST.get('action') == 'cleardb':
 			job = tasks.cleardb.delay()
 			try:
 				task = Tasks.objects.get(Task='cleardb')
@@ -124,7 +124,7 @@ def setup(request):
 			task.save()
 			LogKrakenEvent(request.user, 'Database Cleared', 'info')
 			return HttpResponse()
-		elif request.POST['script'] == 'removescreenshots':
+		elif request.POST.get('action') == 'removescreenshots':
 			job = tasks.removescreenshots.delay()
 			try:
 				task = Tasks.objects.get(Task='removescreenshots')
@@ -136,7 +136,7 @@ def setup(request):
 			task.save()
 			LogKrakenEvent(request.user, 'Screenshots Deleted', 'info')
 			return HttpResponse()
-		elif request.POST['script'] == 'parse':
+		elif request.POST.get('action') == 'parse':
 			form = ParseForm(request.POST, request.FILES)
 			if form.is_valid:
 				with open('/opt/Kraken/tmp/nmap.xml', 'wb+') as destination:
@@ -152,23 +152,10 @@ def setup(request):
 				task.Count = 0
 				task.save()
 				return render(request, 'Web_Scout/setup.html', {'form':form, 'uploaded':True, 'failedupload':False})
-			#path = request.POST['path']
-			#if os.path.exists(path):
-			#	job = tasks.nmap_parse.delay(path)
-			#	try:
-			#		task = Tasks.objects.get(Task='parse')
-			#	except:
-			#		task = Tasks()
-			#		task.Task = 'parse'
-			#	task.Task_Id = job.id
-			#	task.Count = 0
-			#	task.save()
-			#	LogKrakenEvent(request.user, 'Database populated with data from ' + path, 'info')
+
 			else:
 				return render(request, 'Web_Scout/setup.html', {'form':form, 'uploaded':False, 'failedupload':True})
-			#else:
-			#	return HttpResponse("File specified does not exist or is not accessible.")
-		elif request.POST['script'] == 'screenshot':
+		elif request.POST.get('action') == 'screenshot':
 			job = tasks.startscreenshot.delay()
 			try:
 				task = Tasks.objects.get(Task='screenshot')
@@ -180,7 +167,12 @@ def setup(request):
 			task.save()
 			LogKrakenEvent(request.user, 'Screenshot taking task initiated', 'info')
 			return HttpResponse()
-		elif request.POST['script'] == 'runmodules':
+		elif request.POST.get('action') == 'addurl':
+			raw_list = request.POST.get('address-textarea')
+			address_data = AddUrl(raw_list)
+			json_data = json.dumps(address_data)
+			return HttpResponse(json_data, content_type='application/json')
+		elif request.POST.get('action') == 'runmodules':
 			job = tasks.runmodules.delay()
 			try:
 				task = Tasks.objects.get(Task='runmodules')
@@ -192,29 +184,77 @@ def setup(request):
 			task.save()
 			LogKrakenEvent(request.user, 'Running default credential checks.', 'info')
 			return HttpResponse()
+		elif request.POST.get('action') == 'scan':
+			address_list = []
+			error_message = []
+
+			for key,value in request.POST.items():
+				if str(value) == "on":
+					try:
+						address_object = Addresses.objects.get(AddressID=key)
+						if address_object.Hostname:
+							address_list.append(address_object.Hostname)
+						else:
+							address_list.append(address_object.Address + '/' + address_object.Cidr)
+					except:
+						error_message.append(key + ' not found in database.')
+						continue
+
+			job = tasks.scan.delay(address_list)
+
+			try:
+				task = Tasks.objects.get(Task='scan')
+			except:
+				task = Tasks()
+				task.Task = 'scan'
+			task.Task_Id = job.id
+			task.Count = 0
+			task.save()
+
+			json_data = json.dumps(error_message)
+			return HttpResponse(json_data, content_type='application/json')
+		elif request.POST.get('action') == 'addaddress':
+			raw_list = request.POST.get('address-textarea')
+			print raw_list
+			address_data = AddAddress(raw_list)
+			json_data = json.dumps(address_data)
+			return HttpResponse(json_data, content_type='application/json')
+		elif request.POST.get('action') == 'addhostname':
+			raw_list = request.POST.get('address-textarea')
+			address_data = AddHostname(raw_list)
+			json_data = json.dumps(address_data)
+			return HttpResponse(json_data, content_type='application/json')
+		elif request.POST.get('action') == 'delete':
+			address_list = []
+			for key,value in request.POST.items():
+				if str(value) == "on":
+					address_list.append(key)
+			DeleteAddress(address_list)
+			json_data = json.dumps(address_list)
+			return HttpResponse(json_data, content_type='application/json')
 		else:
 			return HttpResponse("Failure.")
 	else:
 		form = ParseForm()
-		return render(request, 'Web_Scout/setup.html', {'form':form, 'uploaded':False, 'failedupload':False})
+		addresses = Addresses.objects.all()
+		return render(request, 'Web_Scout/setup.html', {'addresses':addresses, 'form':form, 'uploaded':False, 'failedupload':False})
 
 @login_required
 def viewer(request):
 	RecordID = request.GET['destination']
-	PortRecord = Ports.objects.get(PortID=RecordID)
-	HostRecord = PortRecord.hosts
+	InterfaceRecord = Interfaces.objects.get(IntID=RecordID)
+	HostRecord = InterfaceRecord.hosts
 	HostRecord.Reviewed = True
 	HostRecord.save()
 	LogKrakenEvent(request.user, 'Reviewed - ' + HostRecord.IP + ' (' + HostRecord.Hostname + ')', 'info')
 	external = request.GET.get('external', '')
 	if external == 'true':
-		return redirect(PortRecord.Link)
+		return redirect(InterfaceRecord.Url)
 	else:
-		return render(request, 'Web_Scout/viewer.html', {'port':PortRecord, 'host':HostRecord})
+		return render(request, 'Web_Scout/viewer.html', {'interface':InterfaceRecord, 'host':HostRecord})
 
 @login_required
 def task_state(request):
-	#""" A view to report the progress to the user """
 	data = 'Fail'
 	if request.GET['task']:
 		URL_task_id = request.GET['task']
@@ -237,18 +277,18 @@ def task_state(request):
 
 @login_required
 def runmodule(request):
-	port = request.GET['port']
-	result, credentials = tasks.runmodule(port)
+	interface = request.GET['interface']
+	result, credentials = tasks.runmodule(interface)
 	data = [result, credentials]
 	json_data = json.dumps(data)
 	return HttpResponse(json_data, content_type='application/json')
 
 @login_required
 def runmodules(request):
-	portlist = request.GET.get('ports', '')
-	if portlist:
-		portlist = portlist.split(',')
-		tasks.runmodules.delay(portlist)
+	interfacelist = request.GET.get('interfaces', '')
+	if interfacelist:
+		interfacelist = interfacelist.split(',')
+		tasks.runmodules.delay(interfacelist)
 	else:
 		tasks.runmodules.delay()
 
