@@ -156,13 +156,16 @@ def DeleteAddress(address_list):
     django.setup()
     from Web_Scout.models import Addresses
 
+    deleted = []
     for address in address_list:
         print address
         try:
             address_record = Addresses.objects.get(AddressID=address)
-            address_record.delete()       
+            address_record.delete() 
+            deleted.append(address)
         except:
             continue
+    return deleted
 
 def DeleteHost(host_list):
     import django, os, sys, re
@@ -171,13 +174,16 @@ def DeleteHost(host_list):
     django.setup()
     from Web_Scout.models import Hosts
 
+    deleted = []
     for host in host_list:
         print host
         try:
             host_record = Hosts.objects.get(HostID=host)
             host_record.delete()
+            deleted.append(host)
         except:
             continue
+    return deleted
 
 def DeleteInterface(interface_list):
     import django, os, sys, re

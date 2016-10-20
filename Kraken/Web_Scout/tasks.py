@@ -41,14 +41,16 @@ def cleardb():
 	try:
 		Hosts.objects.all().delete()
 		Interfaces.objects.all().delete()
+		LogKrakenEvent('Celery', 'Hosts and interfaces cleared', 'info')
 	except:
-		LogKrakenEvent('', 'Error clearing database', 'error')
+		LogKrakenEvent('Celery', 'Error clearing database', 'error')
 
 @task
 def removescreenshots():
 	screenshotlist = [ f for f in os.listdir("/opt/Kraken/Web_Scout/static/Web_Scout/")]
 	for screenshot in screenshotlist:
 		os.remove('/opt/Kraken/Web_Scout/static/Web_Scout/' + screenshot)
+	LogKrakenEvent('Celery', 'Screenshots deleted.', 'info')
 
 @task
 def nmap_parse(filepath, targetaddress=''):
@@ -527,7 +529,7 @@ def scan(addresses):
 	os.environ["DJANGO_SETTINGS_MODULE"] = "Kraken.settings"
 	sys.path.append("/opt/Kraken")
 	django.setup()
-	from Web_Scout.models import Hosts
+	from Web_Scout.models import Addresses, Hosts
 
 	current_task.update_state(state='SCANNING')
 	timestamp = datetime.datetime.now()
@@ -540,7 +542,7 @@ def scan(addresses):
 
 	# Perform scan
 	for address in addresses:
-		args = ['nmap', '-sV', address, '-oX', '/opt/Kraken/tmp/scan.xml', '-p80,280,443,591,593,981,1311,2031,2480,3181,4444,4445,4567,4711,4712,5104,5280,7000,7001,7002,8000,8008,8011,8012,8013,8014,8042,8069,8080,8081,8243,8280,8281,8443,8531,8887,8888,9080,9443,11371,12443,16080,18091,18092']
+		args = ['nmap', '-sV', address, '-oX', '/opt/Kraken/tmp/scan.xml', '-p80,280,443']#,591,593,981,1311,2031,2480,3181,4444,4445,4567,4711,4712,5104,5280,7000,7001,7002,8000,8008,8011,8012,8013,8014,8042,8069,8080,8081,8243,8280,8281,8443,8531,8887,8888,9080,9443,11371,12443,16080,18091,18092']
 		print 'Beginning Nmap Scan.'
 		scan_process = Popen(args)
 		scan_process.wait()
@@ -551,10 +553,19 @@ def scan(addresses):
 
 	for address in addresses:
 		# Figure out how to tie supplied ranges/hostnames to individual records
-		if datetime.datetime.strptime(row.LastSeen, '%Y-%m-%d %H:%M:%S.%f') < timestamp:
-			print 'Host is stale'
-			row.Stale = True
-			row.StaleLevel += 1
+		print 'Checking for stale hosts'
+		try:
+			for host in Addresses.objects.get(AddressID=address.replace('.', '-').replace('/', '-')).hosts_set.all():
+				print 'host ' + host.IP + ' found.'
+				if datetime.datetime.strptime(host.LastSeen, '%Y-%m-%d %H:%M:%S.%f') < timestamp:
+					print 'Host is stale'
+					host.Stale = True
+					host.StaleLevel += 1
+					host.save()
+				else:
+					print 'host ' + host.IP + ' is not stale.'
+		except:
+			LogKrakenEvent('Celery', 'Unable to find Address record during stale check.', 'error')
 	print 'deleting files'
 	#os.remove('/opt/Kraken/tmp/addresses.txt')
 	#os.remove('/opt/Kraken/tmp/scan.xml')
