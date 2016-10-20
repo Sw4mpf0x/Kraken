@@ -8,7 +8,7 @@ from . import tasks
 from celery.result import AsyncResult
 import json
 from .forms import ParseForm
-from Kraken.krakenlib import BuildQuery, LogKrakenEvent, AddUrl, AddAddress, AddHostname, DeleteAddress
+from Kraken.krakenlib import BuildQuery, LogKrakenEvent, AddUrl, AddAddress, AddHostname, DeleteAddress, DeleteHost
 from django.contrib.auth.decorators import login_required
 from base64 import b64encode
 # Create your views here.
@@ -16,7 +16,7 @@ from base64 import b64encode
 @login_required
 def index(request):
 	if request.method == 'POST':
-		if request.POST.get('bulk') == "True":
+		if request.POST.get('action') == "bulk":
 			note = request.POST.get('note', '')
 			reviewed = request.POST.get('reviewed', '')
 			changedhosts = []
@@ -39,7 +39,7 @@ def index(request):
 			data = [changedhosts, changedinterfaces]
 			json_data = json.dumps(data)
 			return HttpResponse(json_data, content_type='application/json')
-		else:
+		elif request.POST.get('action') == "note":
 			note = request.POST.get('note')
 			record = request.POST.get('record')
 			default_creds = request.POST.get('default-creds')
@@ -65,31 +65,40 @@ def index(request):
 			interface.save()
 			host.save()
 			return HttpResponse()
-		
+		elif request.POST.get('action') == "deletehost":
+			host = request.POST.get('host')
+			data = DeleteHost([host])
+			json_data = json.dumps(data)
+			return HttpResponse(json_data, content_type='application/json')		
 	else:
 		search = request.GET.get('search', '')
 		reviewed = request.GET.get('hide_reviewed', '')
 		org = request.GET.get('organize_by', 'IP')
 		hosts_per_page = request.GET.get('hosts_per_page', '20')
 		nav_list = [-10,-9,-8,-7,-6,-5,-4,-3,-2,-1]
+		temp_host_array = []
 		host_array = []
 
 		if search:
 			entry_query = BuildQuery(search, ['IP', 'Hostname', 'Category', 'interfaces__Product'])
-			host_array = Hosts.objects.all().filter(entry_query)
+			temp_host_array = Hosts.objects.all().filter(entry_query)
 
 		if org in ("IP", "Hostname", "Rating"):
-			if host_array:
-				host_array = host_array.order_by(org)
+			if temp_host_array:
+				temp_host_array = temp_host_array.order_by(org)
 			else:
-				host_array = Hosts.objects.all().order_by(org)
+				temp_host_array = Hosts.objects.all().order_by(org)
 
 		if reviewed == 'on':
-			if host_array:
-				host_array = host_array.exclude(Reviewed=True)
+			if temp_host_array:
+				temp_host_array = temp_host_array.exclude(Reviewed=True)
 			else:
-				host_array = Hosts.objects.all().filter(Reviewed=False)
-		
+				temp_host_array = Hosts.objects.all().filter(Reviewed=False)
+	
+		for host in temp_host_array:
+			if len(host.interfaces_set.all()) > 0:
+				host_array.append(host)
+
 		if int(hosts_per_page) in (20, 30, 40, 50, 100):
 			paginator = Paginator(host_array, hosts_per_page)
 		else:
