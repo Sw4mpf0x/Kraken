@@ -449,6 +449,12 @@
 			</div>
 		{% elif host.interfaces_set.all|length_is:"2" %}
 			<div class="col-lg-4 col-md-6 col-sm-6 col-xs-8 well" style="word-wrap: break-word;text-align:left">
+				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
+  					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
+  					<ul class="dropdown-menu dropdown-menu-right">
+    					<li><a href="" data-toggle="modal" data-target="#confirm-delete-host" data-host="{{ host.HostID }}" id="delete-host-submit">Delete Host</a></li>
+  					</ul>
+				</ul>
 				<input type="checkbox" id="{{ host.HostID }}" value="0" name="{{ host.HostID }}" style="float:right"/>
 				{{ host.IP }}&#160{% if host.Reviewed %}<span id="{{ host.HostID}}-check" style="color:green" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span id="{{ host.HostID}}-check" style="color:green;display: none;" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %}<br>
 				{{ host.Hostname }}<br>
@@ -466,6 +472,12 @@
 			</div>
 		{% elif host.interfaces_set.all|length_is:"3" %}
 			<div class="col-lg-6 col-md-9 col-sm-9 col-xs-12 well" style="text-align:left">
+				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
+  					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
+  					<ul class="dropdown-menu dropdown-menu-right">
+    					<li><a href="" data-toggle="modal" data-target="#confirm-delete-host" data-host="{{ host.HostID }}" id="delete-host-submit">Delete Host</a></li>
+  					</ul>
+				</ul>
 				<input type="checkbox" id="{{ host.HostID }}" value="0" name="{{ host.HostID }}" style="float:right"/>
 				{{ host.IP }}&#160{% if host.Reviewed %}<span id="{{ host.HostID}}-check" style="color:green" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span id="{{ host.HostID}}-check" style="color:green;display: none;" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %}<br>
 				{{ host.Hostname }}<br>
@@ -483,6 +495,12 @@
 			</div>
 		{% elif host.interfaces_set.all.count > 3 %}
 			<div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 well" style="text-align:left">
+				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
+  					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
+  					<ul class="dropdown-menu dropdown-menu-right">
+    					<li><a href="" data-toggle="modal" data-target="#confirm-delete-host" data-host="{{ host.HostID }}" id="delete-host-submit">Delete Host</a></li>
+  					</ul>
+				</ul>
 				<input type="checkbox" id="{{ host.HostID }}" value="0" name="{{ host.HostID }}" style="float:right"/>
 				{{ host.IP }}&#160{% if host.Reviewed %}<span id="{{ host.HostID}}-check" style="color:green" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span id="{{ host.HostID}}-check" style="color:green;display: none;" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %}<br>
 				{{ host.Hostname }}<br>
