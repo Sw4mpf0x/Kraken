@@ -371,6 +371,28 @@
 
 	
 	<!-- List of screenshots -->
+	<form id="delete-host-form" name="delete-host-form">
+	{% csrf_token %}
+	<input type="hidden" class="form-control" name="action" value="deletehost"/>
+	<div class="modal fade" id="confirm-delete-host" tabindex="-1" role="dialog" aria-labelledby="ConfirmAction" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">Jeppers Check</h4>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to delete a host.
+                    <p>Do you want to proceed?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-ok">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
 	<form id="bulk-form" name="bulk-form">
 	{% csrf_token %}
 	<div class="modal fade" id="bulk-note-modal" tabindex="-1" role="dialog">
@@ -390,17 +412,26 @@
     	    </div>
     	</div>
 	</div>
-	<input type="hidden" class="form-control" name="bulk" value="True"/>
+	
+	<input type="hidden" class="form-control" name="action" value="bulk"/>
 	<div class="row">
 	{% load staticfiles %}
 	
 	{% for host in hosts %}
 		{% if host.interfaces_set.all|length_is:"1" %}
 			{% if host.Stale %}
-			<div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 well" style="word-wrap: break-word;text-align:left;background-color:#939393">
+			<div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 well" id="{{ host.HostID }}" style="word-wrap: break-word;text-align:left;background-color:#939393">
 			{% else %}
-			<div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 well" style="word-wrap: break-word;text-align:left">
+			<div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 well" id="{{ host.HostID }}" style="word-wrap: break-word;text-align:left">
 			{% endif %}
+				
+				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
+  					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
+  					<ul class="dropdown-menu dropdown-menu-right">
+    					<li><a href="" data-toggle="modal" data-target="#confirm-delete-host" data-host="{{ host.HostID }}" id="delete-host-submit">Delete Host</a></li>
+  					</ul>
+				</ul>
+				
 				<input type="checkbox" id="{{ host.HostID }}" value="0" name="{{ host.HostID }}" style="float:right"/>
 				{{ host.IP }}&#160{% if host.Reviewed %}<span id="{{ host.HostID}}-check" style="color:green" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span id="{{ host.HostID}}-check" style="color:green;display: none;" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %}<br>
 				{{ host.Hostname }}<br>
@@ -450,7 +481,7 @@
 			{% endfor %}
 			</div>
 			</div>
-		{% else %}
+		{% else host.interfaces_set.all.count > 3 %}
 			<div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 well" style="text-align:left">
 				<input type="checkbox" id="{{ host.HostID }}" value="0" name="{{ host.HostID }}" style="float:right"/>
 				{{ host.IP }}&#160{% if host.Reviewed %}<span id="{{ host.HostID}}-check" style="color:green" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span id="{{ host.HostID}}-check" style="color:green;display: none;" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %}<br>
@@ -580,6 +611,7 @@
 								<input type="hidden" id="image-gallery-id" class="form-control" name="record" value=""/>
 			 					<label for="image-gallery-notes">Notes:</label>
 								<textarea placeholder="Notes..." value="" class="form-control" rows="3" id="image-gallery-note" name="note"></textarea>
+								<input type="hidden" class="form-control" name="action" value="note"/>
 								<button id="note-submit" type="submit" class="btn btn-primary">Submit</button>
 							</div>
 						</form>
@@ -734,6 +766,44 @@
 								  	});
     								
 								});
+                                $('#confirm-delete-host').on('click', '.btn-ok', function(e) {
+                                    var $modalDiv = $(e.delegateTarget);
+                                    var host = $(this).data('host');
+                                    console.log("Host: "+ host);
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: "",
+                                        data: $('form#delete-host-form').serialize() + '&host=' + host,
+                                        success: function(data){
+                                            $("#success-text").text("Request to delete host submitted.")
+                                            $("#success-alert").alert();
+                                            $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                                                $("#success-alert").hide();
+                                            });
+                                            $.each(data, function(index, address){
+                    							console.log(address);
+                    							$("div#" + address).remove();
+                							});
+                                        },
+                                        error: function(){
+                                            $("#warning-text").text("A problem was encountered while submitting your request to delete a host.")
+                                            $("#warning-alert").alert();
+                                            $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
+                                                $("#warning-alert").hide();
+                                            }); 
+                                        },
+                                    })
+                                    $modalDiv.addClass('loading');
+                                    setTimeout(function() {
+                                        $modalDiv.modal('hide').removeClass('loading');
+                                    }, 1000)
+                                });
+                            
+                                $('#confirm-delete-host').on('show.bs.modal', function(e) {
+                                    var data = $(e.relatedTarget).data();
+                                    $('.title', this).text(data.description);
+                                    $('.btn-ok', this).data('host', data.host);
+                                });
 							});
 						</script>
 			 		</div>	
