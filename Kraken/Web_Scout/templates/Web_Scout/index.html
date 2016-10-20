@@ -481,7 +481,7 @@
 			{% endfor %}
 			</div>
 			</div>
-		{% else host.interfaces_set.all.count > 3 %}
+		{% elif host.interfaces_set.all.count > 3 %}
 			<div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 well" style="text-align:left">
 				<input type="checkbox" id="{{ host.HostID }}" value="0" name="{{ host.HostID }}" style="float:right"/>
 				{{ host.IP }}&#160{% if host.Reviewed %}<span id="{{ host.HostID}}-check" style="color:green" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span id="{{ host.HostID}}-check" style="color:green;display: none;" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %}<br>
