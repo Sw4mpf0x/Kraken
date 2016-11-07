@@ -8,9 +8,32 @@ fi
 printf "\033[1;31mInstalling Dependencies\033[0m\n"
 # Install RabbitMQ
 sudo apt-get update
-sudo apt-get -y install apache2 libapache2-mod-wsgi sqlite3 rabbitmq-server python-requests python-m2crypto build-essential openssl chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev python-pip python-dev build-essential libpq-dev swig
+sudo apt-get -y install apache2
+sudo apt-get -y install libapache2-mod-wsgi 
+sudo apt-get -y install sqlite3
+sudo apt-get -y install rabbitmq-server
+sudo apt-get -y install python-requests
+sudo apt-get -y install python-m2crypto
+sudo apt-get -y install build-essential
+sudo apt-get -y install openssl
+sudo apt-get -y install chrpath
+sudo apt-get -y install libssl-dev
+sudo apt-get -y install libxft-dev
+sudo apt-get -y install libfreetype6
+sudo apt-get -y install libfreetype6-dev
+sudo apt-get -y install libfontconfig1
+sudo apt-get -y install libfontconfig1-dev
+sudo apt-get -y install python-pip
+sudo apt-get -y install python-dev
+sudo apt-get -y install build-essential
+sudo apt-get -y install libpq-dev
+sudo apt-get -y install swig
+
 pip install --upgrade pip
-pip install Django virtualenvwrapper selenium celery
+pip install Django
+pip install virtualenvwrapper
+pip install selenium
+pip install celery
 
 printf "\033[1;31mMoving files around and changing permissions\033[0m\n"
 mv celeryd.conf /etc/default/celeryd
