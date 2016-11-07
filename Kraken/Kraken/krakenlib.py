@@ -199,3 +199,32 @@ def DeleteInterface(interface_list):
             interface_record.delete()
         except:
             continue
+
+def BulkAction(POSTItems, action, note=''):
+    
+    import django, os, sys, re
+    os.environ["DJANGO_SETTINGS_MODULE"] = "Kraken.settings"
+    sys.path.append("/opt/Kraken")
+    django.setup()
+    from Web_Scout.models import Hosts, Interfaces
+
+    changedhosts = []
+    changedinterfaces = []
+    for key,value in POSTItems:
+        if str(value) == "0":
+            try:
+                host = Hosts.objects.get(HostID=key)
+                changedhosts.append(key)
+                if str(action) == "bulkdelete":
+                    host.delete()
+                if action == "bulknote":
+                    interfaces = host.interfaces_set.all()
+                    interfaces.update(Notes=note)
+                    for interface in interfaces:
+                        changedinterfaces.append(interface.IntID)
+                if action == "bulkreviewed":
+                    host.Reviewed = True
+                host.save()
+            except:
+                continue
+    return [changedhosts, changedinterfaces]

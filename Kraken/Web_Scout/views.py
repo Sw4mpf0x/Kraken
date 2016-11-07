@@ -8,37 +8,27 @@ from . import tasks
 from celery.result import AsyncResult
 import json
 from .forms import ParseForm
-from Kraken.krakenlib import BuildQuery, LogKrakenEvent, AddUrl, AddAddress, AddHostname, DeleteAddress, DeleteHost
+from Kraken.krakenlib import BulkAction, BuildQuery, LogKrakenEvent, AddUrl, AddAddress, AddHostname, DeleteAddress, DeleteHost
 from django.contrib.auth.decorators import login_required
-from base64 import b64encode
-# Create your views here.
 
 @login_required
 def index(request):
 	if request.method == 'POST':
-		if request.POST.get('action') == "bulk":
-			note = request.POST.get('note', '')
-			reviewed = request.POST.get('reviewed', '')
-			changedhosts = []
-			changedinterfaces = []
-			for key,value in request.POST.items():
-				if str(value) == "0":
-					try:
-						host = Hosts.objects.get(HostID=key)
-						changedhosts.append(key)
-						interfaces = host.interfaces_set.all()
-						for interface in interfaces:
-							changedinterfaces.append(interface.IntID)
-						if note:
-							interfaces.update(Notes=note)
-						if reviewed == "Yes":
-							host.Reviewed = True
-						host.save()
-					except:
-						continue
-			data = [changedhosts, changedinterfaces]
+		if request.POST.get('action') == "bulknote":
+			data = BulkAction(request.POST.items(), request.POST.get('action'), request.POST.get('note', ''))
 			json_data = json.dumps(data)
 			return HttpResponse(json_data, content_type='application/json')
+
+		elif request.POST.get('action') == "bulkreviewed":
+			data = BulkAction(request.POST.items(), request.POST.get('action'))
+			json_data = json.dumps(data)
+			return HttpResponse(json_data, content_type='application/json')
+
+		elif request.POST.get('action') == "bulkdelete":
+			data = BulkAction(request.POST.items(), request.POST.get('action'))
+			json_data = json.dumps(data)
+			return HttpResponse(json_data, content_type='application/json')
+
 		elif request.POST.get('action') == "note":
 			note = request.POST.get('note')
 			record = request.POST.get('record')

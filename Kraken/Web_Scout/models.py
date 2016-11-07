@@ -16,7 +16,6 @@ class Hosts(models.Model):
 	HostID = models.CharField(max_length=12)
 	IP = models.CharField(max_length=15)
 	Hostname = models.CharField(max_length=75)
-	DeviceType = models.CharField(max_length=25)
 	OS = models.CharField(max_length=25)
 	Rating = models.CharField(max_length=10)
 	Reviewed = models.BooleanField(default=False)

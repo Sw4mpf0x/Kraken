@@ -1,3 +1,4 @@
+Web Image Monitor</title>|Ricoh/Savin/Lanier MFP|admin:<blank>;supervisor:<blank>||
 Integrated Dell Remote Access Controller|Dell iDRAC|root:calvin||
 ACE 4710 Device Manager;Cisco|ACE 4710 Device Manager|admin:admin||
 ATutor;form_login_action;/gad_search.php|ATutor Web CMS|admin:admin;instructor:instructor||

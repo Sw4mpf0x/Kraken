@@ -48,7 +48,7 @@
 			$('#image-gallery-link').attr('href', $sel.attr('data-link'));
 			$('#image-gallery-extlink').attr('href', $sel.attr('data-link')+'&external=true');
 			$('#image-gallery-category').text($sel.attr('data-category'));
-			$('#image-gallery-device').text($sel.attr('data-device'));
+			$('#image-gallery-lastseen').text($sel.attr('data-lastseen'));
 			$('#image-gallery-product').text($sel.attr('data-product'));
 			$('#image-gallery-note').val('');
 			$('#image-gallery-note').val($sel.attr('data-note'));
@@ -309,7 +309,7 @@
             <ul class="dropdown-menu">
                 <li><a href="" id="bulkreviewed">Reviewed</a></li>
                 <li><a href="" id="bulknotes" data-toggle="modal" data-target="#bulk-note-modal">Notes</a></li>
-                <!--<li><a href="#">Cred Check</a></li>-->
+                <li><a href="" id="bulkdelete" data-toggle="modal" data-target="#confirm-delete-hosts">Delete Hosts</a></li>
             </ul>
         </div>
 		<ul class="pagination" align="center">		
@@ -393,6 +393,24 @@
         </div>
     </div>
     </form>
+    <div class="modal fade" id="confirm-delete-hosts" tabindex="-1" role="dialog" aria-labelledby="ConfirmAction" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">Jeppers Check</h4>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to delete the selected hosts.
+                    <p>Do you want to proceed?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-ok">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 	<form id="bulk-form" name="bulk-form">
 	{% csrf_token %}
 	<div class="modal fade" id="bulk-note-modal" tabindex="-1" role="dialog">
@@ -413,7 +431,6 @@
     	</div>
 	</div>
 	
-	<input type="hidden" class="form-control" name="action" value="bulk"/>
 	<div class="row">
 	{% load staticfiles %}
 	
@@ -436,7 +453,7 @@
 				{{ host.IP }}&#160{% if host.Reviewed %}<span id="{{ host.HostID}}-check" style="color:green" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span id="{{ host.HostID}}-check" style="color:green;display: none;" class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %}<br>
 				{{ host.Hostname }}<br>
 			{% for interface in host.interfaces_set.all %}
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ interface.IntID }}" data-host-id="{{ host.HostID }}" data-module="{% if interface.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ interface.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ interface.Product }}" data-link="viewer/?destination={{ interface.IntID }}" data-image-id="" data-toggle="modal" {% if interface.Type == "url" %} data-title="{{ interface.Url }}" {% else %} data-title="{{ host.IP }}:{{ interface.Port }} ({{ host.Hostname }})" {% endif %} data-note="{{ interface.Notes }}" data-default-creds="{{ interface.DefaultCreds }}" data-http-auth="{{ interface.HttpAuth }}" data-name="{{ interface.Name }}" data-image="{% static interface.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ interface.Url }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ interface.IntID }}" data-host-id="{{ host.HostID }}" data-module="{% if interface.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ host.Category }}" data-lastseen="{{ host.LastSeen }}" data-rating="{{ host.Rating }}" data-product="{{ interface.Product }}" data-link="viewer/?destination={{ interface.IntID }}" data-image-id="" data-toggle="modal" {% if interface.Type == "url" %} data-title="{{ interface.Url }}" {% else %} data-title="{{ host.IP }}:{{ interface.Port }} ({{ host.Hostname }})" {% endif %} data-note="{{ interface.Notes }}" data-default-creds="{{ interface.DefaultCreds }}" data-http-auth="{{ interface.HttpAuth }}" data-name="{{ interface.Name }}" data-image="{% static interface.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ interface.Url }}">
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				{% if interface.Type == "url" %}
@@ -448,7 +465,7 @@
 			{% endfor %}
 			</div>
 		{% elif host.interfaces_set.all|length_is:"2" %}
-			<div class="col-lg-4 col-md-6 col-sm-6 col-xs-8 well" style="word-wrap: break-word;text-align:left">
+			<div class="col-lg-4 col-md-6 col-sm-6 col-xs-8 well" id="{{ host.HostID }}" style="word-wrap: break-word;text-align:left">
 				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
   					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
   					<ul class="dropdown-menu dropdown-menu-right">
@@ -461,7 +478,7 @@
 			<div class="row">
 			{% for interface in host.interfaces_set.all %}
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align:left">
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ interface.IntID }}" data-host-id="{{ host.HostID }}" data-module="{% if interface.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ interface.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ interface.Product }}" data-link="viewer/?destination={{ interface.IntID }}" data-image-id="" data-toggle="modal" {% if interface.Type == "url" %} data-title="{{ interface.Url }}" {% else %} data-title="{{ host.IP }}:{{ interface.Port }} ({{ host.Hostname }})" {% endif %} data-note="{{ interface.Notes }}" data-default-creds="{{ interface.DefaultCreds }}" data-http-auth="{{ interface.HttpAuth }}" data-name="{{ interface.Name }}" data-image="{% static interface.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ interface.Url }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ interface.IntID }}" data-host-id="{{ host.HostID }}" data-module="{% if interface.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ interface.Category }}" data-lastseen="{{ host.LastSeen }}" data-rating="{{ host.Rating }}" data-product="{{ interface.Product }}" data-link="viewer/?destination={{ interface.IntID }}" data-image-id="" data-toggle="modal" {% if interface.Type == "url" %} data-title="{{ interface.Url }}" {% else %} data-title="{{ host.IP }}:{{ interface.Port }} ({{ host.Hostname }})" {% endif %} data-note="{{ interface.Notes }}" data-default-creds="{{ interface.DefaultCreds }}" data-http-auth="{{ interface.HttpAuth }}" data-name="{{ interface.Name }}" data-image="{% static interface.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ interface.Url }}">
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ interface.Port }}<br>
@@ -471,7 +488,7 @@
 			</div>
 			</div>
 		{% elif host.interfaces_set.all|length_is:"3" %}
-			<div class="col-lg-6 col-md-9 col-sm-9 col-xs-12 well" style="text-align:left">
+			<div class="col-lg-6 col-md-9 col-sm-9 col-xs-12 well" id="{{ host.HostID }}" style="text-align:left">
 				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
   					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
   					<ul class="dropdown-menu dropdown-menu-right">
@@ -484,7 +501,7 @@
 			<div class="row">
 			{% for interface in host.interfaces_set.all %}
 				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="word-wrap: break-word;text-align:left">
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ interface.IntID }}" data-host-id="{{ host.HostID }}" data-module="{% if interface.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ interface.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ interface.Product }}" data-link="viewer/?destination={{ interface.IntID }}" data-image-id="" data-toggle="modal" {% if interface.Type == "url" %} data-title="{{ interface.Url }}" {% else %} data-title="{{ host.IP }}:{{ interface.Port }} ({{ host.Hostname }})" {% endif %} data-note="{{ interface.Notes }}" data-default-creds="{{ interface.DefaultCreds }}" data-http-auth="{{ interface.HttpAuth }}" data-name="{{ interface.Name }}" data-image="{% static interface.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ interface.Url }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ interface.IntID }}" data-host-id="{{ host.HostID }}" data-module="{% if interface.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ interface.Category }}" data-lastseen="{{ host.LastSeen }}" data-rating="{{ host.Rating }}" data-product="{{ interface.Product }}" data-link="viewer/?destination={{ interface.IntID }}" data-image-id="" data-toggle="modal" {% if interface.Type == "url" %} data-title="{{ interface.Url }}" {% else %} data-title="{{ host.IP }}:{{ interface.Port }} ({{ host.Hostname }})" {% endif %} data-note="{{ interface.Notes }}" data-default-creds="{{ interface.DefaultCreds }}" data-http-auth="{{ interface.HttpAuth }}" data-name="{{ interface.Name }}" data-image="{% static interface.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ interface.Url }}">
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ interface.Port }}<br>
@@ -494,7 +511,7 @@
 			</div>
 			</div>
 		{% elif host.interfaces_set.all.count > 3 %}
-			<div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 well" style="text-align:left">
+			<div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 well" id="{{ host.HostID }}" style="text-align:left">
 				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
   					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
   					<ul class="dropdown-menu dropdown-menu-right">
@@ -507,7 +524,7 @@
 			<div class="row">
 			{% for interface in host.interfaces_set.all %}
 				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="word-wrap: break-word;text-align:left">
-				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ interface.IntID }}" data-host-id="{{ host.HostID }}" data-module="{% if interface.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ interface.Category }}" data-device="{{ host.DeviceType}}" data-rating="{{ host.Rating }}" data-product="{{ interface.Product }}" data-link="viewer/?destination={{ interface.IntID }}" data-image-id="" data-toggle="modal" {% if interface.Type == "url" %} data-title="{{ interface.Url }}" {% else %} data-title="{{ host.IP }}:{{ interface.Port }} ({{ host.Hostname }})" {% endif %} data-note="{{ interface.Notes }}" data-default-creds="{{ interface.DefaultCreds }}" data-http-auth="{{ interface.HttpAuth }}" data-name="{{ interface.Name }}" data-image="{% static interface.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ interface.Url }}">
+				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ interface.IntID }}" data-host-id="{{ host.HostID }}" data-module="{% if interface.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ interface.Category }}" data-lastseen="{{ host.LastSeen }}" data-rating="{{ host.Rating }}" data-product="{{ interface.Product }}" data-link="viewer/?destination={{ interface.IntID }}" data-image-id="" data-toggle="modal" {% if interface.Type == "url" %} data-title="{{ interface.Url }}" {% else %} data-title="{{ host.IP }}:{{ interface.Port }} ({{ host.Hostname }})" {% endif %} data-note="{{ interface.Notes }}" data-default-creds="{{ interface.DefaultCreds }}" data-http-auth="{{ interface.HttpAuth }}" data-name="{{ interface.Name }}" data-image="{% static interface.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ interface.Url }}">
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ interface.Port }}<br>
@@ -614,7 +631,7 @@
 			 			<div style="padding-bottom:5px"><b>Protocol:</b>&#160<span id="image-gallery-name"></span><br></div>
 			 			<div style="padding-bottom:5px"><b>Product:</b>&#160&#160<span id="image-gallery-product"></span><br></div>
 			 			<div style="padding-bottom:5px"><b>Category:</b>&#160&#160<span id="image-gallery-category"></span><br></div>
-			 			<div style="padding-bottom:5px"><b>Device:</b>&#160&#160<span id="image-gallery-device"></span><br></div>
+			 			<div style="padding-bottom:5px"><b>Last Seen:</b>&#160&#160<span id="image-gallery-lastseen"></span><br></div>
 			 			<div style="padding-bottom:5px"><h3>Documentation</h3></div>
 			 			<form id="note-form" method="POST">
 							<div class="form-group">
@@ -636,12 +653,15 @@
 						<script>
 							$("#success-alert").hide();
 							$("#warning-alert").hide();
+							$('a#bulkdelete').click(function(e){
+								e.preventDefault();
+							});
                             $('a#bulkreviewed').click(function(e){
                                 e.preventDefault();
                                 $.ajax({
                                     type: 'POST',
                                     url: "",
-                                    data: $('form#bulk-form').serialize() + "&reviewed=Yes",
+                                    data: $('form#bulk-form').serialize() + "&action=bulkreviewed",
                                     success: function(data){
                                         $("#success-text").text("Bulk changes submitted.")
                                         $("#success-alert").alert();
@@ -722,7 +742,7 @@
 									$.ajax({
 										type: "POST",
 										url: "",
-										data: $('form#bulk-form').serialize(),
+										data: $('form#bulk-form').serialize() + '&action=bulknote',
 										success: function(data){
 											$("#success-text").text("Bulk changes submitted.")
 											$("#success-alert").alert();
@@ -798,9 +818,9 @@
                                             $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
                                                 $("#success-alert").hide();
                                             });
-                                            $.each(data, function(index, address){
-                    							console.log(address);
-                    							$("div#" + address).remove();
+                                            $.each(data, function(index, host){
+                    							console.log(host);
+                    							$("div#" + host).remove();
                 							});
                                         },
                                         error: function(){
@@ -821,6 +841,39 @@
                                     var data = $(e.relatedTarget).data();
                                     $('.title', this).text(data.description);
                                     $('.btn-ok', this).data('host', data.host);
+                                });
+                                $('#confirm-delete-hosts').on('click', '.btn-ok', function(e) {
+                                    var $modalDiv = $(e.delegateTarget);
+                                    var host = $(this).data('host');
+                                    console.log("Host: "+ host);
+                                    $.ajax({
+										type: "POST",
+										url: "",
+										data: $('form#bulk-form').serialize() + '&action=bulkdelete',
+										success: function(data){
+											$("#success-text").text("Request to delete selected hosts deleted.")
+											$("#success-alert").alert();
+											$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+			   									$("#success-alert").hide();
+			   								});
+			   								console.log(data);
+											$.each(data[0], function(index, host){
+												console.log(host);
+												$("div#"+host).remove()
+											});
+										},
+										error: function(){
+											alert("Failed to delete selected hosts. Check /var/log/apache2/error.log.");
+										}
+								  	});
+                                    $modalDiv.addClass('loading');
+                                    setTimeout(function() {
+                                        $modalDiv.modal('hide').removeClass('loading');
+                                    }, 1000)
+                                });
+                            
+                                $('#confirm-delete-hosts').on('show.bs.modal', function(e) {
+                                    var data = $(e.relatedTarget).data();
                                 });
 							});
 						</script>

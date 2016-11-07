@@ -102,7 +102,6 @@ def nmap_parse(filepath, targetaddress=''):
 			host_object.Hostname = ""
 		
 		host_object.LastSeen = timestamp
-		host_object.Category = ""
 		host_object.save()
 
 		# Loop through ports for each host
@@ -117,11 +116,11 @@ def nmap_parse(filepath, targetaddress=''):
 				
 				# Set port DeviceType
 				try:
-					host_object.DeviceType = port[1].get('devicetype')
-					if not host_object.DeviceType:
-						host_object.DeviceType = ""
+					host_object.Category = port[1].get('devicetype')
+					if not host_object.Category:
+						host_object.Category = ""
 				except:
-					host_object.DeviceType = ""
+					host_object.Category = ""
 
 				# Set host OS
 				try:
@@ -567,7 +566,7 @@ def scan(addresses):
 		except:
 			LogKrakenEvent('Celery', 'Unable to find Address record during stale check.', 'error')
 	print 'deleting files'
-	#os.remove('/opt/Kraken/tmp/addresses.txt')
-	#os.remove('/opt/Kraken/tmp/scan.xml')
+	os.remove('/opt/Kraken/tmp/addresses.txt')
+	os.remove('/opt/Kraken/tmp/scan.xml')
 	LogKrakenEvent('Celery', 'Scanning Complete.', 'info')
 

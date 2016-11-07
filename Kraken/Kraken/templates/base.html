@@ -20,20 +20,20 @@
 			</div>
 			<div class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">WebScout <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li><a href="{% url 'webscout:index' %}">Web Interfaces</a></li>
-							<li role="separator" class="divider"></li>
-							<li><a href="{% url 'webscout:setup' %}">Setup</a></li>
-						</ul>
+					<li>
+						<a href="{% url 'webscout:index' %}">Web Interfaces</a>
 					</li>
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Logs <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li><a href="{% url 'logs:krakenlog' %}">Logs</a></li>
-							<li><a href="{% url 'logs:reports' %}">Reports</a></li>
-						</ul>
+					<li>
+						<a href="#">Inventory</a>
+					</li>
+					<li>
+						<a href="{% url 'webscout:setup' %}">Setup</a>
+					</li>
+					<li>
+						<a href="{% url 'logs:reports' %}">Reports</a>
+					</li>
+					<li>
+						<a href="{% url 'logs:krakenlog' %}">Logs</a>
 					</li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
