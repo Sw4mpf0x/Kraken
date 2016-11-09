@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block head %}
+	<style>
+		.advsearch{
+			display:inline-block;
+			padding:6px 12px;
+			margin-bottom:0;
+			font-size:14px;
+			font-weight:400;
+			line-height:1.42857143;
+			text-align:center;
+			white-space:nowrap;
+			vertical-align:middle;
+			-ms-touch-action:manipulation;
+			touch-action:manipulation;
+			cursor:pointer;
+			-webkit-user-select:none;
+			-moz-user-select:none;
+			-ms-user-select:none;
+			user-select:none;
+			background-image:none;
+			border:1px solid transparent;
+			border-radius:4px;
+			color:#9D9D9D;
+			background-color:#222
+			}
+		.advsearch.active.focus,
+		.advsearch.active:focus,
+		.advsearch.focus,
+		.advsearch:active.focus,
+		.advsearch:active:focus,
+		.advsearch:focus{
+			outline:5px auto -webkit-focus-ring-color;
+			outline-offset:-2px
+			}
+		.advsearch.focus,
+		.advsearch:focus,
+		.advsearch:hover{
+			color:#FFFFFF;
+			text-decoration:none
+			}
+		.advsearch.active,
+		.advsearch:active{
+			background-image:none;
+			border:none;
+			outline:0;
+			}
+	</style>
+{% endblock %}
+
+{% block navbarright %}
+
+<li><button type="button" class="advsearch navbar-btn" data-toggle="collapse" data-target="#filter-panel"><span class="glyphicon glyphicon-cog"></span> Advanced Search</button></li>
+
+{% endblock %}
+
+{% block body %}
+<div class="container">
+	<div class="row">
+        <div id="filter-panel" class="collapse filter-panel">
+            <div class="panel panel-default" style="background-color:#F5F5F5">
+                <div class="panel-body">
+                    <form id="filterform" style="text-align:center" class="form-inline" role="form" method="GET">
+                        <div class="form-group">
+                            <label class="filter-col" style="padding-left:10px;padding-right:10px;" for="pref-perpage">Entries per page:</label><br>
+                            <select id="pref-perpage" class="form-control" name="hosts_per_page">
+                                {% if hosts_per_page > 0 %}
+                                	{% if hosts_per_page == 50 %}
+                                		<option selected="selected" value="50">50</option>
+                                	{% else %}
+                                		<option value="50">50</option>
+                                	{% endif %}
+                                	{% if hosts_per_page == 100 %}
+                                		<option selected="selected" value="100">100</option>
+                                	{% else %}
+                                		<option value="100">100</option>
+                                	{% endif %}
+                                	{% if hosts_per_page == 150 %}
+                                		<option selected="selected" value="150">150</option>
+                                	{% else %}
+                                		<option value="150">150</option>
+                                	{% endif %}
+                                	{% if hosts_per_page == 200 %}
+                                		<option selected="selected" value="200">200</option>
+                                	{% else %}
+                                		<option value="200">200</option>
+                                	{% endif %}
+                                	{% if hosts_per_page == 300 %}
+                                		<option selected="selected" value="300">300</option>
+                                	{% else %}
+                                		<option value="300">300</option>
+                                	{% endif %}
+                                {% else %}
+                                	<option selected="selected" value="50">50</option>
+                                	<option value="100">100</option>
+                                	<option value="150">150</option>
+                                	<option value="200">200</option>
+                                	<option value="300">300</option>
+                                {% endif %}
+                            </select>                                
+                        </div> <!-- form group [entries] -->
+                        <div class="form-group">
+                            <label class="filter-col" style="margin-right:0;" for="pref-search">Search:</label><br>
+                            <input type="text" class="form-control input-sm" id="pref-search" name="search" value="{{ search }}">
+                        </div><!-- form group [search] -->
+                        <div class="form-group">
+                           	<br>
+                            <button type="submit" class="btn btn-default filter-col">
+                                <span class="glyphicon glyphicon-filter"></span> Filter
+                            </button>
+                            <br>  
+                        </div>
+                        <div class="form-group">
+                    		<br>
+                    		<a href="{% url 'logs:krakenlog' %}"><button type="button" class="btn btn-default filter-col">
+                    			Clear Filter
+                    		</button></a>
+                    	</div>
+                    </form>
+                </div>
+            </div>
+        </div>    
+	</div>
+</div>
+<div class="container well">
+	<h2>Host Inventory</h2>
+
+	<nav>
+	<div align="center">
+		<ul class="pagination" align="center">		
+			{% if entries.has_previous %}
+				<li><a href="?page={{ entries.previous_page_number }}{{ pagination_parameters }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+			{% endif %}
+			{% if entries.paginator.num_pages < 12 %}
+				{% for page in entries.paginator.page_range %}
+					{% if entries.number == page %}
+						<li class="active"><a href="?page={{ page }}{{ pagination_parameters }}"> {{ page }} <span class="sr-only">(current)</span></a></li>
+					{% else %}
+						<li><a href="?page={{ page }}{{ pagination_parameters }}"> {{ page }} </a></li>
+					{% endif %}
+				{% endfor %}
+			{% elif entries.paginator.num_pages > 11 %}
+				{% if entries.number < 7 %}
+					{% for page in "nnnnnnnnnnn" %}
+						{% if entries.number == forloop.counter %}
+							<li class="active"><a href="?page={{ forloop.counter }}{{ pagination_parameters }}"> {{ forloop.counter }} <span class="sr-only">(current)</span></a></li>
+						{% else %}
+							<li><a href="?page={{ forloop.counter }}{{ pagination_parameters }}"> {{ forloop.counter }} </a></li>
+						{% endif %}
+					{% endfor %}
+				{% elif entries.number|add:5 <= entries.paginator.num_pages %}
+					<li><a href="?page={{ entries.previous_page_number|add:"-4" }}{{ pagination_parameters }}"> {{ entries.previous_page_number|add:"-4" }} </a></li>
+					<li><a href="?page={{ entries.previous_page_number|add:"-3" }}{{ pagination_parameters }}"> {{ entries.previous_page_number|add:"-3" }} </a></li>
+					<li><a href="?page={{ entries.previous_page_number|add:"-2" }}{{ pagination_parameters }}"> {{ entries.previous_page_number|add:"-2" }} </a></li>
+					<li><a href="?page={{ entries.previous_page_number|add:"-1" }}{{ pagination_parameters }}"> {{ entries.previous_page_number|add:"-1" }} </a></li>
+					<li><a href="?page={{ entries.previous_page_number }}{{ pagination_parameters }}"> {{ entries.previous_page_number }} </a></li>
+					<li class="active"><a href="?page={{ entries.number }}{{ pagination_parameters }}"> {{ entries.number }} </a></li>
+					<li><a href="?page={{ entries.next_page_number }}{{ pagination_parameters }}"> {{ entries.next_page_number }} </a></li>
+					<li><a href="?page={{ entries.next_page_number|add:"1" }}{{ pagination_parameters }}"> {{ entries.next_page_number|add:"1" }} </a></li>	
+					<li><a href="?page={{ entries.next_page_number|add:"2" }}{{ pagination_parameters }}"> {{ entries.next_page_number|add:"2" }} </a></li>
+					<li><a href="?page={{ entries.next_page_number|add:"3" }}{{ pagination_parameters }}"> {{ entries.next_page_number|add:"3" }} </a></li>
+					<li><a href="?page={{ entries.next_page_number|add:"4" }}{{ pagination_parameters }}"> {{ entries.next_page_number|add:"4" }} </a></li>
+				{% elif entries.number|add:5 > entries.paginator.num_pages %}
+					{% for minus_number in nav_list %}
+						{% if entries.number == entries.paginator.num_pages|add:minus_number %}
+							<li class="active"><a href="?page={{ entries.paginator.num_pages|add:minus_number }}{{ pagination_parameters }}"> {{ entries.paginator.num_pages|add:minus_number }} </a></li>
+						{% else %}
+							<li><a href="?page={{ entries.paginator.num_pages|add:minus_number }}{{ pagination_parameters }}"> {{ entries.paginator.num_pages|add:minus_number }} </a></li>
+						{% endif %}	
+					{% endfor %}
+					{% if entries.paginator.num_pages == entries.number %}
+						<li class="active"><a href="?page={{ entries.paginator.num_pages }}{{ pagination_parameters }}"> {{ entries.paginator.num_pages }} </a></li>
+					{% else %}
+						<li><a href="?page={{ entries.paginator.num_pages }}{{ pagination_parameters }}"> {{ entries.paginator.num_pages }} </a></li>
+					{% endif %}
+				{% endif %}
+			{% endif %}
+						{% if entries.has_next %}
+								<li><a href="?page={{ entries.next_page_number }}{{ pagination_parameters }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+						{% endif %}
+
+		</ul>			
+	</div>
+	</nav>
+
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>IP</th>
+				<th>Hostname</th>
+				<th>Interfaces</th>
+				<th>Last Seen</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for host in hosts %}
+			<tr {% if host.Stale %}style="background-color:#939393"{% endif %}>
+				<td>{{ host.IP }}</td>
+				<td>{{ host.Hostname }}</td>
+				<td>{{ host.interfaces_set.all|length }}</td>
+				<td>{{ host.LastSeen }}</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}
