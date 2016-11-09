@@ -108,6 +108,49 @@ def index(request):
 			hosts.paginator.page(paginator.num_pages)
 		return render(request, 'Web_Scout/index.html', {'hosts':hosts, 'nav_list':nav_list, 'pagination_parameters': parameters, 'hosts_per_page': int(hosts_per_page), 'search':search, 'reviewed':reviewed, 'org':org})
 
+
+@login_required
+def inventory(request):
+	search = request.GET.get('search', '')
+	hosts_per_page = request.GET.get('hosts_per_page', '50')
+	org = request.GET.get('organize_by', 'IP')
+	nav_list = [-10,-9,-8,-7,-6,-5,-4,-3,-2,-1]
+	temp_host_array = []
+	host_array = []
+	
+	if search:
+		host_query = BuildQuery(search, ['IP', 'Hostname', 'Category', 'interfaces__Product'])
+		temp_host_array = Hosts.objects.all().filter(host_query)
+
+	if org in ("IP", "Hostname", "Rating"):
+		if temp_host_array:
+			temp_host_array = temp_host_array.order_by(org)
+		else:
+			temp_host_array = Hosts.objects.all().order_by(org)
+
+	for host in temp_host_array:
+		if len(host.interfaces_set.all()) > 0:
+			host_array.append(host)
+
+	if int(hosts_per_page) in (50, 100, 150, 200, 300):
+		paginator = Paginator(host_array, hosts_per_page)
+	else:
+		paginator = Paginator(host_array, 50)
+
+	parameters = ''
+	for key,value in request.GET.items():
+		if not key == 'page' and not value == "":
+			parameters = parameters + '&' + key + '=' + value
+
+	page = request.GET.get('page')
+	try:
+		hosts = paginator.page(page)
+	except PageNotAnInteger:
+		hosts = paginator.page(1)
+	except EmptyPage:
+		hosts.paginator.page(paginator.num_pages)
+	return render(request, 'Web_Scout/inventory.html', {'hosts':hosts, 'nav_list':nav_list, 'pagination_parameters': parameters, 'hosts_per_page': int(hosts_per_page), 'search':search, 'org':org})
+
 @login_required
 def setup(request):
 	if request.method == 'POST':
