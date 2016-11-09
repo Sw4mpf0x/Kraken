@@ -146,7 +146,8 @@
                     <button data-toggle="modal" data-target="#add-address-modal" type="button" class="btn btn-sm btn-default">Add Address</button>
                     <button data-toggle="modal" data-target="#add-hostname-modal" type="button" class="btn btn-sm btn-default">Add Hostname</button>
                     <br><br>
-                    <button data-toggle="modal" data-target="#confirm-action" data-description="begin scanning selected addresses" data-action="scan" id="scan-submit" class="btn btn-primary">Start Scan</button>
+                    <div style="margin-bottom:5px"><span id="scan_progress"></span></div>
+                    <button data-toggle="modal" data-target="#confirm-action" data-description="begin scanning selected addresses" data-action="scan" id="scan-submit" class="btn btn-primary">Start Scan</button>&#160&#160
                 </div>
             </form>
             <h4 style="text-align: center">---------------or---------------</h4>
@@ -275,6 +276,7 @@
     };
     PollState('cleardb');
     PollState('parse');
+    PollState('scan');
     PollState('screenshot');
     PollState('removescreenshots');
     PollState('runmodules');
