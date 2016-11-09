@@ -187,7 +187,7 @@ def nmap_parse(filepath, targetaddress=''):
 	number_of_hosts = Hosts.objects.all().count()
 	number_of_interfaces = Interfaces.objects.all().count()
 	try:
-		os.remove('/opt/Kraken/tmp/nmap.xml')
+		os.remove('/opt/Kraken/tmp/scan.xml')
 	except:
 		print 'No nmap.xml to remove'
 	LogKrakenEvent('Celery', 'Parsing Complete. Hosts: ' + str(number_of_hosts) + ', Interfaces: ' + str(number_of_interfaces), 'info')
@@ -457,6 +457,7 @@ def startscreenshot():
 
 	jobs = group(getscreenshot.s(item, 20, True, None) for item in urlQueue)
 	result = jobs.apply_async()
+
 	while not result.ready():
 		print 'Failed Tasks? ' + str(result.failed())
 		print 'Waiting? ' + str(result.waiting())
@@ -521,6 +522,17 @@ def runmodules(interfacelist=""):
 	LogKrakenEvent('Celery', 'Mass Module Execution Complete. Elapsed time: ' + str(total_time) + ' to test ' + str(total_count) + ' interfaces', 'info')
 
 @task
+def nmap_web(address):
+	from subprocess import Popen
+	args = ['nmap', '-sV', address, '-oX', '/opt/Kraken/tmp/' + address.replace('/', '-').replace('.', '-') + '.xml', '-p80,280,443,591,593,981,1311,2031,2480,3181,4444,4445,4567,4711,4712,5104,5280,7000,7001,7002,8000,8008,8011,8012,8013,8014,8042,8069,8080,8081,8243,8280,8281,8443,8531,8887,8888,9080,9443,11371,12443,16080,18091,18092']
+	print 'Beginning Nmap Scan.'
+	scan_process = Popen(args)
+	scan_process.wait()
+	print 'scan complete'
+	# Parse into database
+	nmap_parse('/opt/Kraken/tmp/' + address.replace('/', '-').replace('.', '-') + '.xml', address)
+
+@task
 def scan(addresses):
 	from subprocess import Popen
 	import datetime
@@ -532,23 +544,17 @@ def scan(addresses):
 
 	current_task.update_state(state='SCANNING')
 	timestamp = datetime.datetime.now()
-
-	# Create list of address ranges to scan
-	#with open('/opt/Kraken/tmp/addresses.txt', 'wb+') as file:
-	#	print addresses
-	#	for address in addresses:
-	#		file.write(address+"\n")
+	total_count = len(addresses)
 
 	# Perform scan
-	for address in addresses:
-		args = ['nmap', '-sV', address, '-oX', '/opt/Kraken/tmp/scan.xml', '-p80,280,443']#,591,593,981,1311,2031,2480,3181,4444,4445,4567,4711,4712,5104,5280,7000,7001,7002,8000,8008,8011,8012,8013,8014,8042,8069,8080,8081,8243,8280,8281,8443,8531,8887,8888,9080,9443,11371,12443,16080,18091,18092']
-		print 'Beginning Nmap Scan.'
-		scan_process = Popen(args)
-		scan_process.wait()
-		print 'scan complete'
-
-		# Parse into database
-		nmap_parse('/opt/Kraken/tmp/scan.xml', address)
+	jobs = group(nmap_web.s(address) for address in addresses)
+	result = jobs.apply_async()
+	while not result.ready():
+		process_percent = int((result.completed_count() / total_count) * 100)
+		sleep(.1)
+		print 'Percentage Complete: ' + str(process_percent) + '%'
+		current_task.update_state(state='PROGRESS', meta={'process_percent': process_percent })
+		sleep(5)
 
 	for address in addresses:
 		# Figure out how to tie supplied ranges/hostnames to individual records
@@ -565,8 +571,6 @@ def scan(addresses):
 					print 'host ' + host.IP + ' is not stale.'
 		except:
 			LogKrakenEvent('Celery', 'Unable to find Address record during stale check.', 'error')
-	print 'deleting files'
-	os.remove('/opt/Kraken/tmp/addresses.txt')
-	os.remove('/opt/Kraken/tmp/scan.xml')
+
 	LogKrakenEvent('Celery', 'Scanning Complete.', 'info')
 
