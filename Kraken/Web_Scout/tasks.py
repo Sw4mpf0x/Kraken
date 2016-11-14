@@ -1,5 +1,5 @@
 from __future__ import absolute_import, division
-from celery import current_task, group
+from celery import task, current_task, group
 from time import sleep
 from selenium import webdriver	
 from PIL	  import Image, ImageDraw, ImageFont

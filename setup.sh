@@ -111,6 +111,7 @@ workon Kraken
 pip install M2Crypto celery selenium Django
 
 pip install Pillow==2.6.1 requests
+deactivate
 ./manage.py migrate
 ./manage.py makemigrations
 ./manage.py migrate
@@ -119,7 +120,6 @@ printf "\033[1;31mCreating Django Superuser\033[0m\n"
 
 # Create django super user. Default creds = admin:2wsxXSW@
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@kraken.com', '2wsxXSW@')" | python ./manage.py shell
-deactivate
 
 chmod 774 /opt/Kraken/Kraken/
 chmod 774 /opt/Kraken/Kraken/kraken.db
