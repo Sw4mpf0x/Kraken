@@ -39,10 +39,6 @@ printf "\033[1;31mMoving files around and changing permissions\033[0m\n"
 mv celeryd.conf /etc/default/celeryd
 mv celeryd /etc/init.d/celeryd
 mv Kraken.sh /usr/bin/Kraken
-if [ -d "/opt/Kraken" ]
-    then
-        rm -rf /opt/Kraken
-fi
 mv Kraken/ /opt/
 
 chown root /etc/default/celeryd
