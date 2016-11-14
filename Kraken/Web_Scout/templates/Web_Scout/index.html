@@ -292,7 +292,6 @@
             </div>
         </div>    
 	</div>
-
 </div>
 {% if hosts %}
 
@@ -465,7 +464,12 @@
 			{% endfor %}
 			</div>
 		{% elif host.interfaces_set.all|length_is:"2" %}
+			{% if host.Stale %}
+			<div class="col-lg-4 col-md-6 col-sm-6 col-xs-8 well" id="{{ host.HostID }}" style="word-wrap: break-word;text-align:left;background-color:#939393">
+			{% else %}
 			<div class="col-lg-4 col-md-6 col-sm-6 col-xs-8 well" id="{{ host.HostID }}" style="word-wrap: break-word;text-align:left">
+			{% endif %}
+
 				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
   					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
   					<ul class="dropdown-menu dropdown-menu-right">
@@ -488,7 +492,12 @@
 			</div>
 			</div>
 		{% elif host.interfaces_set.all|length_is:"3" %}
-			<div class="col-lg-6 col-md-9 col-sm-9 col-xs-12 well" id="{{ host.HostID }}" style="text-align:left">
+			{% if host.Stale %}
+			<div class="col-lg-6 col-md-9 col-sm-9 col-xs-12 well" id="{{ host.HostID }}" style="word-wrap: break-word;text-align:left;background-color:#939393">
+			{% else %}
+			<div class="col-lg-6 col-md-9 col-sm-9 col-xs-12 well" id="{{ host.HostID }}" style="word-wrap: break-word;text-align:left">
+			{% endif %}
+
 				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
   					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
   					<ul class="dropdown-menu dropdown-menu-right">
@@ -511,7 +520,12 @@
 			</div>
 			</div>
 		{% elif host.interfaces_set.all.count > 3 %}
-			<div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 well" id="{{ host.HostID }}" style="text-align:left">
+			{% if host.Stale %}
+			<div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 well" id="{{ host.HostID }}" style="word-wrap: break-word;text-align:left;background-color:#939393">
+			{% else %}
+			<div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 well" id="{{ host.HostID }}" style="word-wrap: break-word;text-align:left">
+			{% endif %}
+
 				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
   					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
   					<ul class="dropdown-menu dropdown-menu-right">

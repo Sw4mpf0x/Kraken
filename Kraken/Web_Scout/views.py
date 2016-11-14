@@ -114,19 +114,29 @@ def inventory(request):
 	search = request.GET.get('search', '')
 	hosts_per_page = request.GET.get('hosts_per_page', '50')
 	org = request.GET.get('organize_by', 'IP')
+	new = request.GET.get('show_new', '')
+	stale = request.GET.get('show_stale', '')
 	nav_list = [-10,-9,-8,-7,-6,-5,-4,-3,-2,-1]
 	temp_host_array = []
 	host_array = []
 	
 	if search:
-		host_query = BuildQuery(search, ['IP', 'Hostname', 'Category', 'interfaces__Product'])
+		host_query = BuildQuery(search, ['IP', 'Hostname', 'LastSeen', 'Category', 'interfaces__Product'])
 		temp_host_array = Hosts.objects.all().filter(host_query)
 
-	if org in ("IP", "Hostname", "Rating"):
+	if org in ("IP", "Hostname", "LastSeen"):
 		if temp_host_array:
 			temp_host_array = temp_host_array.order_by(org)
 		else:
 			temp_host_array = Hosts.objects.all().order_by(org)
+
+	if stale == 'on' and new == 'on':
+		temp_host_array = temp_host_array.exclude(Stale=False) | temp_host_array.exclude(New=False)
+ 	elif stale == 'on':
+		temp_host_array = temp_host_array.exclude(Stale=False)
+
+	elif new == 'on':
+		temp_host_array = temp_host_array.exclude(New=False)
 
 	for host in temp_host_array:
 		if len(host.interfaces_set.all()) > 0:
@@ -149,7 +159,11 @@ def inventory(request):
 		hosts = paginator.page(1)
 	except EmptyPage:
 		hosts.paginator.page(paginator.num_pages)
-	return render(request, 'Web_Scout/inventory.html', {'hosts':hosts, 'nav_list':nav_list, 'pagination_parameters': parameters, 'hosts_per_page': int(hosts_per_page), 'search':search, 'org':org})
+
+	active_count = len(host_array)
+	new_count = len(Hosts.objects.all().filter(New=True))
+	stale_count = len(Hosts.objects.all().filter(Stale=True))
+	return render(request, 'Web_Scout/inventory.html', {'hosts':hosts, 'nav_list':nav_list, 'pagination_parameters': parameters, 'hosts_per_page': int(hosts_per_page), 'search':search, 'org':org, 'active_count':active_count, 'new_count':new_count, 'stale_count':stale_count, 'stale':stale, 'new':new})
 
 @login_required
 def setup(request):
@@ -198,7 +212,8 @@ def setup(request):
 			else:
 				return render(request, 'Web_Scout/setup.html', {'form':form, 'uploaded':False, 'failedupload':True})
 		elif request.POST.get('action') == 'screenshot':
-			job = tasks.startscreenshot.delay()
+			overwrite = request.POST.get('overwrite', 'False')
+			job = tasks.startscreenshot.delay(overwrite)
 			try:
 				task = Tasks.objects.get(Task='screenshot')
 			except:

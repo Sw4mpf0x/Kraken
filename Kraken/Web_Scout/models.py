@@ -21,6 +21,7 @@ class Hosts(models.Model):
 	Reviewed = models.BooleanField(default=False)
 	Category = models.CharField(max_length=25)
 	LastSeen = models.CharField(max_length=100)
+	New = models.BooleanField(default=False)
 	Stale = models.BooleanField(default=False)
 	StaleLevel = models.IntegerField(default=0)
 

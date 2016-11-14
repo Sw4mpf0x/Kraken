@@ -63,9 +63,24 @@
                 <div class="panel-body">
                     <form id="filterform" style="text-align:center" class="form-inline" role="form" method="GET">
                         <div class="form-group">
-                            <label class="filter-col" style="padding-left:10px;padding-right:10px;" for="pref-perpage">Entries per page:</label><br>
+                            <label class="filter-col" style="padding-left:10px;padding-right:10px;" for="pref-perpage">Hosts per page:</label><br>
                             <select id="pref-perpage" class="form-control" name="hosts_per_page">
                                 {% if hosts_per_page > 0 %}
+                                	{% if hosts_per_page == 20 %}
+                                		<option selected="selected" value="20">20</option>
+                                	{% else %}
+                                		<option value="20">20</option>
+                                	{% endif %}
+                                	{% if hosts_per_page == 30 %}
+                                		<option selected="selected" value="30">30</option>
+                                	{% else %}
+                                		<option value="30">30</option>
+                                	{% endif %}
+                                	{% if hosts_per_page == 40 %}
+                                		<option selected="selected" value="40">40</option>
+                                	{% else %}
+                                		<option value="40">40</option>
+                                	{% endif %}
                                 	{% if hosts_per_page == 50 %}
                                 		<option selected="selected" value="50">50</option>
                                 	{% else %}
@@ -76,34 +91,69 @@
                                 	{% else %}
                                 		<option value="100">100</option>
                                 	{% endif %}
-                                	{% if hosts_per_page == 150 %}
-                                		<option selected="selected" value="150">150</option>
-                                	{% else %}
-                                		<option value="150">150</option>
-                                	{% endif %}
-                                	{% if hosts_per_page == 200 %}
-                                		<option selected="selected" value="200">200</option>
-                                	{% else %}
-                                		<option value="200">200</option>
-                                	{% endif %}
-                                	{% if hosts_per_page == 300 %}
-                                		<option selected="selected" value="300">300</option>
-                                	{% else %}
-                                		<option value="300">300</option>
-                                	{% endif %}
                                 {% else %}
-                                	<option selected="selected" value="50">50</option>
+                                	<option selected="selected" value="20">20</option>
+                                	<option value="30">30</option>
+                                	<option value="40">40</option>
+                                	<option value="50">50</option>
                                 	<option value="100">100</option>
-                                	<option value="150">150</option>
-                                	<option value="200">200</option>
-                                	<option value="300">300</option>
                                 {% endif %}
                             </select>                                
-                        </div> <!-- form group [entries] -->
+                        </div> <!-- form group [hosts] -->
                         <div class="form-group">
                             <label class="filter-col" style="margin-right:0;" for="pref-search">Search:</label><br>
                             <input type="text" class="form-control input-sm" id="pref-search" name="search" value="{{ search }}">
                         </div><!-- form group [search] -->
+                        <div class="form-group" style="padding-left:15px">
+                            <label class="filter-col" style="margin-right:0;" for="pref-orderby">Order by:</label><br>
+                            <select id="pref-orderby" class="form-control" name="organize_by">
+                                {% if not org == 'IP' %}
+                                	<option>IP</option>
+                                	{% if org == 'Hostname' %}
+                                		<option selected="selected">Hostname</option>
+                                	{% else %}
+                                		<option>Hostname</option>
+                                	{% endif %}
+                                	{% if org == 'LastSeen' %}
+                                		<option selected="selected">LastSeen</option>
+                                	{% else %}
+                                		<option>LastSeen</option>
+                                	{% endif %}
+                                {% else %}
+                                	<option>IP</option>
+                                	<option>Hostname</option>
+                                	<option>LastSeen</option>
+                                {% endif %}
+                            </select>                                
+                        </div> <!-- form group [order by] --> 
+                        <div class="form-group"> <br>
+                           	{% if new == 'on' %}
+                           		<div class="checkbox" style="margin-left:10px; margin-right:10px;">
+                                	<label>
+                                		<br><input type="checkbox" name="show_new" checked="checked">New
+                                	</label>
+                            	</div>
+                           	{% else %}
+                           		<div class="checkbox" style="margin-left:10px; margin-right:10px;">
+                                	<label>
+                                		<input type="checkbox" name="show_new">New
+                        			</label>
+                            	</div>
+                           	{% endif %}
+                           	{% if stale == 'on' %}
+                           		<div class="checkbox" style="margin-left:10px; margin-right:10px;">
+                                	<label>
+                                		<br><input type="checkbox" name="show_stale" checked="checked">Stale
+                                	</label>
+                            	</div>
+                           	{% else %}
+                           		<div class="checkbox" style="margin-left:10px; margin-right:10px;">
+                                	<label>
+                                		<input type="checkbox" name="show_stale">Stale
+                        			</label>
+                            	</div>
+                           	{% endif %}
+                        </div>
                         <div class="form-group">
                            	<br>
                             <button type="submit" class="btn btn-default filter-col">
@@ -113,7 +163,7 @@
                         </div>
                         <div class="form-group">
                     		<br>
-                    		<a href="{% url 'logs:krakenlog' %}"><button type="button" class="btn btn-default filter-col">
+                    		<a href="{% url 'webscout:inventory' %}"><button type="button" class="btn btn-default filter-col">
                     			Clear Filter
                     		</button></a>
                     	</div>
@@ -125,7 +175,9 @@
 </div>
 <div class="container well">
 	<h2>Host Inventory</h2>
-
+	<p>Active Hosts: {{ active_count }}
+	<br>New Hosts: {{ new_count }}
+	<br>Stale Hosts: {{ stale_count }}</p>
 	<nav>
 	<div align="center">
 		<ul class="pagination" align="center">		
@@ -195,7 +247,7 @@
 		</thead>
 		<tbody>
 		{% for host in hosts %}
-			<tr {% if host.Stale %}style="background-color:#939393"{% endif %}>
+			<tr {% if host.Stale %}style="background-color:#939393"{% elif host.New %}style="background-color:#3DDD27"{% endif %}>
 				<td>{{ host.IP }}</td>
 				<td>{{ host.Hostname }}</td>
 				<td>{{ host.interfaces_set.all|length }}</td>
