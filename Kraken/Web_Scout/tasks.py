@@ -10,6 +10,8 @@ import os.path
 import requests
 import StringIO
 import shutil
+import signal
+import ssl
 
 reload(sys)
 sys.setdefaultencoding("utf8")
@@ -246,7 +248,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 	def writeImage(text, filename, fontsize=40, width=1024, height=200):
 		image = Image.new("RGBA", (width,height), (255,255,255))
 		draw = ImageDraw.Draw(image)
-		font_path = os.path.dirname(os.path.realpath(__file__))+"/LiberationSerif-BoldItalic.ttf"
+		font_path = "/opt/Kraken/Web_Scout/LiberationSerif-BoldItalic.ttf"
 		font = ImageFont.truetype(font_path, fontsize)
 		draw.text((10, 0), text, (0,0,0), font=font)
 		image.save(filename)
@@ -261,7 +263,10 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 		if(proxy is not None):
 			session.proxies={'http':'socks5://'+proxy,'https':'socks5://'+proxy}
 		print 'Getting ' + url[0]
-		resp = session.get(url[0],**kwargs)
+		try:
+			resp = session.get(url[0],**kwargs)
+		except requests.exceptions.SSLError:
+			resp = "SSL Error"
 		return resp
 
 	# Used to compare interface source code to a list of application signatures to 
@@ -377,14 +382,17 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 		resp = doGet(urlItem, verify=False, timeout=tout, proxy=proxy)
 		
 		# Handle basic auth
-		if(resp is not None and resp.status_code == 401):
-			print urlItem[0]+" Requires HTTP Basic Auth"
-			writeImage(resp.headers.get('www-authenticate','NO WWW-AUTHENTICATE HEADER'),screenshotName+".png")
-			browser.quit()
-			return
+		try:
+			if(resp is not None and resp.status_code == 401):
+				print urlItem[0]+" Requires HTTP Basic Auth"
+				writeImage(resp.headers.get('www-authenticate','NO WWW-AUTHENTICATE HEADER'),screenshotName+".png")
+				browser.quit()
+				return
+		except:
+			print "SSL Exception for" + urlItem[0]
 		
 		# Handle all other responses
-		elif(resp is not None):
+		if(resp is not None):
 			if(debug):
 				print 'Got response for ' + urlItem[0]
 			
