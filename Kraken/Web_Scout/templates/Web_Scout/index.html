@@ -676,6 +676,11 @@
 		</div>		
 	</div>
 	</nav>
+{% elif search %}
+<div class="well" style="width:70%;margin:0 auto">
+	<h3>Kraken could not find any interfaces that matched your search terms!</h3>
+	<p>Kraken's search functionality performs an 'or' search on several database fields. For example, the search 'jboss tomcat' will return any interfaces with jboss OR tomcat in them.</p>
+</div>
 {% else %}
 <div class="well" style="width:70%;margin:0 auto">
 	<h3>Kraken doesn't have any data!</h3>
