@@ -29,6 +29,24 @@ def index(request):
 			json_data = json.dumps(data)
 			return HttpResponse(json_data, content_type='application/json')
 
+		elif request.POST.get('action') == "bulkscreenshot":
+			data = BulkAction(request.POST.items(), request.POST.get('action'))
+			json_data = json.dumps(data)
+			return HttpResponse(json_data, content_type='application/json')
+
+		elif request.POST.get('action') == "bulkrunmodule":
+			data = BulkAction(request.POST.items(), request.POST.get('action'))
+			json_data = json.dumps(data)
+			return HttpResponse(json_data, content_type='application/json')
+
+		elif request.POST.get('action') == "screenshothost":
+			hostid = request.POST.get('host')
+			host = Hosts.objects.get(HostID=hostid)
+			for interface in host.interfaces_set.all():
+				item = [interface.Url, interface.IntID]
+				tasks.getscreenshot.delay(item, 20, True, None, True)
+			return HttpResponse()
+
 		elif request.POST.get('action') == "note":
 			note = request.POST.get('note')
 			record = request.POST.get('record')
@@ -339,15 +357,4 @@ def runmodule(request):
 	data = [result, credentials]
 	json_data = json.dumps(data)
 	return HttpResponse(json_data, content_type='application/json')
-
-@login_required
-def runmodules(request):
-	interfacelist = request.GET.get('interfaces', '')
-	if interfacelist:
-		interfacelist = interfacelist.split(',')
-		tasks.runmodules.delay(interfacelist)
-	else:
-		tasks.runmodules.delay()
-
-	return HttpResponse()
 	
