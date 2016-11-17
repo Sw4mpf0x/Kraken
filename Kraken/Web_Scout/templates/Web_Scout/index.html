@@ -711,7 +711,10 @@
 			 			<div style="padding-bottom:5px"><b>Category:</b>&#160&#160<span id="image-gallery-category"></span><br></div>
 			 			<div style="padding-bottom:5px"><b>Last Seen:</b>&#160&#160<span id="image-gallery-lastseen"></span><br></div>
 			 			<div style="padding-bottom:5px"><h3>Documentation</h3></div>
-			 			<form id="note-form" method="POST">
+			 			<form id="runmodule-form">
+  							{% csrf_token %}
+  						</form>
+  						<form id="note-form" method="POST">
 							<div class="form-group">
 								{% csrf_token %}
   								<input type="hidden" id="image-gallery-default-credshidden" value="No" name="default-creds" />
@@ -851,9 +854,9 @@
 								});
 								$("button#runmodule").click(function(){
 									$.ajax({
-										type: "GET",
-										url: "runmodule",
-										data: "interface=" + $(this).attr('data-id'),
+										type: "POST",
+										url: "",
+										data: $('form#runmodule-form').serialize() + "&action=runmodule&interfaceid=" + $(this).attr('data-id'),
 										success: function(data){
 											if (data[0] == "Success"){
 												$("#gallery-success-text").text("Default credentials worked!")
@@ -949,6 +952,7 @@
                                         $modalDiv.modal('hide').removeClass('loading');
                                     }, 1000)
                                 });
+	
 								$('#confirm-runmodule-hosts').on('click', '.btn-ok', function(e) {
                                     var $modalDiv = $(e.delegateTarget);
                                     var host = $(this).data('host');
@@ -964,10 +968,6 @@
 			   									$("#success-alert").hide();
 			   								});
 			   								console.log(data);
-											$.each(data[0], function(index, host){
-												console.log(host);
-												$("div#"+host).remove()
-											});
 										},
 										error: function(){
 											alert("A problem was encountered while submitting your request to check default credentials on a host.");
