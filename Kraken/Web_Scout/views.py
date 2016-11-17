@@ -39,6 +39,13 @@ def index(request):
 			json_data = json.dumps(data)
 			return HttpResponse(json_data, content_type='application/json')
 
+		elif request.POST.get('action') == "runmodule":
+			interfaceid = request.POST.get('interfaceid')
+			result, credentials = tasks.runmodule(interfaceid)
+			data = [result, credentials]
+			json_data = json.dumps(data)
+			return HttpResponse(json_data, content_type='application/json')
+
 		elif request.POST.get('action') == "screenshothost":
 			hostid = request.POST.get('host')
 			host = Hosts.objects.get(HostID=hostid)
@@ -349,12 +356,4 @@ def task_state(request):
 		return HttpResponse(json_data, content_type='application/json')
 	else:
 		return HttpResponse()
-
-@login_required
-def runmodule(request):
-	interface = request.GET['interface']
-	result, credentials = tasks.runmodule(interface)
-	data = [result, credentials]
-	json_data = json.dumps(data)
-	return HttpResponse(json_data, content_type='application/json')
 	
