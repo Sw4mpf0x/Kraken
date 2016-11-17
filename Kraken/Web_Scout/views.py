@@ -96,19 +96,20 @@ def index(request):
 
 		if search:
 			entry_query = BuildQuery(search, ['IP', 'Hostname', 'Category', 'interfaces__Product'])
-			temp_host_array = Hosts.objects.all().filter(entry_query)
+			if entry_query:
+				temp_host_array = Hosts.objects.all().filter(entry_query)
+			else:
+				temp_host_array = ""
+		else:
+			temp_host_array = Hosts.objects.all()
 
 		if org in ("IP", "Hostname", "Rating"):
 			if temp_host_array:
 				temp_host_array = temp_host_array.order_by(org)
-			else:
-				temp_host_array = Hosts.objects.all().order_by(org)
 
 		if reviewed == 'on':
 			if temp_host_array:
 				temp_host_array = temp_host_array.exclude(Reviewed=True)
-			else:
-				temp_host_array = Hosts.objects.all().filter(Reviewed=False)
 	
 		for host in temp_host_array:
 			if len(host.interfaces_set.all()) > 0:
