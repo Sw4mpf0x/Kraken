@@ -496,17 +496,28 @@ def startscreenshot(overwrite):
 
 @task
 def runmodule(interfaceid):
+	import datetime
+	import django, os, sys
+	os.environ["DJANGO_SETTINGS_MODULE"] = "Kraken.settings"
+	sys.path.append("/opt/Kraken")
+	django.setup()
+	from Web_Scout.models import Interfaces
 	from importlib import import_module
+	
 	try:
 		interface_record = Interfaces.objects.get(IntID=interfaceid)
+		host_record = interface_record.hosts
 		URL = interface_record.Url
 		interface_module = interface_record.Module
 		module = import_module("Web_Scout.modules." + interface_module)
-		result, credentials = module.run()
+		result, credentials = module.run(host_record.IP)
 		if result == 'Success':
+			print "Default Credentials Configured: " + host_record.IP + "."
 			interface_record.DefaultCreds = True
-			interface_record.Notes = 'Successfully authenticated with: (' + credentials + ')\n' + interface_record.Notes
+			interface_record.Notes = interface_record.Product + '. Successfully authenticated with: (' + credentials + ')\n' + interface_record.Notes
 			interface_record.save()
+		else:
+			print "Default Credentials NOT Configured: " + host_record.IP + "."
 		return result, credentials
 	except:
 		return "error", "error"
@@ -514,6 +525,14 @@ def runmodule(interfaceid):
 @task
 def runmodules(interfacelist=""):
 	import datetime
+	import django, os, sys
+	os.environ["DJANGO_SETTINGS_MODULE"] = "Kraken.settings"
+	sys.path.append("/opt/Kraken")
+	django.setup()
+	from Web_Scout.models import Interfaces
+	from importlib import import_module
+	import datetime
+	
 	if not interfacelist:
 		interfacelist = Interfaces.objects.exclude(Module__exact='')
 	
