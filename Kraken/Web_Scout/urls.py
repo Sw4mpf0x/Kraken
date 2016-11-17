@@ -9,6 +9,4 @@ urlpatterns = [
     url(r'^setup/$', views.setup, name='setup'),
     url(r'^viewer/$', views.viewer, name='viewer'),
     url(r'^task_state$', views.task_state, name='task_state'),
-    url(r'^runmodule$', views.runmodule, name='runmodule'),
-    url(r'^runmodules$', views.runmodules, name='runmodules'),
 ]
