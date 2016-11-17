@@ -181,55 +181,55 @@
 	<nav>
 	<div align="center">
 		<ul class="pagination" align="center">		
-			{% if entries.has_previous %}
-				<li><a href="?page={{ entries.previous_page_number }}{{ pagination_parameters }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+			{% if hosts.has_previous %}
+				<li><a href="?page={{ hosts.previous_page_number }}{{ pagination_parameters }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
 			{% endif %}
-			{% if entries.paginator.num_pages < 12 %}
-				{% for page in entries.paginator.page_range %}
-					{% if entries.number == page %}
+			{% if hosts.paginator.num_pages < 12 %}
+				{% for page in hosts.paginator.page_range %}
+					{% if hosts.number == page %}
 						<li class="active"><a href="?page={{ page }}{{ pagination_parameters }}"> {{ page }} <span class="sr-only">(current)</span></a></li>
 					{% else %}
 						<li><a href="?page={{ page }}{{ pagination_parameters }}"> {{ page }} </a></li>
 					{% endif %}
 				{% endfor %}
-			{% elif entries.paginator.num_pages > 11 %}
-				{% if entries.number < 7 %}
+			{% elif hosts.paginator.num_pages > 11 %}
+				{% if hosts.number < 7 %}
 					{% for page in "nnnnnnnnnnn" %}
-						{% if entries.number == forloop.counter %}
+						{% if hosts.number == forloop.counter %}
 							<li class="active"><a href="?page={{ forloop.counter }}{{ pagination_parameters }}"> {{ forloop.counter }} <span class="sr-only">(current)</span></a></li>
 						{% else %}
 							<li><a href="?page={{ forloop.counter }}{{ pagination_parameters }}"> {{ forloop.counter }} </a></li>
 						{% endif %}
 					{% endfor %}
-				{% elif entries.number|add:5 <= entries.paginator.num_pages %}
-					<li><a href="?page={{ entries.previous_page_number|add:"-4" }}{{ pagination_parameters }}"> {{ entries.previous_page_number|add:"-4" }} </a></li>
-					<li><a href="?page={{ entries.previous_page_number|add:"-3" }}{{ pagination_parameters }}"> {{ entries.previous_page_number|add:"-3" }} </a></li>
-					<li><a href="?page={{ entries.previous_page_number|add:"-2" }}{{ pagination_parameters }}"> {{ entries.previous_page_number|add:"-2" }} </a></li>
-					<li><a href="?page={{ entries.previous_page_number|add:"-1" }}{{ pagination_parameters }}"> {{ entries.previous_page_number|add:"-1" }} </a></li>
-					<li><a href="?page={{ entries.previous_page_number }}{{ pagination_parameters }}"> {{ entries.previous_page_number }} </a></li>
-					<li class="active"><a href="?page={{ entries.number }}{{ pagination_parameters }}"> {{ entries.number }} </a></li>
-					<li><a href="?page={{ entries.next_page_number }}{{ pagination_parameters }}"> {{ entries.next_page_number }} </a></li>
-					<li><a href="?page={{ entries.next_page_number|add:"1" }}{{ pagination_parameters }}"> {{ entries.next_page_number|add:"1" }} </a></li>	
-					<li><a href="?page={{ entries.next_page_number|add:"2" }}{{ pagination_parameters }}"> {{ entries.next_page_number|add:"2" }} </a></li>
-					<li><a href="?page={{ entries.next_page_number|add:"3" }}{{ pagination_parameters }}"> {{ entries.next_page_number|add:"3" }} </a></li>
-					<li><a href="?page={{ entries.next_page_number|add:"4" }}{{ pagination_parameters }}"> {{ entries.next_page_number|add:"4" }} </a></li>
-				{% elif entries.number|add:5 > entries.paginator.num_pages %}
+				{% elif hosts.number|add:5 <= hosts.paginator.num_pages %}
+					<li><a href="?page={{ hosts.previous_page_number|add:"-4" }}{{ pagination_parameters }}"> {{ hosts.previous_page_number|add:"-4" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-3" }}{{ pagination_parameters }}"> {{ hosts.previous_page_number|add:"-3" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-2" }}{{ pagination_parameters }}"> {{ hosts.previous_page_number|add:"-2" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number|add:"-1" }}{{ pagination_parameters }}"> {{ hosts.previous_page_number|add:"-1" }} </a></li>
+					<li><a href="?page={{ hosts.previous_page_number }}{{ pagination_parameters }}"> {{ hosts.previous_page_number }} </a></li>
+					<li class="active"><a href="?page={{ hosts.number }}{{ pagination_parameters }}"> {{ hosts.number }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number }}{{ pagination_parameters }}"> {{ hosts.next_page_number }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"1" }}{{ pagination_parameters }}"> {{ hosts.next_page_number|add:"1" }} </a></li>	
+					<li><a href="?page={{ hosts.next_page_number|add:"2" }}{{ pagination_parameters }}"> {{ hosts.next_page_number|add:"2" }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"3" }}{{ pagination_parameters }}"> {{ hosts.next_page_number|add:"3" }} </a></li>
+					<li><a href="?page={{ hosts.next_page_number|add:"4" }}{{ pagination_parameters }}"> {{ hosts.next_page_number|add:"4" }} </a></li>
+				{% elif hosts.number|add:5 > hosts.paginator.num_pages %}
 					{% for minus_number in nav_list %}
-						{% if entries.number == entries.paginator.num_pages|add:minus_number %}
-							<li class="active"><a href="?page={{ entries.paginator.num_pages|add:minus_number }}{{ pagination_parameters }}"> {{ entries.paginator.num_pages|add:minus_number }} </a></li>
+						{% if hosts.number == hosts.paginator.num_pages|add:minus_number %}
+							<li class="active"><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}{{ pagination_parameters }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
 						{% else %}
-							<li><a href="?page={{ entries.paginator.num_pages|add:minus_number }}{{ pagination_parameters }}"> {{ entries.paginator.num_pages|add:minus_number }} </a></li>
+							<li><a href="?page={{ hosts.paginator.num_pages|add:minus_number }}{{ pagination_parameters }}"> {{ hosts.paginator.num_pages|add:minus_number }} </a></li>
 						{% endif %}	
 					{% endfor %}
-					{% if entries.paginator.num_pages == entries.number %}
-						<li class="active"><a href="?page={{ entries.paginator.num_pages }}{{ pagination_parameters }}"> {{ entries.paginator.num_pages }} </a></li>
+					{% if hosts.paginator.num_pages == hosts.number %}
+						<li class="active"><a href="?page={{ hosts.paginator.num_pages }}{{ pagination_parameters }}"> {{ hosts.paginator.num_pages }} </a></li>
 					{% else %}
-						<li><a href="?page={{ entries.paginator.num_pages }}{{ pagination_parameters }}"> {{ entries.paginator.num_pages }} </a></li>
+						<li><a href="?page={{ hosts.paginator.num_pages }}{{ pagination_parameters }}"> {{ hosts.paginator.num_pages }} </a></li>
 					{% endif %}
 				{% endif %}
 			{% endif %}
-						{% if entries.has_next %}
-								<li><a href="?page={{ entries.next_page_number }}{{ pagination_parameters }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+						{% if hosts.has_next %}
+								<li><a href="?page={{ hosts.next_page_number }}{{ pagination_parameters }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
 						{% endif %}
 
 		</ul>			
