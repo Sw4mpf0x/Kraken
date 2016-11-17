@@ -15,17 +15,17 @@ Dell Laser Printer 1720dn|Dell Laser Printer 1720dn|No default username or pass|
 Dell B5465dnf;/cgi-bin/dynamic/dell_header.html|Dell B5465dnf|No default username or pass||
 Dell B3465dnf Laser MFP;/cgi-bin/dynamic/dell_header.html|Dell b3465dnf|No default username or pass||
 Dell Laser Printer 3000cn;frame src="status/status.htm" name="RightFrame"|Dell 3000cn|No default username or pass||
-Xerox WorkCentre 7435;function restore_saved_params(form, key_html)|Xerox WorkCentre 7435|admin:1111||
-WorkCentre 7120;Fuji Xerox Co;var biItms|WorkCentre 7120|admin:1111||
-WorkCentre 7125;Fuji Xerox Co;var nvTree|WorkCentre 7125|admin:1111||
-Xerox WorkCentre 5225;inNN;var trItms|Xerox WorkCentre 5225|11111:x-admin||
-Xerox Corporation;XEROX WORKCENTRE;Header Frame;inUriToMatch|Potential Generic Xerox|admin:1111;x-admin:11111||
-Xerox Workstation M20i;var HEADER_FRAME;var BRANDING_FRAME|Xerox Workstation M20i|admin:1111||
-ChangeDefWebLanguage();script/cookieCoke.js;script/Common_script.js;NOSCRIPT|Potential Workcenter 3550|admin:1111||
-WorkCentre 6605DN;frame src="menuhome.htm"|WorkCentre 6605DN|No default pass||
-Xerox WorkCentre 7232;var nvTree;var rSec|Xerox WorkCentre 7232|11111:x-admin||
-Xerox WorkCentre 5325;var nvTree;var csItms|Xerox WorkCentre 5325|admin:1111||
-Xerox WorkCentre 7345;var nvTree;var csItms|Xerox WorkCentre 7345|admin:1111;11111:x-admin||
+Xerox WorkCentre 7435;function restore_saved_params(form, key_html)|Xerox WorkCentre 7435|admin:1111|M0001|
+WorkCentre 7120;Fuji Xerox Co;var biItms|WorkCentre 7120|admin:1111|M0001|
+WorkCentre 7125;Fuji Xerox Co;var nvTree|WorkCentre 7125|admin:1111|M0001|
+Xerox WorkCentre 5225;inNN;var trItms|Xerox WorkCentre 5225|11111:x-admin|M0001|
+Xerox Corporation;XEROX WORKCENTRE;Header Frame;inUriToMatch|Xerox WorkCentre|admin:1111;x-admin:11111|M0001|
+Xerox Workstation M20i;var HEADER_FRAME;var BRANDING_FRAME|Xerox Workstation M20i|admin:1111|M0001|
+ChangeDefWebLanguage();script/cookieCoke.js;script/Common_script.js;NOSCRIPT|Potential Workcenter 3550|admin:1111|M0001|
+WorkCentre 6605DN;frame src="menuhome.htm"|WorkCentre 6605DN|No default pass|M0001|
+Xerox WorkCentre 7232;var nvTree;var rSec|Xerox WorkCentre 7232|11111:x-admin|M0001|
+Xerox WorkCentre 5325;var nvTree;var csItms|Xerox WorkCentre 5325|admin:1111|M0001|
+Xerox WorkCentre 7345;var nvTree;var csItms|Xerox WorkCentre 7345|admin:1111;11111:x-admin|M0001|
 Dell Color Laser 3110cn;frameleft.htm;TopFrame|Dell Laser 3110cn|No Default Username or Pass||
 HP LaserJet Pro MFP M521dn;setupUrls[index++];manageUrls|HP MFP M521dn|No default username or pass||
 HP Color LaserJet CM2320nf MFP;applicationMastheadSmall|HP Color LaserJet CM2320nf|No default username or pass||
@@ -113,7 +113,7 @@ var tmpDracName = "iDRAC6";idrac6 web GUI login fails with special character "\"
 content="F5 Networks, Inc.";doesn't have a BIGIPAuthCookie;F5 Networks Logo|F5 Load Balancer|admin:admin||
 Cisco Edge 340;For more information of Cisco Edge 340 Series, please visit homepage;/auth/static/images/logo_duotone_gradient1.png|Cisco Edge 340|admin:aDMIN123#||
 alt="Oracle(R) Integrated Lights Out Manager";Log In - Oracle(R) Integrated Lights Out Manager;Log In to Oracle(R) Integrated Lights Out Manager|Oracle ILO|root:changeme||
-Riverbed Steelhead;Riverbed Technology, Inc. and/or its licensors;form id="loginForm" action="/mgmt/gui|Riverbed Steelhead|admin:password|M0001|
+Riverbed Steelhead;Riverbed Technology, Inc. and/or its licensors;form id="loginForm" action="/mgmt/gui|Riverbed Steelhead|admin:password||
 ADManager Plus Authentication;sel.options[i].text == 'ADManager Plus Authentication';ManageEngine;js/framework/Hashtable.js|ADManager|admin:admin (ADManager Plus Authentication in dropdown)||
 ManageEngine ServiceDesk Plus;Local Authentication;alt="ManageEngine ServiceDesk Plus";loginDiv|ServiceDesk|administrator:administrator (Local Authentication)||
 TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|TeraData NAS|admin:password||
