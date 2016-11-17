@@ -308,6 +308,8 @@
             <ul class="dropdown-menu">
                 <li><a href="" id="bulkreviewed">Reviewed</a></li>
                 <li><a href="" id="bulknotes" data-toggle="modal" data-target="#bulk-note-modal">Notes</a></li>
+                <li><a href="" id="bulkscreenshot" data-toggle="modal" data-target="#confirm-screenshot-hosts">Screenshot</a></li>
+                <li><a href="" id="bulkrunmodule" data-toggle="modal" data-target="#confirm-runmodule-hosts">Test Default Credentials</a></li>
                 <li><a href="" id="bulkdelete" data-toggle="modal" data-target="#confirm-delete-hosts">Delete Hosts</a></li>
             </ul>
         </div>
@@ -410,6 +412,64 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="confirm-runmodule-hosts" tabindex="-1" role="dialog" aria-labelledby="ConfirmAction" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">Jeppers Check</h4>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to check default credentials on the selected hosts.
+                    <p>Do you want to proceed?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-ok">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form id="screenshot-host-form" name="screenshot-host-form">
+	{% csrf_token %}
+	<input type="hidden" class="form-control" name="action" value="screenshothost"/>
+	<div class="modal fade" id="confirm-screenshot-host" tabindex="-1" role="dialog" aria-labelledby="ConfirmAction" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">Jeppers Check</h4>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to screenshot a host.
+                    <p>Do you want to proceed?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-ok">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+    <div class="modal fade" id="confirm-screenshot-hosts" tabindex="-1" role="dialog" aria-labelledby="ConfirmAction" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">Jeppers Check</h4>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to screenshot the selected hosts.
+                    <p>Do you want to proceed?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-ok">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 	<form id="bulk-form" name="bulk-form">
 	{% csrf_token %}
 	<div class="modal fade" id="bulk-note-modal" tabindex="-1" role="dialog">
@@ -444,6 +504,7 @@
 				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
   					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
   					<ul class="dropdown-menu dropdown-menu-right">
+  						<li><a href="" data-toggle="modal" data-target="#confirm-screenshot-host" data-host="{{ host.HostID }}" id="screenshot-host-submit">Screenshot Host</a></li>
     					<li><a href="" data-toggle="modal" data-target="#confirm-delete-host" data-host="{{ host.HostID }}" id="delete-host-submit">Delete Host</a></li>
   					</ul>
 				</ul>
@@ -473,6 +534,7 @@
 				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
   					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
   					<ul class="dropdown-menu dropdown-menu-right">
+  						<li><a href="" data-toggle="modal" data-target="#confirm-screenshot-host" data-host="{{ host.HostID }}" id="screenshot-host-submit">Screenshot Host</a></li>
     					<li><a href="" data-toggle="modal" data-target="#confirm-delete-host" data-host="{{ host.HostID }}" id="delete-host-submit">Delete Host</a></li>
   					</ul>
 				</ul>
@@ -501,6 +563,7 @@
 				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
   					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
   					<ul class="dropdown-menu dropdown-menu-right">
+  						<li><a href="" data-toggle="modal" data-target="#confirm-screenshot-host" data-host="{{ host.HostID }}" id="screenshot-host-submit">Screenshot Host</a></li>
     					<li><a href="" data-toggle="modal" data-target="#confirm-delete-host" data-host="{{ host.HostID }}" id="delete-host-submit">Delete Host</a></li>
   					</ul>
 				</ul>
@@ -529,6 +592,7 @@
 				<ul class="dropdown" style="padding-left:3px;padding-top:2px;float:right">
   					<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"><span class="glyphicon glyphicon-option-vertical"></span></a>
   					<ul class="dropdown-menu dropdown-menu-right">
+  						<li><a href="" data-toggle="modal" data-target="#confirm-screenshot-host" data-host="{{ host.HostID }}" id="screenshot-host-submit">Screenshot Host</a></li>
     					<li><a href="" data-toggle="modal" data-target="#confirm-delete-host" data-host="{{ host.HostID }}" id="delete-host-submit">Delete Host</a></li>
   					</ul>
 				</ul>
@@ -865,7 +929,7 @@
 										url: "",
 										data: $('form#bulk-form').serialize() + '&action=bulkdelete',
 										success: function(data){
-											$("#success-text").text("Request to delete selected hosts deleted.")
+											$("#success-text").text("Request to delete selected hosts submitted.")
 											$("#success-alert").alert();
 											$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
 			   									$("#success-alert").hide();
@@ -877,7 +941,94 @@
 											});
 										},
 										error: function(){
-											alert("Failed to delete selected hosts. Check /var/log/apache2/error.log.");
+											alert("A problem was encountered while submitting your request to delete a host.");
+										}
+								  	});
+                                    $modalDiv.addClass('loading');
+                                    setTimeout(function() {
+                                        $modalDiv.modal('hide').removeClass('loading');
+                                    }, 1000)
+                                });
+								$('#confirm-runmodule-hosts').on('click', '.btn-ok', function(e) {
+                                    var $modalDiv = $(e.delegateTarget);
+                                    var host = $(this).data('host');
+                                    console.log("Host: "+ host);
+                                    $.ajax({
+										type: "POST",
+										url: "",
+										data: $('form#bulk-form').serialize() + '&action=bulkrunmodule',
+										success: function(data){
+											$("#success-text").text("Request to check default credentials on selected hosts submitted.")
+											$("#success-alert").alert();
+											$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+			   									$("#success-alert").hide();
+			   								});
+			   								console.log(data);
+											$.each(data[0], function(index, host){
+												console.log(host);
+												$("div#"+host).remove()
+											});
+										},
+										error: function(){
+											alert("A problem was encountered while submitting your request to check default credentials on a host.");
+										}
+								  	});
+                                    $modalDiv.addClass('loading');
+                                    setTimeout(function() {
+                                        $modalDiv.modal('hide').removeClass('loading');
+                                    }, 1000)
+                                });
+								$('#confirm-screenshot-host').on('click', '.btn-ok', function(e) {
+                                    var $modalDiv = $(e.delegateTarget);
+                                    var host = $(this).data('host');
+                                    console.log("Host: "+ host);
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: "",
+                                        data: $('form#screenshot-host-form').serialize() + '&host=' + host,
+                                        success: function(data){
+                                            $("#success-text").text("Request to screenshot host submitted.")
+                                            $("#success-alert").alert();
+                                            $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                                                $("#success-alert").hide();
+                							});
+                                        },
+                                        error: function(){
+                                            $("#warning-text").text("A problem was encountered while submitting your request to screenshot a host.")
+                                            $("#warning-alert").alert();
+                                            $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
+                                                $("#warning-alert").hide();
+                                            }); 
+                                        },
+                                    })
+                                    $modalDiv.addClass('loading');
+                                    setTimeout(function() {
+                                        $modalDiv.modal('hide').removeClass('loading');
+                                    }, 1000)
+                                });
+                            
+                                $('#confirm-screenshot-host').on('show.bs.modal', function(e) {
+                                    var data = $(e.relatedTarget).data();
+                                    $('.title', this).text(data.description);
+                                    $('.btn-ok', this).data('host', data.host);
+                                });
+								$('#confirm-screenshot-hosts').on('click', '.btn-ok', function(e) {
+                                    var $modalDiv = $(e.delegateTarget);
+                                    var host = $(this).data('host');
+                                    console.log("Host: "+ host);
+                                    $.ajax({
+										type: "POST",
+										url: "",
+										data: $('form#bulk-form').serialize() + '&action=bulkscreenshot',
+										success: function(data){
+											$("#success-text").text("Request to screenshot selected hosts submitted.")
+											$("#success-alert").alert();
+											$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+			   									$("#success-alert").hide();
+			   								});
+										},
+										error: function(){
+											alert("Failed to screenshot selected hosts. Check /var/log/apache2/error.log.");
 										}
 								  	});
                                     $modalDiv.addClass('loading');
