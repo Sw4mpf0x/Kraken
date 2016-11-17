@@ -207,24 +207,35 @@ def BulkAction(POSTItems, action, note=''):
     sys.path.append("/opt/Kraken")
     django.setup()
     from Web_Scout.models import Hosts, Interfaces
+    from Web_Scout import tasks
 
     changedhosts = []
     changedinterfaces = []
     for key,value in POSTItems:
         if str(value) == "0":
             try:
-                host = Hosts.objects.get(HostID=key)
+                host_record = Hosts.objects.get(HostID=key)
                 changedhosts.append(key)
                 if str(action) == "bulkdelete":
-                    host.delete()
+                    host_record.delete()
                 if action == "bulknote":
-                    interfaces = host.interfaces_set.all()
+                    interfaces = host_record.interfaces_set.all()
                     interfaces.update(Notes=note)
                     for interface in interfaces:
                         changedinterfaces.append(interface.IntID)
                 if action == "bulkreviewed":
-                    host.Reviewed = True
-                host.save()
+                    host_record.Reviewed = True
+                if action == 'bulkscreenshot':
+                    for interface in host_record.interfaces_set.all():
+                        item = [interface.Url, interface.IntID]
+                        tasks.getscreenshot.delay(item, 20, True, None, True)
+                        changedinterfaces.append(interface.IntID)
+                if action == 'bulkrunmodule':
+                    interface_record = host_record.interfaces_set.all()[0]
+                    if interface_record.Module:
+                        tasks.runmodule.delay(interface_record.IntID)
+                        changedinterfaces.append(interface.IntID)
+                host_record.save()
             except:
                 continue
     return [changedhosts, changedinterfaces]
