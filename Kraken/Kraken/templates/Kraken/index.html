@@ -3,36 +3,44 @@
 <div class="container">
 <div class="well">
 
-<h3>Welcome to Kraken Operations Center!</h3><br>
+<h3>Welcome to Kraken Operations Center!</h3>
+<h4>Quickstart:</h4>
+<p style="margin-left:20px"><b>Step 1</b>: Add host data and take web interface screenshots on the <a href="{% url 'webscout:setup' %}">Setup page</a>.</p>
+<p style="margin-left:20px"><b>Step 2</b>: View the screenshots in <a href="{% url 'webscout:index' %}p">Web Scout page.</a></p>
+<p style="margin-left:20px"><b>Step 3</b>: Click on thumbnails to view more information on each interface, take notes, and perform automated default credential checking.</p>
+
+<h4>Detailed Guide</h4>
+<h5>Setup</h5>
 <p>
-To get started, make your way over to <a href="WebScout/setup">Web Scout's Setup page</a>. Web Scout is what you will use to scan, and review, the web interfaces accessible on a given network. Kraken will parse port data from an Nmap XML file. The parser will look for either 'HTTP' to be present in the port entry, or one of the following known HTTP ports:
+To get started, make your way over to the <a href="{% url 'webscout:setup' %}p">Setup page</a>. There you can:<br>
+<ul>
+	<li>Add IP addresses/ranges and hostnames to scan with Nmap</li>
+	<li>Import and parse Nmap XML file</li> 
+	<li>Take screenshots of the web interfaces added</li>
+	<li>Test for default credentials where able</li>
+</ul>
 </p>
-<div class="well">
-80, 280, 443, 591, 593, 981, 1311, 2031, 2480, 3181, 4444, 4445, 4567, 4711, 4712, 5104, 5280, 7000, 7001, 7002, 8000, 8008, 8011, 8012, 8013, 8014, 8042, 8069, 8080, 8081, 8243, 8280, 8281, 8443, 8531, 8887, 8888, 9080, 9443, 11371 ,12443, 16080, 18091, 18092
-</div>
 <p>
-Web Scout's Setup page provides your with file upload functionality to provide your Nmap XML file. Behind the scenes, a Celery task will parse the Nmap XML data into the SQLite database. The last step for setup is to click the "Take Screenshots" button. Celery workers will screenshots all interfaces in the database. The progress field will display a completion percentage and will show 'SUCCESS' when complete. This may take a while depending on how many screenshots need to be taken. The screenshot-taking Celery task currently uses 5 workers, each with a Selenium headless PhantomJS web driver, so it can be fairly resource intensive. During the screenshot taking process, interfaces are identified by type if possible, and any known default credentials are displayed in the 'viewer.html' page.
+The first step is to add hosts to Kraken. Kraken's Setup page provides your with file upload functionality to provide your Nmap XML file and the ability to specifiy IP addresses, IP ranges, hostnames, and specific URLs to screenshot. The second step is to click the "Take Screenshots" button. Celery workers will screenshots all hosts and interfaces in the database. The progress field will display a completion percentage and will show 'SUCCESS' when complete. This may take a while depending on how many screenshots need to be taken. The screenshot-taking Celery task currently uses 5 workers, each with a Selenium headless PhantomJS web driver, so it can be fairly resource intensive. 
 </p>
 <p>
-Once all of your screenshots are taken, visit <a href="WebScout">Web Scout's main page</a> to see the listing of your web interfaces. Each host gets a Bootstrap 'well'. Each web interace hosted by that host is grouped into that well along with IP, hostname, and basic port information. Clicking a screenshot thumbnail will popup a larger image along with more detailed information about that interface and host. Within this popup you can take notes, check the check boxes for HTTP Authentication and Default Credentials, and mark the host as reviewed. Hit save to record those notes in the database. All of your notes can be reviewed in <a href="Logs/reports">Reports</a>. Clicking "KrakenView" will open another tab where that will attempt to load that interface into an iframe with a Kraken toolbar at the top. The toolbar allows you to take the same notes you can with the popup and provides you with any known default credentials. There is also a link in case the page is not able to load in the iframe.
+During the screenshot taking process, interfaces are categorized by type if possible, and any known default credentials are displayed in the 'viewer.html' page. Some identified interfaces have credential checking modules associated with them. These allow for mass, automated default credential checking with the results stored in each host's metadata.
+</p>
+<h5>Assessing Interfaces</h5>
+<p>
+Once all of your screenshots are taken, visit <a href="{% url 'webscout:index' %}">Web Scout page</a> to see the listing of your web interfaces. Each host is displayed in it's own field. Each web interace hosted by that host is grouped into that field along with IP, hostname, and basic port information. Clicking a screenshot thumbnail will pop up a larger image along with more detailed information about that interface and host. Within this popup you can take notes, check the check boxes for HTTP Authentication and Default Credentials, and mark the host as reviewed. If the host has a module for checking default credentials, you will see a target glyphicon next to the 'Default Credentials' checkbox. Hit save to record those notes in the database. 
 </p>
 <p>
-You can cycle through the interfaces on each page using the popup by either clicking the Next/Previous buttons or hitting the right/left arrows on your keyboard. The workflow Kraken was designed for is to go through a couple of Web Scout pages using the popup and open web interfaces with KrakenView in the background as you go (Ctrl + left-click for Windows or Option + left-click for Mac). Afterwards, go through the tabs and take notes as I go.
+Clicking "KrakenView" will open another tab where that will attempt to load that interface into an iframe with a Kraken toolbar at the top. The toolbar allows you to take the same notes you can with the popup and provides you with any known default credentials. There is also an external link in case the page is not able to load in the iframe.
+</p>
+<p>
+You can cycle through the interfaces on each page using the popup by either clicking the Next/Previous buttons or hitting the right/left arrows on your keyboard. The workflow Kraken was designed for is to go through a couple of Web Scout pages using the popup and open web interfaces with KrakenView in the background as you go (Ctrl + left-click for Windows or Option + left-click for Mac). Afterwards, go through the tabs and take notes as you go.
+</p>
+<h5>Inventory, Reports, and Logs</h5>
+<p>
+All of your notes can be reviewed in <a href="{% url 'logs:reports' %}">Reports</a>. There you will find lists for interfaces with default credentials and HTTP authentication, as well as all interfaces where notes were entered. All activity perform is recorded in the <a href="{% url 'logs:krakenlog' %}">Logs</a>. Lastly, when the scanning functionality is used to add hosts to Kraken, subsequent scans of thoses hosts or ranges could discover new hosts or be unable to reach others. These two conditions are tracked in Kraken's <a href="{% url 'webscout:inventory' %}">Web Scout's inventory page</a>. Stale hosts, or hosts that were not seen on subsequent scans will have a gray color. Newly found hosts will display as bright green.
 </p>
 </div>
 </div>
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
 

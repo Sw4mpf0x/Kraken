@@ -312,8 +312,8 @@ def setup(request):
 			for key,value in request.POST.items():
 				if str(value) == "on":
 					address_list.append(key)
-			DeleteAddress(address_list)
-			json_data = json.dumps(address_list)
+			deleted_addresses = DeleteAddress(address_list)
+			json_data = json.dumps(deleted_addresses)
 			return HttpResponse(json_data, content_type='application/json')
 		else:
 			return HttpResponse("Failure.")

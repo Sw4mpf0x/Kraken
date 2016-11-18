@@ -12,7 +12,7 @@ class Addresses(models.Model):
 class Hosts(models.Model):
 	def __str__(self):
 		return self.IP
-	addresses = models.ForeignKey(Addresses, on_delete=models.PROTECT, blank=True, null=True)
+	addresses = models.ForeignKey(Addresses, on_delete=models.SET_NULL, blank=True, null=True)
 	HostID = models.CharField(max_length=12)
 	IP = models.CharField(max_length=15)
 	Hostname = models.CharField(max_length=75)

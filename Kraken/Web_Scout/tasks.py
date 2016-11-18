@@ -299,7 +299,9 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 					page_id = sig_list[1].strip()
 					credential_info = sig_list[2].strip()
 					module = sig_list[3].strip()
-	
+					category = sig_list[4].strip()
+					rating = sig_list[5].strip()
+
 					# Set our variable to 1 if the signature was not identified.  If it is
 					# identified, it will be added later on.  Find total number of
 					# "signatures" needed to uniquely identify the web app
@@ -317,14 +319,16 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 						if module:
 							interface_record.Module = module
 						interface_record.Product = page_id
+						interface_record.hosts.Category = category
+						interface_record.hosts.Rating = rating
 						interface_record.save()
 				host_record = interface_record.hosts
-				for cat in categories:
+				#for cat in categories:
 					# Find the signature(s), split them into their own list if needed
 					# Assign default creds to its own variable
-					cat_split = cat.split('|')
-					cat_sig = cat_split[0].split(";")
-					cat_name = cat_split[1]
+				#	cat_split = cat.split('|')
+				#	cat_sig = cat_split[0].split(";")
+				#	cat_name = cat_split[1]
 	
 					# Set our variable to 1 if the signature was not identified.  If it is
 					# identified, it will be added later on.  Find total number of
@@ -334,10 +338,10 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 					# This is used if there is more than one "part" of the
 					# web page needed to make a signature Delimete the "signature"
 					# by ";" before the "|", and then have the creds after the "|"
-					if all([x.lower() in source_code.lower() for x in cat_sig]):
-						host_record.Category = cat_name.strip()
-						host_record.save()
-						break
+				#	if all([x.lower() in source_code.lower() for x in cat_sig]):
+				#		host_record.Category = cat_name.strip()
+				#		host_record.save()
+				#		break
     	
 		except IOError:
 			print("[*] WARNING: Credentials file not in the same directory"
@@ -441,7 +445,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 		browser.quit()
 		interface_record.Retry = True
 		interface_record.save()
-		shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', screenshotName + 'png')
+		shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', screenshotName + '.png')
 		return
 	
 @task

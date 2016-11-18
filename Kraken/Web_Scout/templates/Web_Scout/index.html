@@ -380,7 +380,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">Jeppers Check</h4>
+                    <h4 class="modal-title" id="myModalLabel">Validation Check</h4>
                 </div>
                 <div class="modal-body">
                     <p>You are about to delete a host.
@@ -399,7 +399,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">Jeppers Check</h4>
+                    <h4 class="modal-title" id="myModalLabel">Validation Check</h4>
                 </div>
                 <div class="modal-body">
                     <p>You are about to delete the selected hosts.
@@ -417,7 +417,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">Jeppers Check</h4>
+                    <h4 class="modal-title" id="myModalLabel">Validation Check</h4>
                 </div>
                 <div class="modal-body">
                     <p>You are about to check default credentials on the selected hosts.
@@ -438,7 +438,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">Jeppers Check</h4>
+                    <h4 class="modal-title" id="myModalLabel">Validation Check</h4>
                 </div>
                 <div class="modal-body">
                     <p>You are about to screenshot a host.
@@ -457,7 +457,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">Jeppers Check</h4>
+                    <h4 class="modal-title" id="myModalLabel">Validation Check</h4>
                 </div>
                 <div class="modal-body">
                     <p>You are about to screenshot the selected hosts.
@@ -521,7 +521,7 @@
 				{% else %}
 				Port: {{ interface.Port }}<br>
 				{% endif %}
-				<a href="viewer?destination={{ interface.IntID }}" target="_blank">Open</a>
+				<a href="{{ interface.Url }}" target="_blank">Open</a>
 			{% endfor %}
 			</div>
 		{% elif host.interfaces_set.all|length_is:"2" %}
@@ -548,7 +548,7 @@
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ interface.Port }}<br>
-				<a href="viewer?destination={{ interface.IntID }}" target="_blank">Open</a>
+				<a href="{{ interface.Url }}" target="_blank">Open</a>
 				</div>
 			{% endfor %}
 			</div>
@@ -577,7 +577,7 @@
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ interface.Port }}<br>
-				<a href="viewer?destination={{ interface.IntID }}" target="_blank">Open</a>
+				<a href="{{ interface.Url }}" target="_blank">Open</a>
 				</div>
 			{% endfor %}
 			</div>
@@ -606,7 +606,7 @@
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ interface.Port }}<br>
-				<a href="viewer?destination={{ interface.IntID }}" target="_blank">Open</a>
+				<a href="{{ interface.Url }}" target="_blank">Open</a>
 				</div>
 			{% endfor %}
 			</div>
@@ -714,9 +714,9 @@
 			 			<div style="padding-bottom:5px"><b>Protocol:</b>&#160<span id="image-gallery-name"></span><br></div>
 			 			<div style="padding-bottom:5px"><b>Product:</b>&#160&#160<span id="image-gallery-product"></span><br></div>
 			 			<div style="padding-bottom:5px"><b>Category:</b>&#160&#160<span id="image-gallery-category"></span><br></div>
-			 			<div style="padding-bottom:5px"><b>Last Seen:</b>&#160&#160<span id="image-gallery-lastseen"></span><br></div>
-			 			<div style="padding-bottom:5px"><h3>Documentation</h3></div>
-			 			<form id="runmodule-form">
+			 			<div style="padding-bottom:5px"><b>Last Seen:</b>&#160&#160<span id="image-gallery-lastseen"></span></div>
+			 			<div style="padding-bottom:5px"><h3 style="margin-top:5px;margin-bottom:0px">Documentation</h3></div>
+			 			<form style="float:left" id="runmodule-form">
   							{% csrf_token %}
   						</form>
   						<form id="note-form" method="POST">

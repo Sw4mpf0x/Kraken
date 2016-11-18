@@ -2,7 +2,7 @@
 {% block head %}
 <style>
     .modal.loading .modal-content:before {
-        content: 'Oh, Jeppers...';
+        content: 'Processing...';
         text-align: center;
         line-height: 155px;
         font-size: 20px;
@@ -37,7 +37,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="myModalLabel">Jeppers Check</h4>
+                <h4 class="modal-title" id="myModalLabel">Validation Check</h4>
             </div>
             <div class="modal-body">
                 <p>You are about to <b><i class="title"></i></b>.
@@ -136,7 +136,6 @@
             <form id="scan-form" method="POST">
                 <div class="form-group">
                     {% csrf_token %}
-                    <input type="hidden" class="form-control" name="action" value="scan"/>
                     <div style="margin-left:20px" id="addresslist">
                         <br>
                         {% for address in addresses %}
@@ -205,7 +204,6 @@
             <form  id="runmodules-form" method = "POST">
                 <div class="form-group">
                     {% csrf_token %}
-                    <input type="hidden" class="form-control" name="action" value="runmodules"/>
                     <label style="font-size:20px" for="runmodules">Test default credentials on interfaces identified by Kraken:</label><br>
                     <div style="margin-bottom:5px"><span id="runmodules_progress"></span></div>
                     <button data-toggle="modal" data-target="#confirm-action" data-description="check default credentials" data-action="runmodules" id="runmodules" class="btn btn-primary">Test Credentials</button>
@@ -432,7 +430,7 @@
         $.ajax({
             type: 'POST',
             url: "",
-            data: $('form#' + action + '-form').serialize(),
+            data: $('form#' + action + '-form').serialize() + "&action=" + action,
             success: function(msg){
                 $("#success-text").text("Request to " + action_description + " submitted.")
                 $("#success-alert").alert();
