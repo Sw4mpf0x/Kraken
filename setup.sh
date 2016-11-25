@@ -8,6 +8,7 @@ fi
 printf "\033[1;31mInstalling Dependencies\033[0m\n"
 # Install RabbitMQ
 sudo apt-get update
+sudo apt-get -y install nmap
 sudo apt-get -y install apache2
 sudo apt-get -y install libapache2-mod-wsgi 
 sudo apt-get -y install sqlite3

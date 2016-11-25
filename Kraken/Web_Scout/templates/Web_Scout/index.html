@@ -521,7 +521,7 @@
 				{% else %}
 				Port: {{ interface.Port }}<br>
 				{% endif %}
-				<a href="{{ interface.Url }}" target="_blank">Open</a>
+				<a href="viewer/?destination={{ interface.IntID }}&external=true" target="_blank">Open</a>
 			{% endfor %}
 			</div>
 		{% elif host.interfaces_set.all|length_is:"2" %}
@@ -548,7 +548,7 @@
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ interface.Port }}<br>
-				<a href="{{ interface.Url }}" target="_blank">Open</a>
+				<a href="viewer/?destination={{ interface.IntID }}&external=true" target="_blank">Open</a>
 				</div>
 			{% endfor %}
 			</div>
@@ -577,7 +577,7 @@
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ interface.Port }}<br>
-				<a href="{{ interface.Url }}" target="_blank">Open</a>
+				<a href="viewer/?destination={{ interface.IntID }}&external=true" target="_blank">Open</a>
 				</div>
 			{% endfor %}
 			</div>
@@ -606,7 +606,7 @@
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				Port: {{ interface.Port }}<br>
-				<a href="{{ interface.Url }}" target="_blank">Open</a>
+				<a href="viewer/?destination={{ interface.IntID }}&external=true" target="_blank">Open</a>
 				</div>
 			{% endfor %}
 			</div>

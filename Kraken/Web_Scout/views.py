@@ -233,7 +233,9 @@ def setup(request):
 				task.Task_Id = job.id
 				task.Count = 0
 				task.save()
-				return render(request, 'Web_Scout/setup.html', {'form':form, 'uploaded':True, 'failedupload':False})
+				form = ParseForm()
+				addresses = Addresses.objects.all()
+				return render(request, 'Web_Scout/setup.html', {'addresses':addresses, 'form':form, 'uploaded':False, 'failedupload':False})
 
 			else:
 				return render(request, 'Web_Scout/setup.html', {'form':form, 'uploaded':False, 'failedupload':True})
@@ -357,4 +359,3 @@ def task_state(request):
 		return HttpResponse(json_data, content_type='application/json')
 	else:
 		return HttpResponse()
-	

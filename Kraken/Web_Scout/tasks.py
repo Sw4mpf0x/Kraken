@@ -72,6 +72,7 @@ def nmap_parse(filepath, targetaddress=''):
 		try:
 			# Attempt to locate the each host in the Hosts database table.
 			host_object = Hosts.objects.get(HostID=ipaddress.replace('.', '-'))
+			print host_object
 			print('Existing host')
 
 			# If found, the host is no longer stale. If a host cannot be reached, 
@@ -88,11 +89,12 @@ def nmap_parse(filepath, targetaddress=''):
 			# functionality. When a scan is performed, hosts are created with a 
 			# relationship to the address selected to scan
 			if targetaddress:
+				print "Creating new host record under Address"
 				address_record = Addresses.objects.get(AddressID=targetaddress.replace('.', '-').replace('/', '-'))
 				host_object = address_record.hosts_set.create()
+				host_object.New = True
 			else:
 				host_object = Hosts()
-			host_object.New = True
 
 		host_object.HostID = ipaddress.replace('.', '-')
 		host_object.Rating = ""
@@ -414,7 +416,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 					if(debug):
 						print "[-] Didn't work with SSLv3 either..."+urlItem[0]
 					browser2.quit()
-					shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', screenshotName + 'png')
+					shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', screenshotName + '.png')
 				else:
 					print '[+] Saving: '+screenshotName
 					screen = browser.get_screenshot_as_png()
@@ -598,9 +600,9 @@ def scan(addresses):
 
 	for address in addresses:
 		try:
-			filepath = '/opt/Kraken/tmp/' + address.replace('/', '-').replace('.', '-')
+			filepath = '/opt/Kraken/tmp/' + address.replace('/', '-').replace('.', '-') + '.xml'
 			print 'deleting ' + filepath
-			os.remove(filepath)
+		#	os.remove(filepath)
 		except:
 			print 'No nmap.xml to remove'
 
@@ -609,7 +611,7 @@ def scan(addresses):
 		try:
 			for host in Addresses.objects.get(AddressID=address.replace('.', '-').replace('/', '-')).hosts_set.all():
 				print 'host ' + host.IP + ' found.'
-				if datetime.datetime.strptime(host.LastSeen, '%Y-%m-%d %H:%M:%S.%f') > timestamp:
+				if datetime.datetime.strptime(host.LastSeen, '%Y-%m-%d %H:%M:%S.%f') < timestamp:
 					print 'Host is stale'
 					host.Stale = True
 					host.StaleLevel += 1
