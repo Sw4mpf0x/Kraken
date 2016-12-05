@@ -240,8 +240,11 @@ def setup(request):
 			else:
 				return render(request, 'Web_Scout/setup.html', {'form':form, 'uploaded':False, 'failedupload':True})
 		elif request.POST.get('action') == 'screenshot':
-			overwrite = request.POST.get('overwrite', 'False')
-			job = tasks.startscreenshot.delay(overwrite)
+			overwrite = request.POST.get('overwrite')
+			if overwrite == 'True':
+				job = tasks.startscreenshot.delay(True)
+			else:
+				job = tasks.startscreenshot.delay()
 			try:
 				task = Tasks.objects.get(Task='screenshot')
 			except:

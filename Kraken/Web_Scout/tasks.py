@@ -359,10 +359,10 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 	interface_record = Interfaces.objects.get(IntID=urlItem[1])
 
 	# Set screenshot file name.
-	screenshotName = '/opt/Kraken/Web_Scout/static/Web_Scout/'+urlItem[1]
+	screenshotName = '/opt/Kraken/Web_Scout/static/Web_Scout/' + urlItem[1]
 	if(debug):
 		print '[+] Got URL: '+urlItem[0]
-		print '[+] screenshotName: '+screenshotName
+		print '[+] screenshotName: ' + screenshotName + '.png'
 
 	# If screenshot exists and the option to overwrite screenshots was not 
 	# selected, go to next interface.
@@ -391,7 +391,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 		try:
 			if(resp is not None and resp.status_code == 401):
 				print urlItem[0]+" Requires HTTP Basic Auth"
-				writeImage(resp.headers.get('www-authenticate','NO WWW-AUTHENTICATE HEADER'),screenshotName+".png")
+				writeImage(resp.headers.get('www-authenticate','NO WWW-AUTHENTICATE HEADER'),screenshotName + ".png")
 				browser.quit()
 				return
 		except:
@@ -406,19 +406,19 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 			old_url = browser.current_url
 			browser.get(urlItem[0].strip())
 			if(browser.current_url == old_url):
-				print "[-] Error fetching in browser but successfully fetched with Requests: "+urlItem[0]
+				print "[-] Error fetching in browser but successfully fetched with Requests: " + urlItem[0]
 				if(debug):
-					print "[+] Trying with sslv3 instead of TLS - known phantomjs bug: "+urlItem[0]
+					print "[+] Trying with sslv3 instead of TLS - known phantomjs bug: " + urlItem[0]
 				browser2 = webdriver.PhantomJS(service_args=['--ignore-ssl-errors=true'], executable_path="phantomjs")
 				old_url = browser2.current_url
 				browser2.get(urlItem[0].strip())
 				if(browser2.current_url == old_url):
 					if(debug):
-						print "[-] Didn't work with SSLv3 either..."+urlItem[0]
+						print "[-] Didn't work with SSLv3 either..." + urlItem[0]
 					browser2.quit()
 					shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', screenshotName + '.png')
 				else:
-					print '[+] Saving: '+screenshotName
+					print '[+] Saving: ' + screenshotName + '.png'
 					screen = browser.get_screenshot_as_png()
 					im = Image.open(StringIO.StringIO(screen))
 					region = im.crop(box)
@@ -428,7 +428,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 					browser2.quit()
 					return
 
-			print '[+] Saving: '+screenshotName
+			print '[+] Saving: ' + screenshotName + '.png'
 			screen = browser.get_screenshot_as_png()
 			im = Image.open(StringIO.StringIO(screen))
 			region = im.crop(box)
@@ -451,7 +451,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 		return
 	
 @task
-def startscreenshot(overwrite):
+def startscreenshot(overwrite=False):
 	import datetime
 	import django, os, sys
 	os.environ["DJANGO_SETTINGS_MODULE"] = "Kraken.settings"
@@ -488,7 +488,7 @@ def startscreenshot(overwrite):
 		sleep(.1)
 		print 'Percentage Complete: ' + str(process_percent) + '%'
 		current_task.update_state(state='PROGRESS', meta={'process_percent': process_percent })
-		sleep(5)
+		sleep(30)
 
 	for interface in Interfaces.objects.all():
 		if not os.path.exists('/opt/Kraken/Web_Scout/static/Web_Scout/' + interface.IntID + '.png'):

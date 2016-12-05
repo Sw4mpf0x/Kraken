@@ -517,7 +517,7 @@
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
 				{% if interface.Type == "url" %}
-				Url: {{ interface.Url }}<br>
+				Url Path Screenshot<br>
 				{% else %}
 				Port: {{ interface.Port }}<br>
 				{% endif %}
@@ -547,7 +547,11 @@
 				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ interface.IntID }}" data-host-id="{{ host.HostID }}" data-module="{% if interface.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ interface.Category }}" data-lastseen="{{ host.LastSeen }}" data-rating="{{ host.Rating }}" data-product="{{ interface.Product }}" data-link="viewer/?destination={{ interface.IntID }}" data-image-id="" data-toggle="modal" {% if interface.Type == "url" %} data-title="{{ interface.Url }}" {% else %} data-title="{{ host.IP }}:{{ interface.Port }} ({{ host.Hostname }})" {% endif %} data-note="{{ interface.Notes }}" data-default-creds="{{ interface.DefaultCreds }}" data-http-auth="{{ interface.HttpAuth }}" data-name="{{ interface.Name }}" data-image="{% static interface.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ interface.Url }}">
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
+				{% if interface.Type == "url" %}
+				Url Path Screenshot<br>
+				{% else %}
 				Port: {{ interface.Port }}<br>
+				{% endif %}
 				<a href="viewer/?destination={{ interface.IntID }}&external=true" target="_blank">Open</a>
 				</div>
 			{% endfor %}
@@ -576,7 +580,11 @@
 				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ interface.IntID }}" data-host-id="{{ host.HostID }}" data-module="{% if interface.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ interface.Category }}" data-lastseen="{{ host.LastSeen }}" data-rating="{{ host.Rating }}" data-product="{{ interface.Product }}" data-link="viewer/?destination={{ interface.IntID }}" data-image-id="" data-toggle="modal" {% if interface.Type == "url" %} data-title="{{ interface.Url }}" {% else %} data-title="{{ host.IP }}:{{ interface.Port }} ({{ host.Hostname }})" {% endif %} data-note="{{ interface.Notes }}" data-default-creds="{{ interface.DefaultCreds }}" data-http-auth="{{ interface.HttpAuth }}" data-name="{{ interface.Name }}" data-image="{% static interface.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ interface.Url }}">
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
+				{% if interface.Type == "url" %}
+				Url Path Screenshot<br>
+				{% else %}
 				Port: {{ interface.Port }}<br>
+				{% endif %}
 				<a href="viewer/?destination={{ interface.IntID }}&external=true" target="_blank">Open</a>
 				</div>
 			{% endfor %}
@@ -605,7 +613,11 @@
 				<a style="margin-bottom:5px;margin-top:5px" class="thumbnail" id="{{ interface.IntID }}" data-host-id="{{ host.HostID }}" data-module="{% if interface.Module %}True{% else %}False{% endif %}" href="#" data-category="{{ interface.Category }}" data-lastseen="{{ host.LastSeen }}" data-rating="{{ host.Rating }}" data-product="{{ interface.Product }}" data-link="viewer/?destination={{ interface.IntID }}" data-image-id="" data-toggle="modal" {% if interface.Type == "url" %} data-title="{{ interface.Url }}" {% else %} data-title="{{ host.IP }}:{{ interface.Port }} ({{ host.Hostname }})" {% endif %} data-note="{{ interface.Notes }}" data-default-creds="{{ interface.DefaultCreds }}" data-http-auth="{{ interface.HttpAuth }}" data-name="{{ interface.Name }}" data-image="{% static interface.ImgLink %}" data-target="#image-gallery" data-reviewed="{{ host.Reviewed }}" data-extlink="{{ interface.Url }}">
 					<img class="img-responsive img-rounded center-block" src={% static interface.ImgLink %} alt="Short alt text" style="max-width:150px">
 				</a>
+				{% if interface.Type == "url" %}
+				Url Path Screenshot<br>
+				{% else %}
 				Port: {{ interface.Port }}<br>
+				{% endif %}
 				<a href="viewer/?destination={{ interface.IntID }}&external=true" target="_blank">Open</a>
 				</div>
 			{% endfor %}
