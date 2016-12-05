@@ -97,7 +97,7 @@ def index(request):
 		if search:
 			entry_query = BuildQuery(search, ['IP', 'Hostname', 'Category', 'interfaces__Product'])
 			if entry_query:
-				temp_host_array = Hosts.objects.all().filter(entry_query)
+				temp_host_array = Hosts.objects.all().filter(entry_query).distinct()
 			else:
 				temp_host_array = ""
 		else:

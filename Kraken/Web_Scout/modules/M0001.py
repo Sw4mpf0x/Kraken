@@ -1,4 +1,4 @@
-# Default Credential Check for Xerox WorkCentres
+# Default Credential Check for Xerox WorkCentre Multifunction Printers
 def run(host):
 	import requests
 
@@ -8,8 +8,8 @@ def run(host):
 
 	# Execute request
 	r = requests.post("http://" + host + "/userpost/xerox.set", data=payload, headers=headers)
+	
 	# Enter logic here. Result is expected to be either "Success" or "Fail"
-
 	if "window.opener" in r.text:
 		return "Success", "admin:1111"
 	else:

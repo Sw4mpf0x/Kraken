@@ -42,7 +42,7 @@
 		function updateGallery(selector) {
 			var $sel = selector;
 			current_image = $sel.attr('data-image-id');
-			$('#image-gallery-name').text($sel.attr('data-name'));
+			$('#image-gallery-rating').text($sel.attr('data-rating'));
 			$('#image-gallery-title').text($sel.attr('data-title'));
 			$('#image-gallery-image').attr('src', $sel.attr('data-image'));
 			$('#image-gallery-link').attr('href', $sel.attr('data-link'));
@@ -723,9 +723,9 @@
         					<span id="gallery-warning-text"></span>
 						</div>
 						<div style="padding-bottom:5px"><h3>Interface Information</h3></div>
-			 			<div style="padding-bottom:5px"><b>Protocol:</b>&#160<span id="image-gallery-name"></span><br></div>
 			 			<div style="padding-bottom:5px"><b>Product:</b>&#160&#160<span id="image-gallery-product"></span><br></div>
 			 			<div style="padding-bottom:5px"><b>Category:</b>&#160&#160<span id="image-gallery-category"></span><br></div>
+			 			<div style="padding-bottom:5px"><b>Rating:</b>&#160<span id="image-gallery-rating"></span><br></div>
 			 			<div style="padding-bottom:5px"><b>Last Seen:</b>&#160&#160<span id="image-gallery-lastseen"></span></div>
 			 			<div style="padding-bottom:5px"><h3 style="margin-top:5px;margin-bottom:0px">Documentation</h3></div>
 			 			<form style="float:left" id="runmodule-form">

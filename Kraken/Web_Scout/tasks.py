@@ -323,6 +323,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 						interface_record.Product = page_id
 						interface_record.hosts.Category = category
 						interface_record.hosts.Rating = rating
+						interface_record.hosts.save()
 						interface_record.save()
 				host_record = interface_record.hosts
 				#for cat in categories:

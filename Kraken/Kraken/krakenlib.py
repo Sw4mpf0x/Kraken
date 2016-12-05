@@ -13,7 +13,7 @@ def BuildQuery(query_string, search_fields):
         aims to search keywords within a model by testing the given search fields.
     '''
     # Thank you @squarepegsys
-    # Taken from https://github.com/squarepegsys/django-simple-search/blob/master/django-simple-search/utils.py
+    # Source: https://github.com/squarepegsys/django-simple-search/blob/master/django-simple-search/utils.py
     query = None # Query to search for every search term
     terms = NormalizeQuery(query_string)
     for term in terms:
