@@ -1,7 +1,6 @@
 from __future__ import absolute_import, division
 from celery import task, current_task, group
-from time import sleep
-from selenium import webdriver	
+from time import sleep	
 from PIL	  import Image, ImageDraw, ImageFont
 from Kraken.krakenlib import LogKrakenEvent
 import sys
@@ -35,11 +34,11 @@ def cleardb():
 @task
 def removescreenshots():
 	# Build list of all current screenshots.
-	screenshotlist = [ f for f in os.listdir("/opt/Kraken/Web_Scout/static/Web_Scout/")]
+	screenshotlist = [ f for f in os.listdir("/opt/Kraken/static/Web_Scout/")]
 	
 	# Remove each screenshot from the list.
 	for screenshot in screenshotlist:
-		os.remove('/opt/Kraken/Web_Scout/static/Web_Scout/' + screenshot)
+		os.remove('/opt/Kraken/static/Web_Scout/' + screenshot)
 	LogKrakenEvent('Celery', 'Screenshots deleted.', 'info')
 
 @task
@@ -220,6 +219,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 	sys.path.append("/opt/Kraken")
 	django.setup()
 	from Web_Scout.models import Hosts,Interfaces
+	from selenium import webdriver
 	
 	# Used to setup a headless, selenium PhantomJS web driver
 	def setupBrowserProfile(tout, proxy):
@@ -247,12 +247,12 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 		return browser
 	
 	# Used to screenshot basic auth. Needs testing.
-	def writeImage(text, filename, fontsize=40, width=1024, height=200):
+	def writeImage(text, filename, fontsize=200, width=1024, height=768):
 		image = Image.new("RGBA", (width,height), (255,255,255))
 		draw = ImageDraw.Draw(image)
-		font_path = "/opt/Kraken/Web_Scout/LiberationSerif-BoldItalic.ttf"
+		font_path = "/opt/Kraken/common/fonts/LiberationSerif-BoldItalic.ttf"
 		font = ImageFont.truetype(font_path, fontsize)
-		draw.text((10, 0), text, (0,0,0), font=font)
+		draw.text((80, 250), text, (0,0,0), font=font)
 		image.save(filename)
 	
 	# Perform basic request to web interface to test HTTP response code.
@@ -264,9 +264,11 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 		session = requests.session()
 		if(proxy is not None):
 			session.proxies={'http':'socks5://'+proxy,'https':'socks5://'+proxy}
-		print 'Getting ' + url[0]
+		print '[+] Getting ' + url[0]
 		try:
 			resp = session.get(url[0],**kwargs)
+		except requests.exceptions.Timeout:
+			resp = "Timeout"
 		except requests.exceptions.SSLError:
 			resp = "SSL Error"
 		return resp
@@ -278,12 +280,9 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 		try:
 			# File system paths to signature files.
 			sigpath = '/opt/Kraken/Web_Scout/signatures.txt'
-			catpath = '/opt/Kraken/Web_Scout/categories.txt'
 
 			with open(sigpath) as sig_file:
 				signatures = sig_file.readlines()
-			with open(catpath) as cat_file:
-				categories = cat_file.readlines()
 
 			interface_record.Default_Credentials = ""
 			interface_record.save()
@@ -291,7 +290,6 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 			# Loop through and see if there are any matches from the source code
 			# This functionality was adapted from EyeWitness (https://github.com/ChrisTruncer/EyeWitness)
 			if source_code is not None:
-				print 'source code present'
 				for sig in signatures:
 
 					# Find the signature(s), split them into their own list if needed
@@ -319,37 +317,18 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 						else:
 							interface_record.Default_Credentials += '\n' + credential_info
 						if module:
-							interface_record.Module = module
+							interface_record.hosts.Module = module
 						interface_record.Product = page_id
 						interface_record.hosts.Category = category
 						interface_record.hosts.Rating = rating
 						interface_record.hosts.save()
 						interface_record.save()
 				host_record = interface_record.hosts
-				#for cat in categories:
-					# Find the signature(s), split them into their own list if needed
-					# Assign default creds to its own variable
-				#	cat_split = cat.split('|')
-				#	cat_sig = cat_split[0].split(";")
-				#	cat_name = cat_split[1]
-	
-					# Set our variable to 1 if the signature was not identified.  If it is
-					# identified, it will be added later on.  Find total number of
-					# "signatures" needed to uniquely identify the web app
-					# signature_range = len(page_sig)
-	
-					# This is used if there is more than one "part" of the
-					# web page needed to make a signature Delimete the "signature"
-					# by ";" before the "|", and then have the creds after the "|"
-				#	if all([x.lower() in source_code.lower() for x in cat_sig]):
-				#		host_record.Category = cat_name.strip()
-				#		host_record.save()
-				#		break
     	
 		except IOError:
-			print("[*] WARNING: Credentials file not in the same directory"
+			print("[-] WARNING: Credentials file not in the same directory"
 				" as Kraken")
-			print '[*] Skipping credential check'
+			print '[-] Skipping credential check'
 			return
 
 	# Set screenshot size. Matches screen size of web driver.
@@ -360,7 +339,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 	interface_record = Interfaces.objects.get(IntID=urlItem[1])
 
 	# Set screenshot file name.
-	screenshotName = '/opt/Kraken/Web_Scout/static/Web_Scout/' + urlItem[1]
+	screenshotName = '/opt/Kraken/static/Web_Scout/' + urlItem[1]
 	if(debug):
 		print '[+] Got URL: '+urlItem[0]
 		print '[+] screenshotName: ' + screenshotName + '.png'
@@ -390,18 +369,23 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 		
 		# Handle basic auth
 		try:
-			if(resp is not None and resp.status_code == 401):
+			if resp == "Timeout":
+				print "[-] Connection to " + urlItem[0] + " timed out"
+				writeImage("Timed Out",screenshotName + ".png")
+				browser.quit()
+				return
+			elif(resp is not None and resp.status_code == 401):
 				print urlItem[0]+" Requires HTTP Basic Auth"
 				writeImage(resp.headers.get('www-authenticate','NO WWW-AUTHENTICATE HEADER'),screenshotName + ".png")
 				browser.quit()
 				return
 		except:
-			print "SSL Exception for" + urlItem[0]
+			print "[-] SSL Exception for" + urlItem[0]
 		
 		# Handle all other responses
 		if(resp is not None):
 			if(debug):
-				print 'Got response for ' + urlItem[0]
+				print '[+] Got response for ' + urlItem[0]
 			
 			
 			old_url = browser.current_url
@@ -417,7 +401,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 					if(debug):
 						print "[-] Didn't work with SSLv3 either..." + urlItem[0]
 					browser2.quit()
-					shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', screenshotName + '.png')
+					shutil.copy('/opt/Kraken/static/blank.png', screenshotName + '.png')
 				else:
 					print '[+] Saving: ' + screenshotName + '.png'
 					screen = browser.get_screenshot_as_png()
@@ -448,7 +432,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 		browser.quit()
 		interface_record.Retry = True
 		interface_record.save()
-		shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', screenshotName + '.png')
+		shutil.copy('/opt/Kraken/static/blank.png', screenshotName + '.png')
 		return
 	
 @task
@@ -492,37 +476,38 @@ def startscreenshot(overwrite=False):
 		sleep(30)
 
 	for interface in Interfaces.objects.all():
-		if not os.path.exists('/opt/Kraken/Web_Scout/static/Web_Scout/' + interface.IntID + '.png'):
+		if not os.path.exists('/opt/Kraken/static/Web_Scout/' + interface.IntID + '.png'):
 			interface.Retry = True
 			interface.save()
-			shutil.copy('/opt/Kraken/Web_Scout/static/blank.png', '/opt/Kraken/Web_Scout/static/Web_Scout/' + interface.IntID + '.png')
+			shutil.copy('/opt/Kraken/static/blank.png', '/opt/Kraken/static/Web_Scout/' + interface.IntID + '.png')
 	end_time = datetime.datetime.now()
 	total_time = end_time - start_time
 	number_of_interfaces = Interfaces.objects.all().count()
 	LogKrakenEvent('Celery', 'Screenshots Complete. Elapsed time: ' + str(total_time) + ' to screenshot ' + str(number_of_interfaces) + ' interfaces', 'info')
 
 @task
-def runmodule(interfaceid):
+def runmodule(hostid):
 	import datetime
 	import django, os, sys
 	os.environ["DJANGO_SETTINGS_MODULE"] = "Kraken.settings"
 	sys.path.append("/opt/Kraken")
 	django.setup()
-	from Web_Scout.models import Interfaces
+	from Web_Scout.models import Hosts
 	from importlib import import_module
 	
 	try:
-		interface_record = Interfaces.objects.get(IntID=interfaceid)
-		host_record = interface_record.hosts
-		URL = interface_record.Url
-		interface_module = interface_record.Module
-		module = import_module("Web_Scout.modules." + interface_module)
+		print hostid
+		host_record = Hosts.objects.get(HostID=hostid)
+		interface_records = host_record.interfaces_set.all()
+		host_module = host_record.Module
+		module = import_module("Web_Scout.modules." + host_module)
 		result, credentials = module.run(host_record.IP)
 		if result == 'Success':
 			print "Default Credentials Configured: " + host_record.IP + "."
-			interface_record.DefaultCreds = True
-			interface_record.Notes = interface_record.Product + '. Successfully authenticated with: (' + credentials + ')\n' + interface_record.Notes
-			interface_record.save()
+			for interface in interface_records:
+				interface.DefaultCreds = True
+				interface.Notes = interface.Product + '. Successfully authenticated with: (' + credentials + ')\n' + interface.Notes
+				interface.save()
 		else:
 			print "Default Credentials NOT Configured: " + host_record.IP + "."
 		return result, credentials
@@ -530,23 +515,25 @@ def runmodule(interfaceid):
 		return "error", "error"
 
 @task
-def runmodules(interfacelist=""):
+def runmodules(hostlist=""):
 	import datetime
 	import django, os, sys
 	os.environ["DJANGO_SETTINGS_MODULE"] = "Kraken.settings"
 	sys.path.append("/opt/Kraken")
 	django.setup()
-	from Web_Scout.models import Interfaces
+	from Web_Scout.models import Hosts
 	from importlib import import_module
 	import datetime
 	
-	if not interfacelist:
-		interfacelist = Interfaces.objects.exclude(Module__exact='')
+	if not hostlist:
+		hostlist = Hosts.objects.exclude(Module__exact='')
 	
-	total_count = len(interfacelist)
+	total_count = len(hostlist)
+	LogKrakenEvent('Celery', 'Running modules on ' + str(total_count) + ' hosts.', 'info')
+
 	start_time = datetime.datetime.now()
 	
-	jobs = group(runmodule.s(interface.IntID) for interface in interfacelist)
+	jobs = group(runmodule.s(host.HostID) for host in hostlist)
 	result = jobs.apply_async()
 	while not result.ready():
 		print 'Failed Tasks? ' + str(result.failed())

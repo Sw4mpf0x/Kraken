@@ -60,7 +60,7 @@ usermod -a -G www-data celery
 
 chown -R www-data /opt/Kraken
 chgrp -R www-data /opt/Kraken
-chmod 775 /opt/Kraken/Web_Scout/static/Web_Scout/
+chmod 775 /opt/Kraken/static/
 chmod 775 /opt/Kraken/ghostdriver.log
 chmod 775 /opt/Kraken/tmp/
 
@@ -164,8 +164,8 @@ cat <<'EOF' >> /etc/apache2/sites-available/000-default.conf
 	Alias /js /opt/Kraken/common/js/
 	Alias /css /opt/Kraken/common/css/
 	Alias /fonts /opt/Kraken/common/fonts/
-    Alias /static /opt/Kraken/Web_Scout/static/
-    <Directory /opt/Kraken/Web_Scout/static/Web_Scout/>
+    Alias /static /opt/Kraken/static/
+    <Directory /opt/Kraken/static/>
         Require all granted
     </Directory>
     <Directory /opt/Kraken/common/>
