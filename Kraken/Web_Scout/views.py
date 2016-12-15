@@ -41,7 +41,8 @@ def index(request):
 
 		elif request.POST.get('action') == "runmodule":
 			interfaceid = request.POST.get('interfaceid')
-			result, credentials = tasks.runmodule(interfaceid)
+			interface_record = Interfaces.objects.get(IntID=interfaceid)
+			result, credentials = tasks.runmodule(interface_record.hosts.HostID)
 			data = [result, credentials]
 			json_data = json.dumps(data)
 			return HttpResponse(json_data, content_type='application/json')

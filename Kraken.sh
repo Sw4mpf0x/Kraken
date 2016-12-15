@@ -7,7 +7,7 @@ display_usage(){
     echo "required to run Kraken, as well as update Kraken with the"
     echo "latest version."
     echo ""
-    echo "Usage: $0 [start|stop|restart|update]"
+    echo "Usage: $0 [start|stop|restart|update|adduser <username> <password>]"
     echo "============================================================"
 }
 
@@ -91,6 +91,25 @@ restore(){
     rm -rf /tmp/krakenbackup
 }
 
+adduser(){
+    if [ -z "$1" ]
+    then
+        display_usage
+        printf "\033[1;31mA username and password must be provided.\033[0m\n"
+        return 0
+    fi
+    if [ -z "$2" ]
+    then
+        display_usage
+        printf "\033[1;31mA password must be provided.\033[0m\n"
+        return 0
+    fi
+
+    echo "from django.contrib.auth.models import User; User.objects.create_superuser('$1', '$1@kraken.com', '$2')" | python /opt/Kraken/manage.py shell
+    echo ""
+    printf "\033[1;31mUser $1 added.\033[0m\n"
+}
+
 case "$1" in
     start)
         start
@@ -111,6 +130,9 @@ case "$1" in
         ;;
     restore)
         restore
+        ;;
+    adduser)
+        adduser $2 $3
         ;;
     *)
         display_usage

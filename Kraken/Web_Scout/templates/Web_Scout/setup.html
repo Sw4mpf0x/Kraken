@@ -204,7 +204,8 @@
             <form  id="runmodules-form" method = "POST">
                 <div class="form-group">
                     {% csrf_token %}
-                    <label style="font-size:20px" for="runmodules">Test default credentials on interfaces identified by Kraken:</label><br>
+                    <p><h3>Test Default Credentials</h3></p>
+                    <p>Test for default credentials on interfaces identified by Kraken. Notes will automatically be entered for hosts found to have default credentials configured.</p>
                     <div style="margin-bottom:5px"><span id="runmodules_progress"></span></div>
                     <button data-toggle="modal" data-target="#confirm-action" data-description="check default credentials" data-action="runmodules" id="runmodules" class="btn btn-primary">Test Credentials</button>
                 </div>
@@ -213,7 +214,8 @@
                 <div class="form-group">
                     {% csrf_token %}
                     <input type="hidden" class="form-control" name="action" value="cleardb"/>
-                    <label style="font-size:20px" for="cleardb">Clear the Hosts and Interfaces tables:</label><br>
+                    <p><h3>Clear Database</h3></p>
+                    <p>Clear the Hosts and Interfaces tables</p>
                     <div style="margin-bottom:5px"><span id="cleardb_progress"></span></div>
                     <button data-toggle="modal" data-target="#confirm-action" data-description="clear the database" data-action="cleardb" id="cleardb" class="btn btn-primary">Clear Database</button>
                 </div>
@@ -222,7 +224,8 @@
                 <div class="form-group">
                     {% csrf_token %}
                     <input type="hidden" class="form-control" name="action" value="removescreenshots"/>
-                    <label style="font-size:20px" for="removescreenshots">Remove all screenshots in screenshot folder:</label><br>
+                    <p><h3>Remove Screenshots</h3></p>
+                    <p>Delete all screenshots in the screenshot folder.</p>
                     <div style="margin-bottom:5px"><span id="removescreenshots_progress"></span></div>
                     <button data-toggle="modal" data-target="#confirm-action" data-description="remove screenshots" data-action="removescreenshots" id="removescreenshots" class="btn btn-primary">Remove Screenshots</button>
                 </div>

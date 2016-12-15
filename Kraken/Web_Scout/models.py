@@ -24,6 +24,8 @@ class Hosts(models.Model):
 	New = models.BooleanField(default=False)
 	Stale = models.BooleanField(default=False)
 	StaleLevel = models.IntegerField(default=0)
+	Module = models.CharField(max_length=6)
+
 
 class Interfaces(models.Model):
 	def __str__(self):
@@ -42,7 +44,6 @@ class Interfaces(models.Model):
 	HttpAuth = models.BooleanField(default=False)
 	Default_Credentials = models.CharField(max_length=100)
 	Retry = models.BooleanField(default=False)
-	Module = models.CharField(max_length=6)
 	Type = models.CharField(max_length=4)
 
 class Tasks(models.Model):

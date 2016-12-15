@@ -232,8 +232,8 @@ def BulkAction(POSTItems, action, note=''):
                         changedinterfaces.append(interface.IntID)
                 if action == 'bulkrunmodule':
                     interface_record = host_record.interfaces_set.all()[0]
-                    if interface_record.Module:
-                        tasks.runmodule.delay(interface_record.IntID)
+                    if host_record.Module:
+                        tasks.runmodule.delay(host_record.HostID)
                         changedinterfaces.append(interface.IntID)
                 host_record.save()
             except:
