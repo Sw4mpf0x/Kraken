@@ -99,13 +99,13 @@
                                 	<option value="100">100</option>
                                 {% endif %}
                             </select>                                
-                        </div> <!-- form group [hosts] -->
+                        </div>
                         <div class="form-group">
                             <label class="filter-col" style="margin-right:0;" for="pref-search">Search:</label><br>
                             <input type="text" class="form-control input-sm" id="pref-search" name="search" value="{{ search }}">
-                        </div><!-- form group [search] -->
+                        </div><
                         <div class="form-group" style="padding-left:15px">
-                            <label class="filter-col" style="margin-right:0;" for="pref-orderby">Order by:</label><br>
+                            <label class="filter-col" style="margin-right:0;" for="pref-orderby">Sort by:</label><br>
                             <select id="pref-orderby" class="form-control" name="organize_by">
                                 {% if not org == 'IP' %}
                                 	<option>IP</option>
@@ -125,7 +125,7 @@
                                 	<option>LastSeen</option>
                                 {% endif %}
                             </select>                                
-                        </div> <!-- form group [order by] --> 
+                        </div> 
                         <div class="form-group"> <br>
                            	{% if new == 'on' %}
                            		<div class="checkbox" style="margin-left:10px; margin-right:10px;">

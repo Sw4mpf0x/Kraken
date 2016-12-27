@@ -6,21 +6,20 @@
 	Hosts: {{ host_count }}<br>
 	Interfaces: {{ interface_count }} <br>
 	Printers: {{ printer_count }}<br>
- 
 	<br>
 	<h3>Default Creds</h3>
 	{% for entry in default_creds %}
-		{{ entry.hosts.IP }}:{{ entry.Port }} - {{ entry.Notes }}<br>
+		{{ entry.hosts.IP }}:{{ entry.Port }} {% if entry.hosts.Hostname%}({{ entry.hosts.Hostname }}){% endif %} - {{ entry.Notes }}<br>
 	{% endfor %}
 	<br>
 	<h3>HTTP Auth</h3>
 	{% for entry in http_auth %}
-		{{ entry.hosts.IP }}:{{ entry.Port }} - {{ entry.Notes }}<br>
+		{{ entry.hosts.IP }}:{{ entry.Port }} {% if entry.hosts.Hostname%}({{ entry.hosts.Hostname }}){% endif %} - {{ entry.Notes }}<br>
 	{% endfor %}
 	<br>	
 	<h3>Notes</h3>
 	{% for entry in notes %}
-		{{ entry.hosts.IP }}:{{ entry.Port }} - {{ entry.Notes }}<br>
+		{{ entry.hosts.IP }}:{{ entry.Port }} {% if entry.hosts.Hostname%}({{ entry.hosts.Hostname }}){% endif %} - {{ entry.Notes }}<br>
 	{% endfor %}
 	<br>
 </div>
