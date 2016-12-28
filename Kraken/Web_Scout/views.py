@@ -185,7 +185,7 @@ def inventory(request):
 	except PageNotAnInteger:
 		hosts = paginator.page(1)
 	except EmptyPage:
-		hosts.paginator.page(paginator.num_pages)
+		hosts = paginator.page(paginator.num_pages)
 
 	active_count = len(host_array)
 	new_count = len(Hosts.objects.all().filter(New=True))

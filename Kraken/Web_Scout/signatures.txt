@@ -68,7 +68,7 @@ Cisco IP Phone;Device Information;/CGI/Java/Serviceability?adapter=device|Cisco 
 GlassFish Server - Server Running;Your server is now running;go to the Administration Console|GlassFish Server|||general|3
 var alertMgr = new AlertManager();HP BladeSystem Onboard Administrator;Checks to see if we are signing on from HP SIM.;//hpoa:version|HP BladeSystem Onboard Administrator|||general|1
 var alertMgr=new AlertManager();HP BladeSystem Onboard Administrator;function checkHpSimSSO();//hpoa:version|HP BladeSystem Onboard Administrator|||general|1
-Integrated Lights-Out 2 supports Microsoft Internet Explorer;<title>HP Integrated Lights-Out 2 Login</title>;hp-iLO-Login|idrac
+Integrated Lights-Out 2 supports Microsoft Internet Explorer;<title>HP Integrated Lights-Out 2 Login</title>;hp-iLO-Login|HP Integrated Lights Out|||general|
 <title>HP Integrated Lights-Out Login</title>;Integrated Lights-Out supports Microsoft Internet Explorer;hp-iLO-Login|HP iLO|||general|1
 Integrated Lights Out 2;Establishing a secure Integrated Lights Out session with|HP Integrated Lights Out 2|||general|1
 Integrated Lights-Out 2 supports Microsoft Internet Explorer version;HP Integrated Lights-Out 2 Login;ilo.ico|HP Integrated Lights Out 2|||general|1

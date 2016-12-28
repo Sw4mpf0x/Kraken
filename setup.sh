@@ -60,7 +60,7 @@ usermod -a -G www-data celery
 
 chown -R www-data /opt/Kraken
 chgrp -R www-data /opt/Kraken
-chmod 775 /opt/Kraken/static/
+chmod 775 /opt/Kraken/static/Web_Scout
 chmod 775 /opt/Kraken/ghostdriver.log
 chmod 775 /opt/Kraken/tmp/
 
