@@ -15,8 +15,8 @@ Once setup is complete, open your browser and visit http://localhost:<port> and 
 
 admin:2wsxXSW@
 
-Password change and add user functionality can be found at http://localhost:8000/admin
+User management functionality can be found at http://localhost:8000/admin
 
 ##  Detailed Installation Steps, Usage, and Troubleshooting
 
-Please visit the [wiki](https://github.com/Sw4mpf0x/Kraken/wiki) for more detailed information
+Please visit the [wiki](https://github.com/Sw4mpf0x/Kraken/wiki) for more detailed information.
