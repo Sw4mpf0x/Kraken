@@ -1,12 +1,53 @@
 {% extends "base.html" %}
 {% block body %}
 <div class="container">
+<form id="genreport-form" name="genreport-form" method="POST">
+	{% csrf_token %}
+	<div class="modal fade" id="genreport" tabindex="-1" role="dialog" aria-labelledby="ConfirmAction" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">Generate Report</h4>
+                </div>
+                <div class="modal-body" style="margin-left:30px">
+                    <p><b>Report Name</b>:<br>
+                    <input type="text" name="report_name"></p>
+                    <p><b>Notes</b>:<br>
+                    <input type="radio" name="notes" value="none"> N/A<br>
+                    <input type="radio" name="notes" value="exclude"> Exclude notes from report.<br>
+                    <input type="radio" name="notes" value="only"> Only include hosts with notes in report.</p>
+                    <p><b>Sort hosts by</b>:<br>
+                    <select name="order" style="width: 125px">
+                        <option>IP</option>
+                        <option>Hostname</option>
+                        <option>Rating</option>
+                    </select></p>
+                    <p><b>Number of hosts per page:</b><br>
+                    <select name="hosts_per_page" style="width:100px">
+                    	<option>25</option>
+                    	<option>50</option>
+                    	<option>100</option>
+                    	<option>200</option>
+                    </select></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger btn-ok">Generate Report</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+
 <div class="well">
 	<h3>By The Numbers</h3>
-	Hosts: {{ host_count }}<br>
+	<p>Hosts: {{ host_count }}<br>
 	Interfaces: {{ interface_count }} <br>
-	Printers: {{ printer_count }}<br>
-	<br>
+	Printers: {{ printer_count }}</p>
+
+	<p><button style="margin-left:20px" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#genreport">Generate Report</button></p>
+
 	<h3>Default Creds</h3>
 	{% for entry in default_creds %}
 		{{ entry.hosts.IP }}:{{ entry.Port }} {% if entry.hosts.Hostname%}({{ entry.hosts.Hostname }}){% endif %} - {{ entry.Notes }}<br>

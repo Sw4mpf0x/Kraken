@@ -132,7 +132,7 @@ def index(request):
 		except PageNotAnInteger:
 			hosts = paginator.page(1)
 		except EmptyPage:
-			hosts.paginator.page(paginator.num_pages)
+			hosts = paginator.page(paginator.num_pages)
 		return render(request, 'Web_Scout/index.html', {'hosts':hosts, 'nav_list':nav_list, 'pagination_parameters': parameters, 'hosts_per_page': int(hosts_per_page), 'search':search, 'reviewed':reviewed, 'org':org})
 
 

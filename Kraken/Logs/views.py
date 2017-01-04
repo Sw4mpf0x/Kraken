@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from models import KrakenLog
+from os.path import getsize
 from Web_Scout.models import Interfaces, Hosts
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from Kraken.krakenlib import BuildQuery
+from Web_Scout.tasks import genreport
 # Create your views here.
 
 @login_required
@@ -42,10 +44,28 @@ def krakenlog(request):
 
 @login_required
 def reports(request):
-	host_count = str(Hosts.objects.all().count())
-	interface_count = str(Interfaces.objects.all().count())
-	printer_count = str(Hosts.objects.filter(Category='printer').count())
-	default_creds = Interfaces.objects.filter(DefaultCreds=True)
-	http_auth = Interfaces.objects.filter(HttpAuth=True)
-	notes = Interfaces.objects.exclude(Notes__exact='')
-	return render(request, 'Logs/Web_Scout.html', {'default_creds':default_creds, 'http_auth':http_auth, 'notes':notes, 'host_count':host_count, 'interface_count':interface_count, 'printer_count':printer_count})
+	if request.method == 'POST':
+		notes = request.POST.get('notes')
+		order = request.POST.get('order')
+		report_name = request.POST.get('report_name')
+		hosts_per_page = request.POST.get('hosts_per_page')
+
+		genreport(notes, order, report_name, hosts_per_page)
+		file_path = "/opt/Kraken/tmp/KrakenReport.zip"
+
+		with open(file_path,'r') as file:
+			data = file.read()
+		
+		response = HttpResponse(data, content_type="application/zip")
+		response['Content-Disposition'] = "attachment; filename=KrakenReport.zip"
+		response['Content-Length'] = getsize(file_path)
+		return response
+
+	else:
+		host_count = str(Hosts.objects.all().count())
+		interface_count = str(Interfaces.objects.all().count())
+		printer_count = str(Hosts.objects.filter(Category='printer').count())
+		default_creds = Interfaces.objects.filter(DefaultCreds=True)
+		http_auth = Interfaces.objects.filter(HttpAuth=True)
+		notes = Interfaces.objects.exclude(Notes__exact='')
+		return render(request, 'Logs/Web_Scout.html', {'default_creds':default_creds, 'http_auth':http_auth, 'notes':notes, 'host_count':host_count, 'interface_count':interface_count, 'printer_count':printer_count})

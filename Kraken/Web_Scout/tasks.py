@@ -311,7 +311,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 					# web page needed to make a signature Delimete the "signature"
 					# by ";" before the "|", and then have the creds after the "|"
 					if all([x.lower() in source_code.lower() for x in page_identifiers]):
-						print('default cred found!!!! ' + credential_info)
+						print('Interface Identified as: ' + page_id)
 						if interface_record.Default_Credentials is None:
 							interface_record.Default_Credentials = credential_info
 						else:
@@ -612,3 +612,155 @@ def scan(addresses):
 	post_scan_host_count = len(Hosts.objects.all())
 	LogKrakenEvent('Celery', 'Scanning Complete. ' + str(post_scan_host_count - initial_host_count) + ' new hosts found.', 'info')
 
+@task
+def genreport(notes, order, report_name, hosts_per_page):
+	import os
+	import django
+	import sys
+	from shutil import make_archive, rmtree
+	from datetime import date
+	from shutil import copytree
+	from django.core.paginator import Paginator
+	os.environ["DJANGO_SETTINGS_MODULE"] = "Kraken.settings"
+	sys.path.append("/opt/Kraken")
+	django.setup()
+	from Web_Scout.models import Hosts,Interfaces
+	
+	def RiskRating(ratingnumber=0):
+		if ratingnumber:
+			if int(ratingnumber) == 1:
+				return "High"
+			elif int(ratingnumber) == 2:
+				return "Medium"
+			elif int(ratingnumber) == 3:
+				return "Low"
+		else:
+			return ""
+	
+	date = date.today().strftime("%B %d,%Y")
+
+	# Cleanup previous files
+	if os.path.isfile('/opt/Kraken/tmp/KrakenReport.zip'):
+		os.remove('/opt/Kraken/tmp/KrakenReport.zip')
+	if os.path.exists('/opt/Kraken/tmp/report/'):
+		rmtree('/opt/Kraken/tmp/report/')
+
+
+	# Create report folder
+	os.mkdir("/opt/Kraken/tmp/report")
+	os.mkdir("/opt/Kraken/tmp/report/html")
+	
+	# Copy screenshots
+	copytree("/opt/Kraken/static/Web_Scout/", "/opt/Kraken/tmp/report/screenshots/")
+	
+	# Copy CSS
+	copytree("/opt/Kraken/common/css/", "/opt/Kraken/tmp/report/css/")
+	copytree("/opt/Kraken/common/js/", "/opt/Kraken/tmp/report/js/")
+	
+	# Create pages
+	host_array = Hosts.objects.all().order_by(order)
+	
+	if int(hosts_per_page) in (25, 50, 100, 200):
+		paginator = Paginator(host_array, hosts_per_page)
+	else:
+		paginator = Paginator(host_array, 25)
+	
+	for page in paginator.page_range:
+		pagefile = open("/opt/Kraken/tmp/report/html/page" + str(page) + ".html", "w")
+	
+		# Header and pagination
+		header = """
+<html>
+	<head>
+		<script src="../js/jquery-2.1.1.js"></script>
+  		<link href="../css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  		<script src="../js/bootstrap.min.js"></script>
+		<meta charset="UTF-8">
+	</head>
+<body style="background-color: #d9d9d9">
+	<div class="container">
+		<div class="well" style="background-color: #222;color: #9d9d9d">
+			<div style="text-align: center">
+				<h2>{}</h2>
+				<h2>Kraken Report</h2>
+				<p>Date: {}</p> 
+			</div>
+		</div>
+		<nav>
+		<div align="center">
+			<ul class="pagination" align="center">\n""".format(report_name, date)
+		pagefile.write(header)
+		hosts = paginator.page(page)
+		if hosts.has_previous():
+			pagefile.write("				<li><a href=\"page{}.html\">&laquo;</a>\n".format(str(hosts.previous_page_number())))
+		if hosts.paginator.num_pages < 12:
+			for page in hosts.paginator.page_range:
+				if hosts.number == page:
+					pagefile.write("<li class=\"active\"><a href=\"page{}.html\"> {} <span class=\"sr-only\">(current)</span></a></li>\n".format(str(page), str(page)))
+				else:
+					pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(page), str(page)))
+		elif hosts.paginator.num_pages > 11:
+			if hosts.number < 7:
+				for page in [1,2,3,4,5,6,7,8,9,10,11]:
+					if hosts.number == page:
+						pagefile.write("<li class=\"active\"><a href=\"page{}.html\"> {} <span class=\"sr-only\">(current)</span></a></li>\n".format(str(page), str(page)))
+					else:
+						pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(page), str(page)))
+		elif hosts.number + 5 <= hosts.paginator.num_pages:
+			pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.previous_page_number - 4), str(hosts.previous_page_number - 4)))
+			pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.previous_page_number - 3), str(hosts.previous_page_number - 3)))
+			pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.previous_page_number - 2), str(hosts.previous_page_number - 2)))
+			pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.previous_page_number - 1), str(hosts.previous_page_number - 1)))
+			pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.previous_page_number), str(hosts.previous_page_number)))
+			pagefile.write("<li class=\"active\"><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.number), str(hosts.number)))
+			pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.next_page_number), str(hosts.next_page_number)))
+			pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.next_page_number + 1), str(hosts.next_page_number + 1)))
+			pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.next_page_number + 2), str(hosts.next_page_number + 2)))
+			pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.next_page_number + 3), str(hosts.next_page_number + 3)))
+			pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.next_page_number + 4), str(hosts.next_page_number + 4)))
+		elif hosts.number + 5 > hosts.paginator.num_pages:
+			for minus_number in [10,9,8,7,6,5,4,3,2,1]:
+				if hosts.number == hosts.paginator.num_pages - minus_number:
+					pagefile.write("<li class=\"active\"><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.paginator.num_pages - minus_number), str(hosts.paginator.num_pages - minus_number)))
+				else:
+					pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.paginator.num_pages - minus_number), str(hosts.paginator.num_pages - minus_number)))
+			if hosts.paginator.num_pages == hosts.number:
+				pagefile.write("<li class=\"active\"><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.paginator.num_pages), str(hosts.paginator.num_pages)))
+			else:
+				pagefile.write("<li><a href=\"page{}.html\"> {} </a></li>\n".format(str(hosts.paginator.num_pages), str(hosts.paginator.num_pages)))
+		if hosts.has_next():
+			pagefile.write("<li><a href=\"page{}.html\">&raquo;</a></li>\n".format(str(hosts.next_page_number())))
+		pagefile.write("""
+		</ul>			
+	</div>
+</nav>""")
+
+		# Host entries
+		for host in hosts:
+			pagefile.write("""
+<div class="well">
+	<h3>{} ({})</h3>
+	<p><b>Product</b>: {}<br>
+	<b>Category</b>: {}<br>
+	<b>Risk Rating</b>: {}</p>
+	<hr>
+	<h4>Interfaces:</h4>
+	<div class="row">\n""".format(host.IP, host.Hostname, host.interfaces_set.all()[0].Product, host.Category, RiskRating(host.Rating)))
+			
+			# Interface entries
+			for interface in host.interfaces_set.all():
+				pagefile.write("""
+		<div class="col-md-6">
+			<img style="border:1px solid black" align="center" width="512" height="384" src="../screenshots/{}.png">
+			<p style="clear: right"><b>Port</b>: {}<br>\n""".format(interface.IntID, interface.Port))
+				if notes == "none" or notes == "only":
+					pagefile.write("			<b>Notes</b>: {}<br>\n".format(interface.Notes))
+				pagefile.write("""
+			<a href="{}">Open</a></p>
+		</div>\n""".format(interface.Url))
+			pagefile.write("""
+	</div>
+</div>\n""")
+		pagefile.close()
+	make_archive('/opt/Kraken/tmp/KrakenReport', 'zip', '/opt/Kraken/tmp/report/')
+	rmtree('/opt/Kraken/tmp/report/')

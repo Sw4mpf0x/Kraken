@@ -77,6 +77,7 @@ update(){
     rm -rf /tmp/Kraken
     rm $cwd/KrakenBackup.zip
     printf "\033[1;31mUpdate complete!\033[0m\n"
+    restart
 }
 
 backup(){

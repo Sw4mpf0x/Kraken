@@ -1,3 +1,26 @@
+Xerox Corporation;XEROX WORKCENTRE;Header Frame;inUriToMatch|Xerox WorkCentre|admin:1111;x-admin:11111|M0001|printer|2
+document.write("&lt;title&gt;XEROX WORKCENTRE");Function Name:	SyncTreeToThisUrl|Xerox WorkCentre|admin:1111;x-admin:11111|M0001|printer|2
+Xerox WorkCentre 7435;function restore_saved_params(form, key_html)|Xerox WorkCentre 7435|admin:1111|M0001|printer|2
+WorkCentre 7120;Fuji Xerox Co;var biItms|WorkCentre 7120|admin:1111|M0001|printer|2
+WorkCentre 7125;Fuji Xerox Co;var nvTree|WorkCentre 7125|admin:1111|M0001|printer|2
+Xerox WorkCentre 5225;inNN;var trItms|Xerox WorkCentre 5225|11111:x-admin|M0001|printer|2
+Xerox Workstation M20i;var HEADER_FRAME;var BRANDING_FRAME|Xerox Workstation M20i|admin:1111|M0001|printer|2
+Xerox WorkCentre 7232;var nvTree;var rSec|Xerox WorkCentre 7232|11111:x-admin|M0001|printer|2
+Xerox WorkCentre 5325;var nvTree;var csItms|Xerox WorkCentre 5325|admin:1111|M0001|printer|2
+Xerox WorkCentre 7345;var nvTree;var csItms|Xerox WorkCentre 7345|admin:1111;11111:x-admin|M0001|printer|2
+Enable JavaScript to use CentreWare Internet Services;Phaser;More Printers|Xerox CentreWare||M0001|printer|2
+XEROX ColorQube  - Status;SyncTreeToThisUrl|XEROX ColorQube|||printer|2
+XEROX WORKCENTRE;/index.dhtml;/status/tree.php|Xerox WorkCentre|admin:1111;x-admin:11111|M0001|printer|2
+Xerox;/status/consumables.dhtml;displayTree;SMart|Xerox Printer|||printer|
+<div id="headertitle">;Phaser 7760;<div id="stattableWithoutBkGif">|Xerox Phaser 7760|||printer|3
+<a href="http://solutions.brother.com/cgi-bin/solutions.cgi?;alt="Brother"|Brother Printer|||printer|
+Brother MFC-8480DN;Brother Industries;OpenConfirmWindow|Brother 8480DN|<no username>:access;admin:access||printer|2
+<title>Brother HL-2270DW series</title>;/printer/main.html?weblang='+ wlang|Brother HL-2270DW|admin:access||printer|2
+<title>Brother HL-5350DN series</title>;src="/pbio/key_admin.gif"|Brother HL-5350DN|admin:access||printer|2
+<title>Brother HL-5070N series;http://solutions.brother.com/cgi-bin/solutions.cgi;/printer/online.html?|Brother HL-5070N|admin:access||printer|2
+<title>Brother HL-2250DN series</title>;function setCookie(key, val);Brother Industries, Ltd. All Rights Reserved|Brother HL-2250DN|admin:access||printer|2
+<title>Brother HL-2130 series</title>;function setCookie(key, val);getCookie('webLang')|Brother HL-2130|admin:access||printer|2
+<title>Brother HL-5370DW series</title>;onchange="changeLanguage();</tbody></table>|Brother HL-5370DW|admin:access||printer|2
 Web Image Monitor</title>|Ricoh/Savin/Lanier MFP|admin:<blank>;supervisor:<blank>||printer|2
 Integrated Dell Remote Access Controller|Dell iDRAC|root:calvin||general|1
 ACE 4710 Device Manager;Cisco|ACE 4710 Device Manager|admin:admin||netdev|3
@@ -16,17 +39,8 @@ Dell Laser Printer 1720dn|Dell Laser Printer 1720dn|No default username or pass|
 Dell B5465dnf;/cgi-bin/dynamic/dell_header.html|Dell B5465dnf|No default username or pass||printer|
 Dell B3465dnf Laser MFP;/cgi-bin/dynamic/dell_header.html|Dell b3465dnf|No default username or pass||printer|
 Dell Laser Printer 3000cn;frame src="status/status.htm" name="RightFrame"|Dell 3000cn|No default username or pass||printer|3
-Xerox WorkCentre 7435;function restore_saved_params(form, key_html)|Xerox WorkCentre 7435|admin:1111|M0001|printer|2
-WorkCentre 7120;Fuji Xerox Co;var biItms|WorkCentre 7120|admin:1111|M0001|printer|2
-WorkCentre 7125;Fuji Xerox Co;var nvTree|WorkCentre 7125|admin:1111|M0001|printer|2
-Xerox WorkCentre 5225;inNN;var trItms|Xerox WorkCentre 5225|11111:x-admin|M0001|printer|2
-Xerox Corporation;XEROX WORKCENTRE;Header Frame;inUriToMatch|Xerox WorkCentre|admin:1111;x-admin:11111|M0001|printer|2
-Xerox Workstation M20i;var HEADER_FRAME;var BRANDING_FRAME|Xerox Workstation M20i|admin:1111|M0001|printer|2
 ChangeDefWebLanguage();script/cookieCoke.js;script/Common_script.js;NOSCRIPT|Potential Workcenter 3550|admin:1111|M0001|printer|2
 WorkCentre 6605DN;frame src="menuhome.htm"|WorkCentre 6605DN|No default pass|M0001|printer|2
-Xerox WorkCentre 7232;var nvTree;var rSec|Xerox WorkCentre 7232|11111:x-admin|M0001|printer|2
-Xerox WorkCentre 5325;var nvTree;var csItms|Xerox WorkCentre 5325|admin:1111|M0001|printer|2
-Xerox WorkCentre 7345;var nvTree;var csItms|Xerox WorkCentre 7345|admin:1111;11111:x-admin|M0001|printer|2
 Dell Color Laser 3110cn;frameleft.htm;TopFrame|Dell Laser 3110cn|No Default Username or Pass||printer|3
 HP LaserJet Pro MFP M521dn;setupUrls[index++];manageUrls|HP MFP M521dn|No default username or pass||printer|2
 HP Color LaserJet CM2320nf MFP;applicationMastheadSmall|HP Color LaserJet CM2320nf|No default username or pass||printer|2
@@ -36,7 +50,6 @@ HP LaserJet M2727nf MFP;mastheadIcon;mastheadTitle|HP LaserJet M2727nf|No defaul
 HP LaserJet 1536dnf MFP;mastheadIcon;mastheadTitle|HP LaserJet 1536dnf|No default username or pass||printer|2
 HP Color LaserJet CM4540 MFP;class="device-name"|HP Color LaserJet CM4540|No default username or pass (potential username admin, no pass)||printer|2
 Synology DiskStation - Monego;DiskMessageHandler;VideoPlayer|Synology|admin:<nopass>||nas|1
-Brother MFC-8480DN;Brother Industries;OpenConfirmWindow|Brother 8480DN|<no username>:access;admin:access||printer|2
 HP LaserJet 700 color MFP M775;/hp/device/ControlPanelCustomization/Index|HP LaserJet 700|No default username or pass||printer|2
 MB471;okilogo;replacelogo;savecolor|OKI MB471|<nousername or root>:aaaaaa;000000;0000;root:(last 6 of mac address Uppercased)||printer|
 MB461;okilogo;var pagename;var status_ad_flag|OKI MB461|<nousername or root>:aaaaaa;000000;0000;root:(last 6 of mac address Uppercased)||printer|
@@ -135,19 +148,13 @@ dummyActiveXObject = new ActiveXObject('Msxml2.XMLHTTP');<td class="mastheadTitl
 <strong>Cisco IP Conference Station CP-7937G</strong>;<img border="0" align="bottom" hspace="0" alt="Cisco Systems, Inc." src="/Logo" />;<a href="localmenus.cgi?func=604">|Cisco IP Conference Station CP-7937G|||voip|3
 Riverbed Steelhead;Riverbed Technology, Inc. and/or its licensors;form id="loginForm" action="/mgmt/gui|Riverbed Steelhead|admin:password|||
 HP iLO Redirection;Copyright Hewlett-Packard;You will automatically be redirected to a secure connection in 2 seconds|HP Integrated Lights Out|||general|1
-Enable JavaScript to use CentreWare Internet Services;Phaser;More Printers|Xerox CentreWare|||printer|2
 Riverbed Steelhead;Riverbed Technology, Inc. and/or its licensors;form id="loginForm" action="/mgmt/gui|Riverbed Steelhead|||netdev|
 ADManager Plus Authentication;sel.options[i].text == 'ADManager Plus Authentication';ManageEngine;js/framework/Hashtable.js|ADManager Plus||||1val
 ADManager Plus Authentication;sel.options[i].text == 'ADManager Plus Authentication';ManageEngine;js/framework/Hashtable.js|ADManager|admin:admin (ADManager Plus Authentication in dropdown)|||
 ManageEngine ServiceDesk Plus;Local Authentication;alt="ManageEngine ServiceDesk Plus";loginDiv|ServiceDesk|administrator:administrator (Local Authentication)|||
 TeraStation PRO;txtAuthLoginUser;name="frmNas";View TeraStation manual|TeraData NAS|admin:password|||
-<title>Brother HL-2270DW series</title>;/printer/main.html?weblang='+ wlang|Brother HL-2270DW|admin:access||printer|2
-<title>Brother HL-5350DN series</title>;src="/pbio/key_admin.gif"|Brother HL-5350DN|admin:access||printer|2
-<title>Brother HL-5070N series;http://solutions.brother.com/cgi-bin/solutions.cgi;/printer/online.html?|Brother HL-5070N|admin:access||printer|2
 <title>Citrix Login</title>;function checkform;if (form.username.value === "");if (form.password.value === "")|Cisco Netscaler|nsroot:nsroot;nsrecover:nsroot|||
 <title>.::Welcome to ZyXEL P-660HN-51::.</title>;if ( loginrandom == '1' ) {;function framLoad () {|ZyXEL P-660HN-51 Modem|admin:1234||netdev|
-<title>Brother HL-2250DN series</title>;function setCookie(key, val);Brother Industries, Ltd. All Rights Reserved|Brother HL-2250DN|admin:access||printer|2
-<title>Brother HL-2130 series</title>;function setCookie(key, val);getCookie('webLang')|Brother HL-2130|admin:access||printer|2
 <title> Dell B2375dnf Mono MFP </title>;css/sws-all-dell.css;sws_redirect_location|Dell B2375dnf MFP|admin:admin||printer|2
 <body onload="document.login.password.focus()">;<span id="headerLabel">Polycom Web Configuration Utility</span>;Welcome to Polycom Web Configuration Utility|Polycom Device|admin:456;user:123|||
 <title>Ruckus Wireless Admin</title>;<h1>Ruckus Wireless Admin</h1>;</div><img src="/images/goahead.gif"|Ruckus Wireless Controller|super:sp-admin;cloud:cloud123||printer|
@@ -169,12 +176,9 @@ VMware ESXi Server is virtual infrastructure software for partitioning, consolid
 <title>ManageEngine EventLog Analyzer;function userType(ADAuthEnabled);function GetXmlHttpObject();function loadLogin()|ManageEngine EventLog Analyzer|admin:admin;guest:guest||logging|1
 <title>SAP NetWeaver Portal</title>;var webpath = "/caportallogon_new/;<script>var hash = document.location.hash;certLogonForm|SAP Netweaver|SAP*:06071992;TMSADM:$1Pawd2&||infrastructure|
 VMware VirtualCenter is virtual infrastructure software for partitioning;VMware-viclient.exe|VMware VirtualCenter|||virtualization|1
-XEROX ColorQube  - Status;SyncTreeToThisUrl|XEROX ColorQube|||printer|2
-XEROX WORKCENTRE;/index.dhtml;/status/tree.php|Xerox WorkCentre|||printer|2
 Welcome to JBoss;/jmx-console/;JBoss AS Documentation;Tomcat status|JBoss|||deployment|1
 hp color LaserJet;div.hpGasGaugeBlock|HP Color LaserJet|||printer|3
 iLO 3;js/iLO.js;js/supersleight-min;Hewlett-Packard Development Company|HP Integrated Lights Out|||general|1
-<title>Brother HL-5370DW series</title>;onchange="changeLanguage();</tbody></table>|Brother HL-5370DW|admin:access||printer|2
 <title>Welcome to Service Assistant</title>;var clusterAddressLabel = "System Address";BM Storwize V7000 Service Assistant Tool |IBM Storwize V7000|superuser:passw0rd||infrastructure|
 a class="login-page-logo" title="Go to;CA Performance Center;form id="frmSignIn" class="aui-form" method="post" action="sign-in-process.jsp"|CA Performance Center|admin:admin;user:user||infrastructure|
 <head><title>Log In</title>;Log in to begin an administrative session.;PCoIP;Idle Timeout:|PCoIP System|teradici:4400Dominion (possibly SSH Pass)||infrastructure|
@@ -198,7 +202,6 @@ Dell-KACE;Systems Deployment;Administrator Console|Dell KACE|||deployment|1
 Welcome to Lion Server;ServerCenter.png;Apple Inc.|Apple Lion Server||||
 OS X Server;Welcome to Server;com.apple.entity.Page|Apple OS X Server||||
 Welcome to OS X Server;/xcode;/profilemanager|Apple OS X Server||||
-Xerox;/status/consumables.dhtml;displayTree;SMart|Xerox Printer|||printer|
 It works!;This is the default web page for this server;The web server software is running||||default installation|3
 <title>AXIS;Network Camera;/view/view.shtml|Axis Video Camera|||camera|3
 <title>Cisco Systems Login</title>;<input type="button" onclick="loginAction()" name="bSubmit " value="Login" style="cursor:pointer;<meta name="GENERATOR" content=|Cisco Wireless LAN Controller|password set during config||netdev|1
@@ -277,14 +280,11 @@ hp LaserJet 9050</title>;div.hpGasGaugeBlock|HP LaserJet 9050|||printer|3
 div.hpGasGaugeBlock;div.hpPageText;HP 9250C Digital Sender|HP 9250C Digital Sender|||printer|2
 <title>HP Designjet T1100 44in;getElementById('printerStatusId').innerHTML|HP Designjet T1100|||printer|3
 Wired PrintServer<h3>Status;<h1>Zebra Technologies<br />|Zebra Printer|||printer|3
-<div id="headertitle">;Phaser 7760;<div id="stattableWithoutBkGif">|Xerox Phaser 7760|||printer|3
-document.write("&lt;title&gt;XEROX WORKCENTRE");Function Name:	SyncTreeToThisUrl|Xerox WorkCentre|||printer|2
 div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;Printers</title>|HP LaserJet|||printer|3
 div.hpGasGaugeBlock;div.hpPageText;hp LaserJet;|HP LaserJet|||printer|3
 div.hpGasGaugeBlock;div.hpPageText;HP LaserJet;MFP Series</title>|HP LaserJet MFP|||printer|2
 <frame src="/index_top.htm" name="Banner" noresize="noresize";<frame src="/index_top_2.htm" name="Tabs" noresize="noresize";<frame src="/index_down.htm" name="Main";name="PhoneHome"||||printer|
 Polycom '+GetCurrentPageName ()+'</title>');document.title = sysName+' - Polycom '+model|Polycom VoIP|||voip|3
-<a href="http://solutions.brother.com/cgi-bin/solutions.cgi?;alt="Brother"|Brother Printer|||printer|
 <img src="iis-85.png";go.microsoft.com/fwlink;IIS Windows|IIS 8.5|||default installation|3
 jenkins;yuiResizeMonitor;projectstatus|||||1
 <frame src="/index_top.htm" name="Banner" leftmargin="5" noresize="";<frame src="/index_top_2.htm" name="Tabs" leftmargin="25" noresize="";<frame src="/index_down.htm" name="Main";||||printer|
