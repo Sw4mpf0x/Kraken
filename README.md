@@ -17,6 +17,6 @@ admin:2wsxXSW@
 
 Password change and add user functionality can be found at http://localhost:8000/admin
 
-## Usage, detailed installation steps, and troubleshooting
+##  Detailed Installation Steps, Usage, and Troubleshooting
 
 Please visit the [wiki](https://github.com/Sw4mpf0x/Kraken/wiki) for more detailed information
