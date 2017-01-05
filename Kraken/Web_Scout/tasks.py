@@ -678,7 +678,7 @@ def genreport(notes, order, report_name, hosts_per_page):
 		<meta charset="UTF-8">
 	</head>
 <body style="background-color: #d9d9d9">
-	<div class="container">
+	<div class="container" style="width: 1000px">
 		<div class="well" style="background-color: #222;color: #9d9d9d">
 			<div style="text-align: center">
 				<h2>{}</h2>
@@ -739,7 +739,7 @@ def genreport(notes, order, report_name, hosts_per_page):
 		for host in hosts:
 			pagefile.write("""
 <div class="well">
-	<h3>{} ({})</h3>
+	<h4 style="text-align:center">{} ({})</h4>
 	<p><b>Product</b>: {}<br>
 	<b>Category</b>: {}<br>
 	<b>Risk Rating</b>: {}</p>
@@ -751,7 +751,7 @@ def genreport(notes, order, report_name, hosts_per_page):
 			for interface in host.interfaces_set.all():
 				pagefile.write("""
 		<div class="col-md-6">
-			<img style="border:1px solid black" align="center" width="512" height="384" src="../screenshots/{}.png">
+			<img style="border:1px solid black" align="center" width="400" src="../screenshots/{}.png">
 			<p style="clear: right"><b>Port</b>: {}<br>\n""".format(interface.IntID, interface.Port))
 				if notes == "none" or notes == "only":
 					pagefile.write("			<b>Notes</b>: {}<br>\n".format(interface.Notes))
