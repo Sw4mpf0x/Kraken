@@ -130,6 +130,7 @@
                 </button>
                 <ul class="dropdown-menu">
                     <li><a href="" id="delete">Delete Selected</a></li>
+                    <li><a href="" id="deleteall">Delete All</a></li>
                 </ul>
             </div>
 
@@ -251,6 +252,21 @@
 {% else %}
     $("#warning-alert").hide();
 {% endif %}
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
     // pole state of the current task
     var PollState = function(task_id) {
         jQuery.ajax({
@@ -417,6 +433,26 @@
                     console.log(address);
                     $("span#" + address).remove();
                 });
+            },
+            error: function(){
+                alert("failure");
+            }
+        });
+    });
+    $('a#deleteall').click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data: "csrfmiddlewaretoken=" + getCookie('csrftoken') + "&action=delete&deleteall=on",
+            success: function(data){
+                $("#success-text").text("Addresses deleted.")
+                $("#success-alert").alert();
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").hide();
+                });
+                console.log(data);
+                $('#addresslist').find('span').remove();
             },
             error: function(){
                 alert("failure");

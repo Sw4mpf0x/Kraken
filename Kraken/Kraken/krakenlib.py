@@ -158,6 +158,10 @@ def DeleteAddress(address_list):
 
     deleted = []
     for address in address_list:
+        if address == "deleteall":
+            Addresses.objects.all().delete()
+            deleted.append("all")
+            return deleted
         print address
         try:
             address_record = Addresses.objects.get(AddressID=address)
