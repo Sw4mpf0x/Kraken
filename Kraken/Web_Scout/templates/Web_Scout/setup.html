@@ -137,10 +137,12 @@
             <form id="scan-form" method="POST">
                 <div class="form-group">
                     {% csrf_token %}
-                    <div style="margin-left:20px" id="addresslist">
+                    <div style="margin-left:20px" id="addresslist" class="row">
                         <br>
                         {% for address in addresses %}
-                        <span id="{{ address.AddressID }}"><input type="checkbox" name="{{ address.AddressID }}" value="on"> &#160 {% if address.Hostname %}{{ address.Hostname }}{% else %}{{ address.Address }}/{{ address.Cidr }}{% endif %}<br></span>
+                        <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4" id="{{ address.AddressID }}" style="word-wrap: break-word">
+                            <input type="checkbox" name="{{ address.AddressID }}" value="on"> &#160 {% if address.Hostname %}{{ address.Hostname }}{% else %}{{ address.Address }}/{{ address.Cidr }}{% endif %}
+                        </div>
                         {% endfor %}
                     </div><br>
                     <button data-toggle="modal" data-target="#add-address-modal" type="button" class="btn btn-sm btn-default">Add Address</button>
@@ -376,7 +378,7 @@
                 console.log(data);
                 $.each(data, function(index, address){
                     console.log(address);
-                    $("#addresslist").append("<span id='" + address[0] + "''><input type='checkbox' name='" + address[0] + "' /> &#160 " + address[1] + "<br></span>");
+                    $("#addresslist").append("<div class='col-lg-2 col-md-3 col-sm-3 col-xs-4' id='" + address[0] + "'><input type='checkbox' name='" + address[0] + "' /> &#160 " + address[1] + "</div>");
                 });
             },
             error: function(){
@@ -401,7 +403,7 @@
                 console.log(data);
                 $.each(data, function(index, address){
                     console.log(address);
-                    $("#addresslist").append("<span id='" + address[0] + "'><input type='checkbox' name='" + address[0] + "' /> &#160 " + address[1] + "<br></span>");
+                    $("#addresslist").append("<div class='col-lg-2 col-md-3 col-sm-3 col-xs-4' id='" + address[0] + "'><input type='checkbox' name='" + address[0] + "' /> &#160 " + address[1] + "</div>");
                 });
             },
             error: function(){
@@ -431,7 +433,7 @@
                 console.log(data);
                 $.each(data, function(index, address){
                     console.log(address);
-                    $("span#" + address).remove();
+                    $("div#" + address).remove();
                 });
             },
             error: function(){
@@ -452,7 +454,7 @@
                     $("#success-alert").hide();
                 });
                 console.log(data);
-                $('#addresslist').find('span').remove();
+                $('#addresslist').find('div').remove();
             },
             error: function(){
                 alert("failure");
