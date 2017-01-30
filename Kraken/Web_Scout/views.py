@@ -14,28 +14,8 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def index(request):
 	if request.method == 'POST':
-		if request.POST.get('action') == "bulknote":
+		if request.POST.get('action') in ["bulknote", "bulkreviewed", "bulkdelete", "bulkscreenshot", "bulkrunmodule"]:
 			data = BulkAction(request.POST.items(), request.POST.get('action'), request.POST.get('note', ''))
-			json_data = json.dumps(data)
-			return HttpResponse(json_data, content_type='application/json')
-
-		elif request.POST.get('action') == "bulkreviewed":
-			data = BulkAction(request.POST.items(), request.POST.get('action'))
-			json_data = json.dumps(data)
-			return HttpResponse(json_data, content_type='application/json')
-
-		elif request.POST.get('action') == "bulkdelete":
-			data = BulkAction(request.POST.items(), request.POST.get('action'))
-			json_data = json.dumps(data)
-			return HttpResponse(json_data, content_type='application/json')
-
-		elif request.POST.get('action') == "bulkscreenshot":
-			data = BulkAction(request.POST.items(), request.POST.get('action'))
-			json_data = json.dumps(data)
-			return HttpResponse(json_data, content_type='application/json')
-
-		elif request.POST.get('action') == "bulkrunmodule":
-			data = BulkAction(request.POST.items(), request.POST.get('action'))
 			json_data = json.dumps(data)
 			return HttpResponse(json_data, content_type='application/json')
 
@@ -83,7 +63,7 @@ def index(request):
 			return HttpResponse()
 		elif request.POST.get('action') == "deletehost":
 			host = request.POST.get('host')
-			data = DeleteHost([host])
+			data = DeleteHost(host)
 			json_data = json.dumps(data)
 			return HttpResponse(json_data, content_type='application/json')		
 	else:
@@ -138,59 +118,69 @@ def index(request):
 
 @login_required
 def inventory(request):
-	search = request.GET.get('search', '')
-	hosts_per_page = request.GET.get('hosts_per_page', '50')
-	org = request.GET.get('organize_by', 'IP')
-	new = request.GET.get('show_new', '')
-	stale = request.GET.get('show_stale', '')
-	nav_list = [-10,-9,-8,-7,-6,-5,-4,-3,-2,-1]
-	temp_host_array = []
-	host_array = []
-	
-	if search:
-		host_query = BuildQuery(search, ['IP', 'Hostname', 'LastSeen', 'Category', 'interfaces__Product'])
-		temp_host_array = Hosts.objects.all().filter(host_query)
-
-	if org in ("IP", "Hostname", "LastSeen"):
-		if temp_host_array:
-			temp_host_array = temp_host_array.order_by(org)
+	if request.method == 'POST':
+		if request.POST.get('action') in ["bulkmarknew", "bulkmarkstale", "bulkmarknormal", "bulkdelete"]:
+			data = BulkAction(request.POST.items(), request.POST.get('action'))
+			json_data = json.dumps(data)
+			return HttpResponse(json_data, content_type='application/json')
 		else:
-			temp_host_array = Hosts.objects.all().order_by(org)
-
-	if stale == 'on' and new == 'on':
-		temp_host_array = temp_host_array.exclude(Stale=False) | temp_host_array.exclude(New=False)
- 	elif stale == 'on':
-		temp_host_array = temp_host_array.exclude(Stale=False)
-
-	elif new == 'on':
-		temp_host_array = temp_host_array.exclude(New=False)
-
-	for host in temp_host_array:
-		if len(host.interfaces_set.all()) > 0:
-			host_array.append(host)
-
-	if int(hosts_per_page) in (50, 100, 150, 200, 300):
-		paginator = Paginator(host_array, hosts_per_page)
+			return HttpResponse("Unknown action submitted.")
 	else:
-		paginator = Paginator(host_array, 50)
-
-	parameters = ''
-	for key,value in request.GET.items():
-		if not key == 'page' and not value == "":
-			parameters = parameters + '&' + key + '=' + value
-
-	page = request.GET.get('page')
-	try:
-		hosts = paginator.page(page)
-	except PageNotAnInteger:
-		hosts = paginator.page(1)
-	except EmptyPage:
-		hosts = paginator.page(paginator.num_pages)
-
-	active_count = len(host_array)
-	new_count = len(Hosts.objects.all().filter(New=True))
-	stale_count = len(Hosts.objects.all().filter(Stale=True))
-	return render(request, 'Web_Scout/inventory.html', {'hosts':hosts, 'nav_list':nav_list, 'pagination_parameters': parameters, 'hosts_per_page': int(hosts_per_page), 'search':search, 'org':org, 'active_count':active_count, 'new_count':new_count, 'stale_count':stale_count, 'stale':stale, 'new':new})
+		search = request.GET.get('search', '')
+		hosts_per_page = request.GET.get('hosts_per_page', '50')
+		org = request.GET.get('organize_by', 'IP')
+		new = request.GET.get('show_new', '')
+		stale = request.GET.get('show_stale', '')
+		nav_list = [-10,-9,-8,-7,-6,-5,-4,-3,-2,-1]
+		temp_host_array = []
+		host_array = []
+		
+		if search:
+			host_query = BuildQuery(search, ['IP', 'Hostname', 'LastSeen', 'Category', 'interfaces__Product'])	
+			if host_query:
+				temp_host_array = Hosts.objects.all().filter(host_query).distinct()
+			else:
+				temp_host_array = ""
+	
+		if org in ("IP", "Hostname", "LastSeen"):
+			if temp_host_array:
+				temp_host_array = temp_host_array.order_by(org)
+			else:
+				temp_host_array = Hosts.objects.all().order_by(org)
+	
+		if stale == 'on' and new == 'on':
+			temp_host_array = temp_host_array.exclude(Stale=False) | temp_host_array.exclude(New=False)
+	 	elif stale == 'on':
+			temp_host_array = temp_host_array.exclude(Stale=False)
+		elif new == 'on':
+			temp_host_array = temp_host_array.exclude(New=False)
+	
+		for host in temp_host_array:
+			if len(host.interfaces_set.all()) > 0:
+				host_array.append(host)
+	
+		if int(hosts_per_page) in (50, 100, 150, 200, 300):
+			paginator = Paginator(host_array, hosts_per_page)
+		else:
+			paginator = Paginator(host_array, 50)
+	
+		parameters = ''
+		for key,value in request.GET.items():
+			if not key == 'page' and not value == "":
+				parameters = parameters + '&' + key + '=' + value
+	
+		page = request.GET.get('page')
+		try:
+			hosts = paginator.page(page)
+		except PageNotAnInteger:
+			hosts = paginator.page(1)
+		except EmptyPage:
+			hosts = paginator.page(paginator.num_pages)
+	
+		active_count = len(host_array)
+		new_count = len(Hosts.objects.all().filter(New=True))
+		stale_count = len(Hosts.objects.all().filter(Stale=True))
+		return render(request, 'Web_Scout/inventory.html', {'hosts':hosts, 'nav_list':nav_list, 'pagination_parameters': parameters, 'hosts_per_page': int(hosts_per_page), 'search':search, 'org':org, 'active_count':active_count, 'new_count':new_count, 'stale_count':stale_count, 'stale':stale, 'new':new})
 
 @login_required
 def setup(request):

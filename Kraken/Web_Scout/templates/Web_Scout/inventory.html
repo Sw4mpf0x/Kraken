@@ -56,6 +56,18 @@
 {% endblock %}
 
 {% block body %}
+<div class="center-block" style="width:95%;">
+    <div class="alert alert-success" id="success-alert" style="z-index:5;position:absolute;width:95%;top:55px">
+            <button type="button" class="close" data-dismiss="alert">x</button>
+            <strong>Success!</strong>
+            <span id="success-text"></span>
+    </div>
+    <div class="alert alert-warning" id="warning-alert" style="z-index:5;position:absolute;width:95%;top:55px">
+            <button type="button" class="close" data-dismiss="alert">x</button>
+            <strong>Warning!</strong>
+            <span id="warning-text"></span>
+    </div>
+</div>
 <div class="container">
 	<div class="row">
         <div id="filter-panel" class="collapse filter-panel">
@@ -66,21 +78,6 @@
                             <label class="filter-col" style="padding-left:10px;padding-right:10px;" for="pref-perpage">Hosts per page:</label><br>
                             <select id="pref-perpage" class="form-control" name="hosts_per_page">
                                 {% if hosts_per_page > 0 %}
-                                	{% if hosts_per_page == 20 %}
-                                		<option selected="selected" value="20">20</option>
-                                	{% else %}
-                                		<option value="20">20</option>
-                                	{% endif %}
-                                	{% if hosts_per_page == 30 %}
-                                		<option selected="selected" value="30">30</option>
-                                	{% else %}
-                                		<option value="30">30</option>
-                                	{% endif %}
-                                	{% if hosts_per_page == 40 %}
-                                		<option selected="selected" value="40">40</option>
-                                	{% else %}
-                                		<option value="40">40</option>
-                                	{% endif %}
                                 	{% if hosts_per_page == 50 %}
                                 		<option selected="selected" value="50">50</option>
                                 	{% else %}
@@ -91,19 +88,34 @@
                                 	{% else %}
                                 		<option value="100">100</option>
                                 	{% endif %}
+                                	{% if hosts_per_page == 150 %}
+                                		<option selected="selected" value="150">150</option>
+                                	{% else %}
+                                		<option value="150">150</option>
+                                	{% endif %}
+                                	{% if hosts_per_page == 200 %}
+                                		<option selected="selected" value="200">200</option>
+                                	{% else %}
+                                		<option value="200">200</option>
+                                	{% endif %}
+                                	{% if hosts_per_page == 300 %}
+                                		<option selected="selected" value="300">300</option>
+                                	{% else %}
+                                		<option value="300">300</option>
+                                	{% endif %}
                                 {% else %}
-                                	<option selected="selected" value="20">20</option>
-                                	<option value="30">30</option>
-                                	<option value="40">40</option>
-                                	<option value="50">50</option>
+                                	<option selected="selected" value="50">50</option>
                                 	<option value="100">100</option>
+                                	<option value="150">150</option>
+                                	<option value="200">200</option>
+                                	<option value="300">300</option>
                                 {% endif %}
                             </select>                                
                         </div>
                         <div class="form-group">
                             <label class="filter-col" style="margin-right:0;" for="pref-search">Search:</label><br>
                             <input type="text" class="form-control input-sm" id="pref-search" name="search" value="{{ search }}">
-                        </div><
+                        </div>
                         <div class="form-group" style="padding-left:15px">
                             <label class="filter-col" style="margin-right:0;" for="pref-orderby">Sort by:</label><br>
                             <select id="pref-orderby" class="form-control" name="organize_by">
@@ -180,6 +192,20 @@
 	<br>Stale Hosts: {{ stale_count }}</p>
 	<nav>
 	<div align="center">
+		<div class="btn-group" style="float:left;margin-top:20px">
+            <button type="button" id="checkall" class="btn btn-default">Bulk</button>
+            <input type="checkbox" id="flagstone" style="display: none;" />
+            <button style="box-sizing: border-box;" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <span class="caret" style="margin-right:-3px"></span>&#160
+    			<span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+            	<li><a href="" id="marknew">Mark As New</a></li>
+                <li><a href="" id="markstale">Mark As Stale</a></li>
+                <li><a href="" id="marknormal">Mark As Normal</a></li>
+                <li><a href="" id="delete">Delete Selected</a></li>
+            </ul>
+        </div>
 		<ul class="pagination" align="center">		
 			{% if hosts.has_previous %}
 				<li><a href="?page={{ hosts.previous_page_number }}{{ pagination_parameters }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
@@ -235,26 +261,137 @@
 		</ul>			
 	</div>
 	</nav>
-
+	<form id="bulk-form" name="bulk-form">
+	{% csrf_token %}
 	<table class="table table-striped">
 		<thead>
 			<tr>
+				<th></th>
 				<th>IP</th>
 				<th>Hostname</th>
 				<th>Interfaces</th>
 				<th>Last Seen</th>
 			</tr>
-		</thead>
-		<tbody>
+		</thead>		
+		<tbody id="inventorylist">
 		{% for host in hosts %}
-			<tr {% if host.Stale %}style="background-color:#939393"{% elif host.New %}style="background-color:#3DDD27"{% endif %}>
-				<td>{{ host.IP }}</td>
+			<tr id="{{ host.HostID }}" {% if host.Stale %}style="background-color:#939393"{% elif host.New %}style="background-color:#3DDD27"{% endif %}>
+				<td><input type="checkbox" id="{{ host.HostID }}" value="0" name="{{ host.HostID }}" /></td>
+				<td><a href="/WebScout/?search={{ host.IP }}">{{ host.IP }}</a></td>
 				<td>{{ host.Hostname }}</td>
 				<td>{{ host.interfaces_set.all|length }}</td>
 				<td>{{ host.LastSeen }}</td>
 			</tr>
 		{% endfor %}
-		</tbody>
+		</tbody>		
 	</table>
+	</form>
 </div>
+<script>
+	$("#success-alert").hide();
+	$("#warning-alert").hide();
+	$("button#checkall").click(function(){
+        if(document.getElementById("flagstone").checked){
+            $('#flagstone').prop('checked', false);
+            $('#bulk-form input:checkbox').not(this).prop('checked', false);
+        }else{
+            $('#flagstone').prop('checked', true);
+            $('#bulk-form input:checkbox').not(this).prop('checked', true);
+        }
+    });
+    $('a#marknew').click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data: $('form#bulk-form').serialize() + "&action=bulkmarknew",
+            success: function(data){
+                $("#success-text").text("Selected hosts marked as new.")
+                $("#success-alert").alert();
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").hide();
+                });
+                console.log(data);
+                $.each(data[0], function(index, address){
+                    console.log(address);
+                    $("tr#" + address).css("background-color","#3DDD27");
+                });
+            },
+            error: function(){
+                alert("failure");
+            }
+        });
+    });
+    $('a#markstale').click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data: $('form#bulk-form').serialize() + "&action=bulkmarkstale",
+            success: function(data){
+                $("#success-text").text("Selected hosts marked as stale.")
+                $("#success-alert").alert();
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").hide();
+                });
+                console.log(data);
+                $.each(data[0], function(index, address){
+                    console.log(address);
+                    $("tr#" + address).css("background-color","#939393");
+                });
+            },
+            error: function(){
+                alert("failure");
+            }
+        });
+    });
+    $('a#marknormal').click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data: $('form#bulk-form').serialize() + "&action=bulkmarknormal",
+            success: function(data){
+                $("#success-text").text("Selected hosts marked as normal.")
+                $("#success-alert").alert();
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").hide();
+                });
+                console.log(data);
+                $.each(data[0], function(index, address){
+                    console.log(address);
+                    $("tr#" + address).css("background-color","");
+                });
+            },
+            error: function(){
+                alert("failure");
+            }
+        });
+    });
+    $('a#delete').click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data: $('form#bulk-form').serialize() + "&action=bulkdelete",
+            success: function(data){
+                $("#success-text").text("Selected hosts deleted.")
+                $("#success-alert").alert();
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").hide();
+                });
+                console.log(data);
+                $.each(data[0], function(index, address){
+                    console.log(address);
+                    $("tr#" + address).remove();
+                });
+            },
+            error: function(){
+                alert("failure");
+            }
+        });
+    });
+</script>
 {% endblock %}
+
+

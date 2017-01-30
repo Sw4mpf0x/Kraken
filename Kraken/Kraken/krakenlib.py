@@ -171,23 +171,21 @@ def DeleteAddress(address_list):
             continue
     return deleted
 
-def DeleteHost(host_list):
+def DeleteHost(host):
     import django, os, sys, re
     os.environ["DJANGO_SETTINGS_MODULE"] = "Kraken.settings"
     sys.path.append("/opt/Kraken")
     django.setup()
     from Web_Scout.models import Hosts
 
-    deleted = []
-    for host in host_list:
-        print host
-        try:
-            host_record = Hosts.objects.get(HostID=host)
-            host_record.delete()
-            deleted.append(host)
-        except:
-            continue
-    return deleted
+    print host
+    try:
+        host_record = Hosts.objects.get(HostID=host)
+        host_record.delete()
+        deleted.append(host)
+    except:
+        host = "Error deleting Host."
+    return host
 
 def DeleteInterface(interface_list):
     import django, os, sys, re
@@ -220,25 +218,35 @@ def BulkAction(POSTItems, action, note=''):
             try:
                 host_record = Hosts.objects.get(HostID=key)
                 changedhosts.append(key)
-                if str(action) == "bulkdelete":
+                if action == "bulkdelete":
                     host_record.delete()
-                if action == "bulknote":
+                    continue
+                elif action == "bulknote":
                     interfaces = host_record.interfaces_set.all()
                     interfaces.update(Notes=note)
                     for interface in interfaces:
                         changedinterfaces.append(interface.IntID)
-                if action == "bulkreviewed":
+                elif action == "bulkreviewed":
                     host_record.Reviewed = True
-                if action == 'bulkscreenshot':
+                elif action == 'bulkscreenshot':
                     for interface in host_record.interfaces_set.all():
                         item = [interface.Url, interface.IntID]
                         tasks.getscreenshot.delay(item, 20, True, None, True)
                         changedinterfaces.append(interface.IntID)
-                if action == 'bulkrunmodule':
+                elif action == 'bulkrunmodule':
                     interface_record = host_record.interfaces_set.all()[0]
                     if host_record.Module:
                         tasks.runmodule.delay(host_record.HostID)
                         changedinterfaces.append(interface.IntID)
+                elif action == "bulkmarknew":
+                    host_record.New = True
+                    host_record.Stale = False
+                elif action == "bulkmarkstale":
+                    host_record.Stale = True
+                    host_record.New = False
+                elif action == "bulkmarknormal":
+                    host_record.Stale = False
+                    host_record.New = False
                 host_record.save()
             except:
                 continue

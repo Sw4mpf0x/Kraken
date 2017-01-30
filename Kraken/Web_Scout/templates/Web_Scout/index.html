@@ -916,10 +916,7 @@
                                             $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
                                                 $("#success-alert").hide();
                                             });
-                                            $.each(data, function(index, host){
-                    							console.log(host);
-                    							$("div#" + host).remove();
-                							});
+                                            $("div#" + host).remove();
                                         },
                                         error: function(){
                                             $("#warning-text").text("A problem was encountered while submitting your request to delete a host.")
