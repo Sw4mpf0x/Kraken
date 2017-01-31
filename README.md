@@ -19,4 +19,6 @@ User management functionality can be found at http://localhost:8000/admin
 
 ##  Detailed Installation Steps, Usage, and Troubleshooting
 
-Please visit the [wiki](https://github.com/Sw4mpf0x/Kraken/wiki) for more detailed information.
+Please visit the [wiki](https://github.com/Sw4mpf0x/Kraken/wiki) for more detailed information. 
+
+https://pentestarmoury.com/2017/01/31/kraken-web-interface-survey-tool/
