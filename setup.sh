@@ -35,6 +35,7 @@ pip install Django
 pip install virtualenvwrapper
 pip install selenium
 pip install celery
+pip install image
 
 printf "\033[1;31mMoving files around and changing permissions\033[0m\n"
 mv celeryd.conf /etc/default/celeryd
@@ -105,7 +106,11 @@ else
 fi
 mkvirtualenv Kraken --no-site-packages
 workon Kraken
-pip install M2Crypto celery selenium Django
+pip install M2Crypto
+pip install celery
+pip install selenium
+pip install image
+pip install Django
 
 pip install Pillow==2.6.1 requests
 deactivate
