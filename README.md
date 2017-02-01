@@ -3,7 +3,7 @@ Kraken is a tool to help make your web interface testing workflow more efficient
 
 ## Quick Start
 
-Clone the repository down and run the following commands:
+Clone the repository down and run the following commands (Note, don't clone into /opt or it won't install correctly):
 
 ```# chmod 755 setup.sh```
 
