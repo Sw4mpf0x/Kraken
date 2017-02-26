@@ -269,7 +269,8 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 			resp = session.get(url[0],**kwargs)
 		except requests.exceptions.Timeout:
 			resp = "Timeout"
-		except requests.exceptions.SSLError:
+		except requests.exceptions.SSLError as e:
+			print e
 			resp = "SSL Error"
 		return resp
 
