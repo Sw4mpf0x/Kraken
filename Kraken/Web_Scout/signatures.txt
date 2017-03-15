@@ -296,3 +296,5 @@ KONICA MINOLTA PageScope;m_s_smm.html|Konica Minolta|||printer|2
 k Camera;AXIS;indexMain|Video Camera|||voip|3
 This is a placeholder page installed by the Ubuntu;bug in this Light|Ubuntu Page|||default installation|3
 Welcome to nginx on Ubuntu;ubuntu-bug;Thank you for using Ubuntu|Ubuntu nginx Page|||default installation|3
+<title>OneFS</title>|OneFS|||NAS|1
+HPE BladeSystem|HPE BladeSystem Onboard Administrator|No default password|||general|3
