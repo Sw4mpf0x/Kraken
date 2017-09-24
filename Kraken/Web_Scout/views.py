@@ -7,6 +7,7 @@ import os
 from . import tasks
 from celery.result import AsyncResult
 import json
+import re
 from .forms import ParseForm
 from Kraken.krakenlib import BulkAction, BuildQuery, LogKrakenEvent, AddUrl, AddAddress, AddHostname, DeleteAddress, DeleteHost
 from django.contrib.auth.decorators import login_required
@@ -232,10 +233,19 @@ def setup(request):
 				return render(request, 'Web_Scout/setup.html', {'form':form, 'uploaded':False, 'failedupload':True})
 		elif request.POST.get('action') == 'screenshot':
 			overwrite = request.POST.get('overwrite')
+			ipPattern = re.compile("^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
+			hostnamePattern = re.compile("^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)+([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$")
+			proxy = ""
+			proxyHost = request.POST.get("proxyhost", "")
+			proxyPort = request.POST.get("proxyport", "")
+			if proxyHost != "" and (ipPattern.match(proxyHost) or hostnamePattern.match(proxyHost)) and int(proxyPort) > 0 and int(proxyPort) < 65536:
+				proxy = request.POST.get('proxyhost') + ":" + request.POST.get('proxyport')
+			elif proxyHost:
+				return HttpResponse(status=500)
 			if overwrite == 'True':
-				job = tasks.startscreenshot.delay(True)
+				job = tasks.startscreenshot.delay(True, proxy)
 			else:
-				job = tasks.startscreenshot.delay()
+				job = tasks.startscreenshot.delay(False, proxy)
 			try:
 				task = Tasks.objects.get(Task='screenshot')
 			except:

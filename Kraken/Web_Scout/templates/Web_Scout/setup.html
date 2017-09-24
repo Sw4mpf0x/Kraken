@@ -193,7 +193,9 @@
                     <input type="hidden" class="form-control" name="action" value="screenshot"/>
                     <p><h3>Take Screenshots</h3></p>
                     <p>Take screenshots of all interfaces identified in Step 1.</p>
-                    <input type="checkbox" name="overwrite" value="True"> Overwrite Current Screenshots 
+                    <input type="checkbox" name="overwrite" value="True"> Overwrite Current Screenshots<br><br>
+                    <p>(Optional) Socks Proxy Settings</p>
+                    <input type="text" name="proxyhost" placeholder="Host">:<input type="text" name="proxyport" style="width:60px" placeholder="Port"><br>
                     <div style="margin-bottom:5px"><span id="screenshot_progress"></span></div>
                     <button data-toggle="modal" data-target="#confirm-action" data-description="take screenshots" data-action="screenshot" id="screenshot" class="btn btn-primary">Take Screenshots</button>
                 </div>
@@ -483,6 +485,7 @@
             error: function(){
                 $("#warning-text").text("A problem was encountered while submitting your request to " + action_description + ".")
                 $("#warning-alert").alert();
+                console.log("NOPE")
                 PollState(action);
                 $("#warning-alert").fadeTo(2000, 500).slideUp(500, function(){
                     $("#warning-alert").hide();

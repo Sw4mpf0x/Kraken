@@ -263,6 +263,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 		kwargs['allow_redirects'] = False
 		session = requests.session()
 		if(proxy is not None):
+			print proxy
 			session.proxies={'http':'socks5://'+proxy,'https':'socks5://'+proxy}
 		print '[+] Getting ' + url[0]
 		try:
@@ -437,7 +438,7 @@ def getscreenshot(urlItem, tout, debug, proxy, overwrite):
 		return
 	
 @task
-def startscreenshot(overwrite=False):
+def startscreenshot(overwrite=False, proxy=None):
 	import datetime
 	import django, os, sys
 	os.environ["DJANGO_SETTINGS_MODULE"] = "Kraken.settings"
@@ -461,8 +462,13 @@ def startscreenshot(overwrite=False):
 		for interface in host.interfaces_set.all():
 			urlQueue.append([interface.Url, interface.IntID])
 			total_count +=1
+	
+	if proxy == None:
+		timeout = 45
+	else:
+		timeout = 90
 
-	jobs = group(getscreenshot.s(item, 20, True, None, overwrite) for item in urlQueue)
+	jobs = group(getscreenshot.s(item, timeout, True, proxy, overwrite) for item in urlQueue)
 	result = jobs.apply_async()
 
 	while not result.ready():
