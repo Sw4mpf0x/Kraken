@@ -5,19 +5,23 @@ Kraken is a tool to help make your web interface testing workflow more efficient
 
 Kraken has been Dockerized! You can now run Kraken with Docker and have the database persist in a Docker Volume using the follow command after installing Docker, if you don’t have it:
 
-```docker volume create krakendb
+```
+docker volume create krakendb
 
 docker run \
   --mount source=krakendb,target=/app/db \
   -p 5000:80 \
-  sw4mpf0x/kraken```
+  sw4mpf0x/kraken
+```
   
 Once ran, access Kraken with https://localhost:5000/. Kraken can be started and stopped as you like. The second command will start Kraken again:
 
-```docker run \
+```
+docker run \
   --mount source=krakendb,target=/app/db \
   -p 5000:80 \
-  sw4mpf0x/kraken```
+  sw4mpf0x/kraken
+```
 
 ## OLD Quick Start
 
