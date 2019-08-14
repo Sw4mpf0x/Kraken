@@ -17,6 +17,10 @@ docker run \
 Once ran, access Kraken with https://localhost:5000/. Kraken can be started and stopped as you like. The second command will start Kraken again:
 
 ```
+docker container list
+
+docker container stop <Container ID>
+
 docker run \
   --mount source=krakendb,target=/app/db \
   -p 5000:80 \
